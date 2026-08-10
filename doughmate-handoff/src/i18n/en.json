@@ -1,0 +1,211 @@
+{
+  "_meta": {
+    "language": "en",
+    "voice_rules": "Sam's voice: warm, short sentences, no hyphens or dashes ever, uses contractions freely, never uses corporate words (leverage, optimize, seamless), never says 'sorry' (says 'hmm' instead), addresses user as 'you'.",
+    "notes": "Every string in the app lives here. Access via t('key.path'). Never hardcode text in components."
+  },
+  "app": {
+    "name": "Doughmate",
+    "tagline": "Convert, scale, and bake with Sam"
+  },
+  "onboarding": {
+    "screen1": {
+      "greeting": "Hi. I'm Sam. Let's make the math easy.",
+      "cta": "Get Started",
+      "skip": "Skip"
+    },
+    "screen2": {
+      "features": "Convert cups to grams, scale any recipe, and I'll keep you company.",
+      "cta": "Next",
+      "skip": "Skip"
+    },
+    "screen3": {
+      "prompt": "Want reminders when your starter needs feeding?",
+      "yes": "Sure",
+      "no": "Maybe Later"
+    }
+  },
+  "tabs": {
+    "convert": "Convert",
+    "recipes": "Recipes",
+    "starters": "Starters",
+    "settings": "Settings"
+  },
+  "converter": {
+    "sam_greeting_default": "What are we baking?",
+    "sam_greeting_returning": "Welcome back. What are we making?",
+    "sam_greeting_late_night": "Baking late? I'm here.",
+    "label_ingredient": "Ingredient",
+    "label_amount": "Amount",
+    "label_from_unit": "From",
+    "label_to_unit": "To",
+    "label_equals": "equals",
+    "button_save": "★ Save",
+    "button_more_tools": "More tools",
+    "button_convert": "Convert",
+    "picker_search_placeholder": "Search ingredients"
+  },
+  "more_tools": {
+    "title": "More tools",
+    "pan": "Pan converter",
+    "oven": "Oven temperature",
+    "yeast": "Yeast",
+    "egg": "Egg size",
+    "butter": "Butter",
+    "substitutions": "Substitutions"
+  },
+  "recipes": {
+    "title": "Recipes",
+    "empty_title": "No recipes yet.",
+    "empty_body": "Save a conversion or tap + to add one.",
+    "button_add": "+ New Recipe",
+    "button_scale": "Scale",
+    "button_delete": "Delete",
+    "button_undo": "Undo",
+    "toast_saved": "Saved to your Recipe Box.",
+    "toast_deleted": "Recipe deleted.",
+    "detail_ingredients": "Ingredients",
+    "detail_notes": "Notes",
+    "new_name_placeholder": "Name your recipe",
+    "new_add_ingredient": "Add ingredient"
+  },
+  "starters": {
+    "title": "Starters",
+    "empty_title": "No starters yet.",
+    "empty_body": "Let's meet the first one.",
+    "button_add": "+ Add Starter",
+    "button_feed_now": "Feed now",
+    "feed_log_title": "Feed log",
+    "toast_added": "Starter added. I'll remind you at {time}.",
+    "toast_fed": "Well fed. {name} is happy.",
+    "countdown_ready": "Feed now",
+    "countdown_future": "{hours}h until feed",
+    "countdown_soon": "{minutes}m until feed",
+    "new_name_placeholder": "Starter",
+    "new_name_placeholder_next": "Starter {number}",
+    "field_hydration": "Hydration",
+    "field_ratio": "Feed ratio",
+    "field_interval": "Feed every",
+    "field_temperature": "Kitchen temperature",
+    "field_notes": "Notes",
+    "notifications": {
+      "ready_generic": "{name} is ready for a feed.",
+      "waiting": "Time to feed {name}. She's been waiting {hours} hours.",
+      "peak": "Your starter's close to peak. Want to bake today?",
+      "long_absence": "Been a few days. Your starter would love a visit."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "section_appearance": "Appearance",
+    "section_sound": "Sound & feel",
+    "section_preferences": "Preferences",
+    "section_notifications": "Notifications",
+    "section_pro": "Pro",
+    "section_support": "Support",
+    "section_about": "About",
+    "theme_label": "Theme",
+    "theme_auto": "Auto",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "reduced_motion": "Reduced motion",
+    "sound_effects": "Sound effects",
+    "haptics": "Haptics",
+    "default_units": "Default units",
+    "unit_metric": "Metric",
+    "unit_imperial": "Imperial",
+    "flour_standard": "Flour standard",
+    "flour_120": "120g per cup (US)",
+    "flour_125": "125g per cup (European)",
+    "floured_fingers": "Floured fingers mode",
+    "floured_fingers_desc": "Extra large text and fewer taps for messy hands.",
+    "language": "Language",
+    "starter_reminders": "Starter reminders",
+    "weekly_tip": "Weekly baking tip from Sam",
+    "restore_purchases": "Restore purchases",
+    "buy_pro": "Buy Pro",
+    "buy_themes": "Buy themes",
+    "rate": "Rate Doughmate",
+    "contact": "Contact Sam",
+    "feedback": "Send feedback",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "ingredient_sources": "Ingredient sources",
+    "version": "Version",
+    "credits": "Credits"
+  },
+  "paywall": {
+    "title": "Doughmate Pro",
+    "tagline": "Single purchase, no subscription.",
+    "features": [
+      "Unlimited recipes",
+      "Unlimited starters",
+      "Baker's percentages",
+      "Fermentation timer",
+      "Every theme",
+      "No ads, ever"
+    ],
+    "cta": "Get Pro for $4.99",
+    "restore": "Restore purchases",
+    "close": "Close",
+    "contextual": {
+      "sixth_starter": "Want unlimited starters and full baker's math?",
+      "eleventh_recipe": "Want to save unlimited recipes?",
+      "seasonal_theme": "Get every current and future theme with Pro."
+    }
+  },
+  "empty_states": {
+    "favorites_title": "No favorites yet.",
+    "favorites_body": "Star a conversion and it'll live here."
+  },
+  "errors": {
+    "no_internet": "Can't reach out right now. The calculator still works.",
+    "iap_failed_title": "That didn't go through.",
+    "iap_failed_body": "Want to try again?",
+    "iap_retry": "Retry",
+    "iap_cancel": "Cancel",
+    "restore_empty": "Nothing to restore right now. Purchases follow your account.",
+    "invalid_input": "Hmm, that number's tricky. Want to try again?",
+    "generic": "Something wobbled. Try that again?"
+  },
+  "toasts": {
+    "restore_success": "Restored. Welcome back.",
+    "pro_unlocked": "Pro unlocked. Thank you.",
+    "theme_purchased": "New theme unlocked. Enjoy."
+  },
+  "milestones": {
+    "first_conversion": "First one done. This is going to be fun.",
+    "tenth_conversion": "Ten already. Look at us.",
+    "hundredth_conversion": "One hundred. We're baking now.",
+    "first_recipe_saved": "Your first recipe is safe with me.",
+    "first_starter_fed": "Well fed. Your starter's smiling.",
+    "seven_day_streak": "Seven days baking. Beautiful.",
+    "thirty_day_streak": "A whole month. You're a baker now."
+  },
+  "review": {
+    "prompt": "Enjoying baking with me? A quick review means the world.",
+    "yes": "Sure",
+    "no": "Not now"
+  },
+  "att": {
+    "pre_prompt": "To keep Sam free, we show ads. If you allow tracking, they can be baker relevant (equipment, ingredients) instead of random. Your call, always.",
+    "allow": "Allow",
+    "decline": "Not now"
+  },
+  "weekly_push": [
+    "This week: try adding cardamom to your Sunday bake.",
+    "This week: brown your butter before the cookies. You'll thank me.",
+    "This week: bake something you've never tried. I'll help with the math.",
+    "This week: try a slower rise. Cold overnight in the fridge changes everything.",
+    "This week: measure by weight, not volume. Even once. See the difference."
+  ],
+  "time": {
+    "just_now": "Just now",
+    "minutes_ago": "{n}m ago",
+    "hours_ago": "{n}h ago",
+    "days_ago": "{n}d ago",
+    "yesterday": "Yesterday",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  }
+}

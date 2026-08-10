@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "source": "USDA egg grading standards",
+    "note": "Weights are for whole egg without shell. Yolk ≈ 33% of weight, white ≈ 67%."
+  },
+  "sizes": {
+    "small": { "name": "Small", "whole_g": 38, "yolk_g": 13, "white_g": 25, "shell_g": 5 },
+    "medium": { "name": "Medium", "whole_g": 44, "yolk_g": 15, "white_g": 29, "shell_g": 5 },
+    "large": { "name": "Large", "whole_g": 50, "yolk_g": 17, "white_g": 33, "shell_g": 6, "default": true },
+    "extra_large": { "name": "Extra large", "whole_g": 56, "yolk_g": 19, "white_g": 37, "shell_g": 6, "aliases": ["XL"] },
+    "jumbo": { "name": "Jumbo", "whole_g": 63, "yolk_g": 21, "white_g": 42, "shell_g": 7 }
+  },
+  "conversions_from_large": {
+    "small_to_large_ratio": 0.76,
+    "medium_to_large_ratio": 0.88,
+    "extra_large_to_large_ratio": 1.12,
+    "jumbo_to_large_ratio": 1.26
+  },
+  "usage_examples": [
+    { "recipe_calls_for": "3 large eggs", "if_you_have_medium": "3 medium + 1 tbsp beaten egg (or just use 4 medium for close enough)" },
+    { "recipe_calls_for": "3 large eggs", "if_you_have_jumbo": "use 2 jumbo + 2 tbsp beaten egg (or 2 jumbo for a slightly drier bake)" }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "source": "King Arthur Baking + Fleischmann's technical bulletins",
+    "note": "Yeast conversions vary slightly by source. These ratios balance accuracy with practical use."
+  },
+  "types": {
+    "active_dry": {
+      "name": "Active dry yeast",
+      "per_tsp_g": 3.5,
+      "per_packet_g": 7,
+      "notes": "Standard packet is 1/4 oz (7g) = 2 1/4 tsp"
+    },
+    "instant": {
+      "name": "Instant yeast",
+      "per_tsp_g": 3.1,
+      "per_packet_g": 7,
+      "aliases": ["rapid rise", "bread machine yeast", "quick yeast"],
+      "notes": "Same packet size as active dry. Can skip proofing step."
+    },
+    "fresh": {
+      "name": "Fresh yeast",
+      "per_tsp_g": 12,
+      "per_cake_g": 17,
+      "aliases": ["cake yeast", "compressed yeast", "wet yeast"],
+      "notes": "Small cake is 0.6 oz (17g). Highly perishable."
+    }
+  },
+  "conversions": {
+    "active_dry_to_instant_ratio": 0.75,
+    "instant_to_active_dry_ratio": 1.33,
+    "active_dry_to_fresh_ratio": 2.5,
+    "fresh_to_active_dry_ratio": 0.4,
+    "instant_to_fresh_ratio": 3.0,
+    "fresh_to_instant_ratio": 0.333
+  },
+  "examples": [
+    { "from": "1 tsp active dry", "to": "3/4 tsp instant" },
+    { "from": "1 tsp instant", "to": "1 1/4 tsp active dry" },
+    { "from": "1 tsp active dry", "to": "0.4 oz fresh" },
+    { "from": "1 packet active dry (7g)", "to": "17g fresh yeast (1 small cake)" }
+  ]
+}
