@@ -54,13 +54,13 @@ export default function TabsLayout() {
 
       {/* Sam peeks up over the middle of the tab bar. He never blocks taps. */}
       <View
-        pointerEvents="none"
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
           bottom: insets.bottom + TAB_BAR_HEIGHT - 12,
           alignItems: 'center',
+          pointerEvents: 'none',
         }}
       >
         <Sam size={SAM_SIZE} />
