@@ -78,7 +78,26 @@
     "yeast": "Yeast",
     "egg": "Egg size",
     "butter": "Butter",
-    "substitutions": "Substitutions"
+    "substitutions": "Substitutions",
+    "soon": "Soon"
+  },
+  "pan": {
+    "title": "Pan converter",
+    "from_label": "Recipe pan",
+    "to_label": "Your pan",
+    "scale_label": "Scale your recipe by",
+    "bake_time_label": "Bake time",
+    "bake_larger": "Bigger pan, thinner batter. Check early and shorten the time a little.",
+    "bake_smaller": "Smaller pan, deeper batter. Give it longer, and maybe lower the heat.",
+    "bake_same": "About the same. Just check a few minutes early."
+  },
+  "oven": {
+    "title": "Oven temperature",
+    "amount_label": "Temperature",
+    "unit_f": "Fahrenheit",
+    "unit_c": "Celsius",
+    "reads_label": "That reads as",
+    "gas_mark": "Gas mark"
   },
   "recipes": {
     "title": "Recipes",

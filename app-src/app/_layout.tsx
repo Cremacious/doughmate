@@ -21,6 +21,9 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="scaler" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="more-tools" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="pan" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="oven" options={{ presentation: 'modal' }} />
         </Stack>
         <StatusBar style={isDark ? 'light' : 'dark'} />
       </SafeAreaProvider>

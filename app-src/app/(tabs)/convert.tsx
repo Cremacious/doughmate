@@ -1,10 +1,12 @@
 // The main converter. Amount + ingredient + from/to units, with a big result.
 // All math comes from src/lib/convert. All copy from t(). All colours from theme.
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { IngredientPicker } from '@/components/IngredientPicker';
 import { UnitField } from '@/components/UnitField';
@@ -96,6 +98,12 @@ export default function ConvertScreen() {
             </View>
           </View>
         </Card>
+
+        <Button
+          label={t('converter.button_more_tools')}
+          variant="secondary"
+          onPress={() => router.push('/more-tools')}
+        />
       </ScrollView>
     </SafeAreaView>
   );
