@@ -7,9 +7,15 @@ import { haptic } from '@/theme';
 
 export type HapticName = keyof typeof haptic;
 
+// Toggled by the settings store. Defaults on until told otherwise.
+let hapticsEnabled = true;
+export function setHapticsEnabled(enabled: boolean): void {
+  hapticsEnabled = enabled;
+}
+
 export function triggerHaptic(name: HapticName): void {
-  // Haptics are a native affordance; skip them on web.
-  if (Platform.OS === 'web') {
+  // Haptics are a native affordance; skip on web or when the baker turned them off.
+  if (Platform.OS === 'web' || !hapticsEnabled) {
     return;
   }
   switch (haptic[name]) {

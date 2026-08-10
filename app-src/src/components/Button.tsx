@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { triggerHaptic, type HapticName } from '@/lib/haptics';
+import { scaleType } from '@/lib/typeScale';
 import { radius, spacing, typography } from '@/theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
@@ -23,7 +24,7 @@ export function Button({
   disabled = false,
   haptic = 'tap',
 }: ButtonProps) {
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
 
   const background =
     variant === 'primary' ? palette.jam : variant === 'secondary' ? palette.dough : 'transparent';
@@ -43,7 +44,11 @@ export function Button({
         { backgroundColor: background, opacity: disabled ? 0.4 : pressed ? 0.85 : 1 },
       ]}
     >
-      <Text style={[typography.body.lg, { color: textColor }]}>{label}</Text>
+      <Text
+        style={[typography.body.lg, scaleType(typography.body.lg, fontScale), { color: textColor }]}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }

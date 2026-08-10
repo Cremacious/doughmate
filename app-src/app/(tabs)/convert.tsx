@@ -12,17 +12,20 @@ import { IngredientPicker } from '@/components/IngredientPicker';
 import { UnitField } from '@/components/UnitField';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { convert, formatQuantity, getIngredient, type Ingredient, type Unit } from '@/lib/convert';
+import { scaleType } from '@/lib/typeScale';
+import { useSettings } from '@/state/settings';
 import { spacing, typography } from '@/theme';
 
 const DEFAULT_INGREDIENT: Ingredient = getIngredient('all_purpose_flour')!;
 
 export default function ConvertScreen() {
   const { t } = useTranslation();
-  const { palette, bg } = useAppTheme();
+  const { palette, bg, fontScale } = useAppTheme();
+  const { settings } = useSettings();
 
   const [ingredient, setIngredient] = useState<Ingredient>(DEFAULT_INGREDIENT);
   const [amountText, setAmountText] = useState('1');
-  const [fromUnit, setFromUnit] = useState<Unit>('cup');
+  const [fromUnit, setFromUnit] = useState<Unit>(settings.units === 'metric' ? 'ml' : 'cup');
   const [toUnit, setToUnit] = useState<Unit>('g');
 
   const amount = Number(amountText);
@@ -32,8 +35,14 @@ export default function ConvertScreen() {
     if (!amountValid) {
       return null;
     }
-    return convert({ amount, from: fromUnit, to: toUnit, ingredient });
-  }, [amount, amountValid, fromUnit, toUnit, ingredient]);
+    return convert({
+      amount,
+      from: fromUnit,
+      to: toUnit,
+      ingredient,
+      flourStandard: settings.flourStandard,
+    });
+  }, [amount, amountValid, fromUnit, toUnit, ingredient, settings.flourStandard]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bg.primary }]} edges={['top']}>
@@ -63,6 +72,7 @@ export default function ConvertScreen() {
                 selectTextOnFocus
                 style={[
                   typography.body.lg,
+                  scaleType(typography.body.lg, fontScale),
                   styles.amountInput,
                   { backgroundColor: bg.subtle, color: palette.choc },
                 ]}
@@ -86,7 +96,13 @@ export default function ConvertScreen() {
                 {t('converter.result_placeholder')}
               </Text>
             ) : (
-              <Text style={[typography.number.hero, { color: palette.crust }]}>
+              <Text
+                style={[
+                  typography.number.hero,
+                  scaleType(typography.number.hero, fontScale),
+                  { color: palette.crust },
+                ]}
+              >
                 {formatQuantity(result)}
               </Text>
             )}
