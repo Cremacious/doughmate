@@ -1,0 +1,148 @@
+{
+  "_meta": {
+    "note": "Substitutions work best in most recipes but can affect texture. Never guarantee allergy-safe substitutions.",
+    "disclaimer": "Sam offers substitutions as a starting point. Not medical or allergy advice."
+  },
+  "free": [
+    {
+      "id": "buttermilk_diy",
+      "missing": "Buttermilk",
+      "amount": "1 cup",
+      "substitute": "1 cup milk + 1 tablespoon white vinegar or lemon juice. Stir and let sit 5 minutes.",
+      "notes": "Nearly identical results in baking."
+    },
+    {
+      "id": "sour_cream_yogurt",
+      "missing": "Sour cream",
+      "amount": "1 cup",
+      "substitute": "1 cup full-fat Greek yogurt",
+      "notes": "1:1 swap. Adds a slight tang."
+    },
+    {
+      "id": "egg_flax",
+      "missing": "Egg (1 large)",
+      "amount": "1 egg",
+      "substitute": "1 tablespoon ground flaxseed + 3 tablespoons water. Mix and let sit 5 minutes to thicken.",
+      "notes": "Works for cookies, muffins, quick breads. Not for airy or leavened bakes."
+    },
+    {
+      "id": "butter_oil_cake",
+      "missing": "Butter (for cakes)",
+      "amount": "1 cup",
+      "substitute": "1 cup vegetable oil",
+      "notes": "Cake will be more moist. Not ideal for cookies where creaming matters."
+    },
+    {
+      "id": "butter_oil_cookie",
+      "missing": "Butter (for cookies)",
+      "amount": "1 cup",
+      "substitute": "3/4 cup vegetable oil",
+      "notes": "Cookies spread more and taste less rich."
+    },
+    {
+      "id": "brown_sugar_diy",
+      "missing": "Brown sugar",
+      "amount": "1 cup",
+      "substitute": "1 cup white sugar + 1 tablespoon molasses (for light) or 2 tablespoons (for dark). Mix well.",
+      "notes": "Nearly identical results."
+    },
+    {
+      "id": "cake_flour_diy",
+      "missing": "Cake flour",
+      "amount": "1 cup",
+      "substitute": "3/4 cup + 2 tablespoons all-purpose flour + 2 tablespoons cornstarch. Sift twice.",
+      "notes": "The cornstarch lowers the protein like cake flour does."
+    },
+    {
+      "id": "self_rising_flour_diy",
+      "missing": "Self-rising flour",
+      "amount": "1 cup",
+      "substitute": "1 cup all-purpose flour + 1 1/2 teaspoons baking powder + 1/4 teaspoon salt",
+      "notes": "Use immediately, don't store the mix."
+    },
+    {
+      "id": "baking_powder_diy",
+      "missing": "Baking powder",
+      "amount": "1 teaspoon",
+      "substitute": "1/4 teaspoon baking soda + 1/2 teaspoon cream of tartar",
+      "notes": "Use immediately."
+    },
+    {
+      "id": "heavy_cream_cooking",
+      "missing": "Heavy cream (for cooking, not whipping)",
+      "amount": "1 cup",
+      "substitute": "3/4 cup milk + 1/4 cup melted butter",
+      "notes": "Won't whip. Fine for sauces, ganache, baked goods."
+    },
+    {
+      "id": "milk_water_butter",
+      "missing": "Milk",
+      "amount": "1 cup",
+      "substitute": "1 cup water + 1 1/2 teaspoons melted butter",
+      "notes": "For baking only. Won't taste right in coffee or on cereal."
+    },
+    {
+      "id": "vanilla_maple",
+      "missing": "Vanilla extract",
+      "amount": "1 teaspoon",
+      "substitute": "1 teaspoon maple syrup",
+      "notes": "Mild flavor swap. Works in most cookies and cakes."
+    },
+    {
+      "id": "cocoa_choc",
+      "missing": "Unsweetened chocolate",
+      "amount": "1 ounce",
+      "substitute": "3 tablespoons cocoa powder + 1 tablespoon butter or oil",
+      "notes": "Melts differently, but chemistry works."
+    },
+    {
+      "id": "molasses_brown",
+      "missing": "Molasses",
+      "amount": "1 cup",
+      "substitute": "3/4 cup brown sugar + 1/4 cup water. Warm to dissolve.",
+      "notes": "Milder flavor than real molasses."
+    },
+    {
+      "id": "corn_syrup_honey",
+      "missing": "Corn syrup",
+      "amount": "1 cup",
+      "substitute": "1 cup honey",
+      "notes": "Changes color and flavor slightly. Fine for most baking."
+    },
+    {
+      "id": "cornstarch_flour",
+      "missing": "Cornstarch (as thickener)",
+      "amount": "1 tablespoon",
+      "substitute": "2 tablespoons all-purpose flour",
+      "notes": "For sauces and pie fillings."
+    },
+    {
+      "id": "yeast_baking_soda",
+      "missing": "Yeast",
+      "amount": "1 packet",
+      "substitute": "There is no true substitute. For quick breads only: use baking powder or a combo of baking soda + acid.",
+      "notes": "Real yeast breads need yeast. Sorry."
+    },
+    {
+      "id": "cream_of_tartar_lemon",
+      "missing": "Cream of tartar",
+      "amount": "1 teaspoon",
+      "substitute": "2 teaspoons lemon juice or white vinegar",
+      "notes": "Works for meringues and some acid uses."
+    }
+  ],
+  "pro": [
+    {
+      "note": "Additional 80+ substitutions unlocked with Pro. See docs/substitutions-pro-list.md when populating v1.5 update.",
+      "categories_covered": [
+        "dairy-free swaps",
+        "gluten-free flour blends",
+        "egg replacers for various uses",
+        "vegan butter/cream alternatives",
+        "sugar alternatives (stevia, monk fruit, erythritol conversions)",
+        "specific ingredient swaps (mascarpone, ricotta, buttermilk variations)",
+        "regional ingredient equivalents (US to UK terminology)"
+      ]
+    }
+  ]
+}

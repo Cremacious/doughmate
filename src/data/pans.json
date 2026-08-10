@@ -1,0 +1,165 @@
+{
+  "_meta": {
+    "note": "Areas are in square inches. Volumes assume 2 inch depth unless the pan type specifies otherwise. Use the ratio to scale ingredients. Adjust bake time per the rule of thumb."
+  },
+  "common_pans": [
+    {
+      "id": "round_6",
+      "name": "6\" round",
+      "shape": "round",
+      "diameter_in": 6,
+      "area_sqin": 28.3,
+      "depth_in": 2,
+      "volume_cuin": 56.6
+    },
+    {
+      "id": "round_7",
+      "name": "7\" round",
+      "shape": "round",
+      "diameter_in": 7,
+      "area_sqin": 38.5,
+      "depth_in": 2,
+      "volume_cuin": 77
+    },
+    {
+      "id": "round_8",
+      "name": "8\" round",
+      "shape": "round",
+      "diameter_in": 8,
+      "area_sqin": 50.3,
+      "depth_in": 2,
+      "volume_cuin": 100.5
+    },
+    {
+      "id": "round_9",
+      "name": "9\" round",
+      "shape": "round",
+      "diameter_in": 9,
+      "area_sqin": 63.6,
+      "depth_in": 2,
+      "volume_cuin": 127.2
+    },
+    {
+      "id": "round_10",
+      "name": "10\" round",
+      "shape": "round",
+      "diameter_in": 10,
+      "area_sqin": 78.5,
+      "depth_in": 2,
+      "volume_cuin": 157.1
+    },
+    {
+      "id": "square_8",
+      "name": "8\" square",
+      "shape": "square",
+      "side_in": 8,
+      "area_sqin": 64,
+      "depth_in": 2,
+      "volume_cuin": 128
+    },
+    {
+      "id": "square_9",
+      "name": "9\" square",
+      "shape": "square",
+      "side_in": 9,
+      "area_sqin": 81,
+      "depth_in": 2,
+      "volume_cuin": 162
+    },
+    {
+      "id": "rect_9x13",
+      "name": "9x13 rectangle",
+      "shape": "rectangle",
+      "length_in": 13,
+      "width_in": 9,
+      "area_sqin": 117,
+      "depth_in": 2,
+      "volume_cuin": 234
+    },
+    {
+      "id": "loaf_9x5",
+      "name": "9x5 loaf",
+      "shape": "rectangle",
+      "length_in": 9,
+      "width_in": 5,
+      "area_sqin": 45,
+      "depth_in": 2.75,
+      "volume_cuin": 123.75
+    },
+    {
+      "id": "loaf_8x4",
+      "name": "8x4 loaf",
+      "shape": "rectangle",
+      "length_in": 8,
+      "width_in": 4,
+      "area_sqin": 32,
+      "depth_in": 2.5,
+      "volume_cuin": 80
+    },
+    {
+      "id": "springform_9",
+      "name": "9\" springform",
+      "shape": "round",
+      "diameter_in": 9,
+      "area_sqin": 63.6,
+      "depth_in": 3,
+      "volume_cuin": 190.9
+    },
+    {
+      "id": "springform_10",
+      "name": "10\" springform",
+      "shape": "round",
+      "diameter_in": 10,
+      "area_sqin": 78.5,
+      "depth_in": 3,
+      "volume_cuin": 235.6
+    },
+    {
+      "id": "tube_10",
+      "name": "10\" tube pan",
+      "shape": "tube",
+      "diameter_in": 10,
+      "area_sqin": 62.8,
+      "depth_in": 4,
+      "volume_cuin": 251.3
+    },
+    {
+      "id": "bundt_10",
+      "name": "10\" bundt",
+      "shape": "bundt",
+      "diameter_in": 10,
+      "area_sqin": 62.8,
+      "depth_in": 3.5,
+      "volume_cuin": 219.9
+    },
+    {
+      "id": "muffin_12",
+      "name": "12-cup muffin tin (standard)",
+      "shape": "muffin",
+      "cavities": 12,
+      "area_sqin": 44,
+      "volume_cuin": 42,
+      "notes": "Each cup ≈ 3.5 cu in"
+    },
+    {
+      "id": "cupcake_12",
+      "name": "12-cup cupcake tin",
+      "shape": "muffin",
+      "cavities": 12,
+      "area_sqin": 44,
+      "volume_cuin": 42
+    }
+  ],
+  "formulas": {
+    "round_area_sqin": "PI * (diameter_in / 2)^2",
+    "square_area_sqin": "side_in * side_in",
+    "rectangle_area_sqin": "length_in * width_in",
+    "scaling_ratio": "new_pan_area / original_pan_area"
+  },
+  "bake_time_rules": {
+    "note": "Rules of thumb — always start checking earlier than expected.",
+    "larger_pan": "Batter is thinner, reduce bake time by 10 to 20% depending on how much bigger",
+    "smaller_pan": "Batter is thicker, increase bake time by 10 to 20% AND consider lowering oven by 25°F",
+    "different_shape_same_area": "Bake time roughly the same, but check 5 minutes early"
+  }
+}

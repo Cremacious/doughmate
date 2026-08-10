@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sam — Doughmate's sourdough mascot.
+  Master SVG. Scales cleanly from 24px favicon to 1024px hero.
+  Use this as a placeholder until Fiverr Lottie animations arrive.
+  Palette matches theme.ts (crust, crustLight, choc, jam, cream).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" role="img" aria-label="Sam, a sourdough loaf">
+  <title>Sam</title>
+  <desc>A round, warm, chubby sourdough loaf with a friendly face and score marks on top.</desc>
+
+  <!-- Ground shadow -->
+  <ellipse cx="110" cy="158" rx="85" ry="7" fill="#8B5A2B" opacity="0.15"/>
+
+  <!-- Loaf body (belly) -->
+  <ellipse cx="110" cy="105" rx="90" ry="62" fill="#C9975B"/>
+
+  <!-- Top crust highlight (oven spring) -->
+  <path d="M 25 95 Q 110 45 195 95 Q 195 108 190 115 Q 110 60 30 115 Q 25 108 25 95 Z" fill="#D9A76B"/>
+
+  <!-- Score marks (baker's slashes on top) -->
+  <path d="M 60 72 L 82 92" stroke="#8B5A2B" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 98 65 L 122 87" stroke="#8B5A2B" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 138 72 L 160 92" stroke="#8B5A2B" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Blush cheeks -->
+  <ellipse cx="72" cy="128" rx="10" ry="5" fill="#E36A6A" opacity="0.35"/>
+  <ellipse cx="148" cy="128" rx="10" ry="5" fill="#E36A6A" opacity="0.35"/>
+
+  <!-- Eyes -->
+  <circle cx="85" cy="115" r="4.5" fill="#4A3728"/>
+  <circle cx="135" cy="115" r="4.5" fill="#4A3728"/>
+  <!-- Eye highlights -->
+  <circle cx="86.5" cy="113.5" r="1.5" fill="#FBF5EA"/>
+  <circle cx="136.5" cy="113.5" r="1.5" fill="#FBF5EA"/>
+
+  <!-- Smile -->
+  <path d="M 95 133 Q 110 143 125 133" stroke="#4A3728" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Flour dusting -->
+  <circle cx="45" cy="88" r="1.8" fill="#FBF5EA" opacity="0.9"/>
+  <circle cx="160" cy="80" r="1.4" fill="#FBF5EA" opacity="0.9"/>
+  <circle cx="110" cy="55" r="1.8" fill="#FBF5EA" opacity="0.9"/>
+  <circle cx="70" cy="105" r="1.2" fill="#FBF5EA" opacity="0.7"/>
+  <circle cx="175" cy="115" r="1.5" fill="#FBF5EA" opacity="0.7"/>
+  <circle cx="30" cy="120" r="1.2" fill="#FBF5EA" opacity="0.7"/>
+</svg>
