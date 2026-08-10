@@ -5,12 +5,12 @@
     "note": "Weights are for level (spooned & leveled) measurements, not scooped. Volumes assume US cup = 236.6ml."
   },
   "ingredients": [
-    { "id": "all_purpose_flour", "name": "All-purpose flour", "category": "flour", "per_cup_g": 120, "per_tbsp_g": 7.5, "per_tsp_g": 2.5, "aliases": ["flour", "AP flour", "plain flour"] },
+    { "id": "all_purpose_flour", "name": "All purpose flour", "category": "flour", "per_cup_g": 120, "per_tbsp_g": 7.5, "per_tsp_g": 2.5, "aliases": ["flour", "AP flour", "plain flour"] },
     { "id": "bread_flour", "name": "Bread flour", "category": "flour", "per_cup_g": 120, "per_tbsp_g": 7.5, "per_tsp_g": 2.5, "aliases": ["strong flour"] },
     { "id": "whole_wheat_flour", "name": "Whole wheat flour", "category": "flour", "per_cup_g": 113, "per_tbsp_g": 7, "per_tsp_g": 2.3, "aliases": ["whole meal flour", "wholemeal"] },
     { "id": "cake_flour", "name": "Cake flour", "category": "flour", "per_cup_g": 113, "per_tbsp_g": 7, "per_tsp_g": 2.3, "aliases": [] },
     { "id": "pastry_flour", "name": "Pastry flour", "category": "flour", "per_cup_g": 106, "per_tbsp_g": 6.6, "per_tsp_g": 2.2, "aliases": [] },
-    { "id": "self_rising_flour", "name": "Self-rising flour", "category": "flour", "per_cup_g": 113, "per_tbsp_g": 7, "per_tsp_g": 2.3, "aliases": ["self-raising flour"] },
+    { "id": "self_rising_flour", "name": "Self rising flour", "category": "flour", "per_cup_g": 113, "per_tbsp_g": 7, "per_tsp_g": 2.3, "aliases": ["self-raising flour"] },
     { "id": "rye_flour", "name": "Rye flour", "category": "flour", "per_cup_g": 106, "per_tbsp_g": 6.6, "per_tsp_g": 2.2, "aliases": [] },
     { "id": "almond_flour", "name": "Almond flour", "category": "flour", "per_cup_g": 96, "per_tbsp_g": 6, "per_tsp_g": 2, "aliases": ["almond meal"] },
     { "id": "coconut_flour", "name": "Coconut flour", "category": "flour", "per_cup_g": 112, "per_tbsp_g": 7, "per_tsp_g": 2.3, "aliases": [] },
@@ -41,7 +41,7 @@
     { "id": "cream_cheese", "name": "Cream cheese", "category": "dairy", "per_cup_g": 227, "per_tbsp_g": 14.2, "per_tsp_g": 4.7, "aliases": [] },
     { "id": "water", "name": "Water", "category": "liquid", "per_cup_g": 227, "per_tbsp_g": 14.2, "per_tsp_g": 4.7, "aliases": [] },
     { "id": "rolled_oats", "name": "Rolled oats", "category": "grain", "per_cup_g": 89, "per_tbsp_g": 5.6, "per_tsp_g": 1.9, "aliases": ["old-fashioned oats"] },
-    { "id": "steel_cut_oats", "name": "Steel-cut oats", "category": "grain", "per_cup_g": 170, "per_tbsp_g": 10.6, "per_tsp_g": 3.5, "aliases": ["Irish oats"] },
+    { "id": "steel_cut_oats", "name": "Steel cut oats", "category": "grain", "per_cup_g": 170, "per_tbsp_g": 10.6, "per_tsp_g": 3.5, "aliases": ["Irish oats"] },
     { "id": "quick_oats", "name": "Quick oats", "category": "grain", "per_cup_g": 92, "per_tbsp_g": 5.75, "per_tsp_g": 1.9, "aliases": [] },
     { "id": "raisins", "name": "Raisins", "category": "fruit", "per_cup_g": 149, "per_tbsp_g": 9.3, "per_tsp_g": 3.1, "aliases": [] },
     { "id": "walnuts_chopped", "name": "Walnuts (chopped)", "category": "nut", "per_cup_g": 113, "per_tbsp_g": 7, "per_tsp_g": 2.3, "aliases": [] },

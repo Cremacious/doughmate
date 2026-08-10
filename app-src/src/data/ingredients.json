@@ -7,7 +7,7 @@
   "ingredients": [
     {
       "id": "all_purpose_flour",
-      "name": "All-purpose flour",
+      "name": "All purpose flour",
       "category": "flour",
       "per_cup_g": 120,
       "per_tbsp_g": 7.5,
@@ -52,7 +52,7 @@
     },
     {
       "id": "self_rising_flour",
-      "name": "Self-rising flour",
+      "name": "Self rising flour",
       "category": "flour",
       "per_cup_g": 113,
       "per_tbsp_g": 7,
@@ -331,7 +331,7 @@
     },
     {
       "id": "steel_cut_oats",
-      "name": "Steel-cut oats",
+      "name": "Steel cut oats",
       "category": "grain",
       "per_cup_g": 170,
       "per_tbsp_g": 10.6,

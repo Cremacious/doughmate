@@ -71,7 +71,7 @@ describe('convertWeight', () => {
 
 describe('getIngredient', () => {
   it('finds an ingredient by id', () => {
-    expect(getIngredient('all_purpose_flour')?.name).toBe('All-purpose flour');
+    expect(getIngredient('all_purpose_flour')?.name).toBe('All purpose flour');
   });
 
   it('finds an ingredient by name, ignoring case', () => {

@@ -17,8 +17,8 @@
     { "id": "springform_10", "name": "10\" springform", "shape": "round", "diameter_in": 10, "area_sqin": 78.5, "depth_in": 3, "volume_cuin": 235.6 },
     { "id": "tube_10", "name": "10\" tube pan", "shape": "tube", "diameter_in": 10, "area_sqin": 62.8, "depth_in": 4, "volume_cuin": 251.3 },
     { "id": "bundt_10", "name": "10\" bundt", "shape": "bundt", "diameter_in": 10, "area_sqin": 62.8, "depth_in": 3.5, "volume_cuin": 219.9 },
-    { "id": "muffin_12", "name": "12-cup muffin tin (standard)", "shape": "muffin", "cavities": 12, "area_sqin": 44, "volume_cuin": 42, "notes": "Each cup ≈ 3.5 cu in" },
-    { "id": "cupcake_12", "name": "12-cup cupcake tin", "shape": "muffin", "cavities": 12, "area_sqin": 44, "volume_cuin": 42 }
+    { "id": "muffin_12", "name": "12 cup muffin tin (standard)", "shape": "muffin", "cavities": 12, "area_sqin": 44, "volume_cuin": 42, "notes": "Each cup ≈ 3.5 cu in" },
+    { "id": "cupcake_12", "name": "12 cup cupcake tin", "shape": "muffin", "cavities": 12, "area_sqin": 44, "volume_cuin": 42 }
   ],
   "formulas": {
     "round_area_sqin": "PI * (diameter_in / 2)^2",

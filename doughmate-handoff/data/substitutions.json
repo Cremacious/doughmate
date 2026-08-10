@@ -15,7 +15,7 @@
       "id": "sour_cream_yogurt",
       "missing": "Sour cream",
       "amount": "1 cup",
-      "substitute": "1 cup full-fat Greek yogurt",
+      "substitute": "1 cup full fat Greek yogurt",
       "notes": "1:1 swap. Adds a slight tang."
     },
     {
@@ -50,14 +50,14 @@
       "id": "cake_flour_diy",
       "missing": "Cake flour",
       "amount": "1 cup",
-      "substitute": "3/4 cup + 2 tablespoons all-purpose flour + 2 tablespoons cornstarch. Sift twice.",
+      "substitute": "3/4 cup + 2 tablespoons all purpose flour + 2 tablespoons cornstarch. Sift twice.",
       "notes": "The cornstarch lowers the protein like cake flour does."
     },
     {
       "id": "self_rising_flour_diy",
-      "missing": "Self-rising flour",
+      "missing": "Self rising flour",
       "amount": "1 cup",
-      "substitute": "1 cup all-purpose flour + 1 1/2 teaspoons baking powder + 1/4 teaspoon salt",
+      "substitute": "1 cup all purpose flour + 1 1/2 teaspoons baking powder + 1/4 teaspoon salt",
       "notes": "Use immediately, don't store the mix."
     },
     {
@@ -113,7 +113,7 @@
       "id": "cornstarch_flour",
       "missing": "Cornstarch (as thickener)",
       "amount": "1 tablespoon",
-      "substitute": "2 tablespoons all-purpose flour",
+      "substitute": "2 tablespoons all purpose flour",
       "notes": "For sauces and pie fillings."
     },
     {
