@@ -24,6 +24,10 @@ export default function RootLayout() {
           <Stack.Screen name="more-tools" options={{ presentation: 'modal' }} />
           <Stack.Screen name="pan" options={{ presentation: 'modal' }} />
           <Stack.Screen name="oven" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="yeast" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="egg" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="butter" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="substitutions" options={{ presentation: 'modal' }} />
         </Stack>
         <StatusBar style={isDark ? 'light' : 'dark'} />
       </SafeAreaProvider>

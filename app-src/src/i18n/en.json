@@ -53,7 +53,34 @@
     "ml": "ml",
     "g": "g",
     "oz": "oz",
-    "lb": "lb"
+    "lb": "lb",
+    "stick": "stick"
+  },
+  "yeast": {
+    "title": "Yeast",
+    "amount_label": "Teaspoons",
+    "from_label": "You have",
+    "to_label": "You want",
+    "equals": "equals"
+  },
+  "egg": {
+    "title": "Egg size",
+    "count_label": "How many",
+    "from_label": "Recipe wants",
+    "to_label": "You have",
+    "result_suffix": "eggs"
+  },
+  "butter": {
+    "title": "Butter",
+    "amount_label": "Amount",
+    "from_label": "From",
+    "to_label": "To"
+  },
+  "substitutions": {
+    "title": "Substitutions",
+    "search_placeholder": "Search substitutions",
+    "swap_for": "Swap for",
+    "empty": "Nothing matches. Try another ingredient."
   },
   "scaler": {
     "title": "Scale a recipe",

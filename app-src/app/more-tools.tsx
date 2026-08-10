@@ -1,4 +1,4 @@
-// The "More tools" hub. Pan and oven are live; the rest arrive on their day.
+// The "More tools" hub. Every secondary converter lives here.
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
@@ -10,11 +10,14 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { triggerHaptic } from '@/lib/haptics';
 import { spacing, typography } from '@/theme';
 
-const BUILT = [
+const TOOLS = [
   { key: 'pan', go: () => router.push('/pan') },
   { key: 'oven', go: () => router.push('/oven') },
+  { key: 'yeast', go: () => router.push('/yeast') },
+  { key: 'egg', go: () => router.push('/egg') },
+  { key: 'butter', go: () => router.push('/butter') },
+  { key: 'substitutions', go: () => router.push('/substitutions') },
 ] as const;
-const UPCOMING = ['yeast', 'egg', 'butter', 'substitutions'] as const;
 
 export default function MoreToolsScreen() {
   const { t } = useTranslation();
@@ -25,7 +28,7 @@ export default function MoreToolsScreen() {
       <ModalHeader title={t('more_tools.title')} />
 
       <ScrollView contentContainerStyle={styles.content}>
-        {BUILT.map((tool) => (
+        {TOOLS.map((tool) => (
           <Pressable
             key={tool.key}
             accessibilityRole="button"
@@ -42,17 +45,6 @@ export default function MoreToolsScreen() {
               <Text style={[typography.body.lg, { color: palette.crust }]}>›</Text>
             </Card>
           </Pressable>
-        ))}
-
-        {UPCOMING.map((key) => (
-          <Card key={key} style={[styles.row, styles.dim, { backgroundColor: bg.subtle }]}>
-            <Text style={[typography.body.lg, { color: palette.chocSoft }]}>
-              {t(`more_tools.${key}`)}
-            </Text>
-            <Text style={[typography.caption, { color: palette.chocSoft }]}>
-              {t('more_tools.soon')}
-            </Text>
-          </Card>
         ))}
       </ScrollView>
     </SafeAreaView>
@@ -73,8 +65,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: spacing.lg,
-  },
-  dim: {
-    opacity: 0.7,
   },
 });
