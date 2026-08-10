@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
@@ -28,8 +28,9 @@ function toNumber(text: string): number | null {
 export default function ScalerScreen() {
   const { t } = useTranslation();
   const { palette, bg } = useAppTheme();
+  const params = useLocalSearchParams<{ recipe?: string }>();
 
-  const [recipe, setRecipe] = useState('');
+  const [recipe, setRecipe] = useState(typeof params.recipe === 'string' ? params.recipe : '');
   const [factor, setFactor] = useState(1);
   const [customText, setCustomText] = useState('');
   const [needsText, setNeedsText] = useState('');

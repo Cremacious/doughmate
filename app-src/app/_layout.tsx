@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { RecipesProvider } from '@/state/recipes';
 import { SettingsProvider } from '@/state/settings';
 
 export default function RootLayout() {
@@ -14,7 +15,9 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <SettingsProvider>
-          <ThemedApp />
+          <RecipesProvider>
+            <ThemedApp />
+          </RecipesProvider>
         </SettingsProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
@@ -33,6 +36,7 @@ function ThemedApp() {
         }}
       >
         <Stack.Screen name="scaler" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="recipe-new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="more-tools" options={{ presentation: 'modal' }} />
         <Stack.Screen name="pan" options={{ presentation: 'modal' }} />
         <Stack.Screen name="oven" options={{ presentation: 'modal' }} />

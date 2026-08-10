@@ -139,7 +139,12 @@
     "detail_ingredients": "Ingredients",
     "detail_notes": "Notes",
     "new_name_placeholder": "Name your recipe",
-    "new_add_ingredient": "Add ingredient"
+    "new_add_ingredient": "Add ingredient",
+    "new_title": "New recipe",
+    "new_ingredients_label": "Ingredients",
+    "new_ingredients_placeholder": "One ingredient on each line.\n\n2 eggs\n1 cup flour\n180 g sugar",
+    "button_save": "Save",
+    "line_count": "{{count}} ingredients"
   },
   "starters": {
     "title": "Starters",
