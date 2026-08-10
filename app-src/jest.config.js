@@ -7,5 +7,10 @@ module.exports = {
     '^.+\\.[jt]sx?$': ['babel-jest', { presets: ['babel-preset-expo'] }],
   },
   testMatch: ['**/src/lib/**/*.test.ts'],
-  collectCoverageFrom: ['src/lib/**/*.ts', '!src/lib/**/*.test.ts'],
+  // Coverage is enforced on the pure logic. haptics.ts is a thin native
+  // (expo-haptics) side-effect wrapper, not math, so it is excluded here.
+  collectCoverageFrom: ['src/lib/**/*.ts', '!src/lib/**/*.test.ts', '!src/lib/haptics.ts'],
+  coverageThreshold: {
+    global: { branches: 100, functions: 100, lines: 100, statements: 100 },
+  },
 };

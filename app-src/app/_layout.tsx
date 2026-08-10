@@ -19,7 +19,9 @@ export default function RootLayout() {
             headerShown: false,
             contentStyle: { backgroundColor: bg.primary },
           }}
-        />
+        >
+          <Stack.Screen name="scaler" options={{ presentation: 'modal' }} />
+        </Stack>
         <StatusBar style={isDark ? 'light' : 'dark'} />
       </SafeAreaProvider>
     </GestureHandlerRootView>

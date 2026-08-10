@@ -55,6 +55,22 @@
     "oz": "oz",
     "lb": "lb"
   },
+  "scaler": {
+    "title": "Scale a recipe",
+    "input_label": "Your recipe",
+    "input_placeholder": "Type your recipe. One ingredient on each line.\n\n2 eggs\n1 cup flour\n180 g sugar",
+    "multiply_by": "Multiply by",
+    "custom": "Custom",
+    "to_ingredient_title": "Or scale to what you have",
+    "to_ingredient_needs": "Recipe needs",
+    "to_ingredient_have": "You have",
+    "to_ingredient_apply": "Scale to this",
+    "result_label": "Scaled",
+    "result_empty": "Your scaled recipe shows up here.",
+    "active_factor": "Now at {{factor}}x",
+    "reset": "Reset",
+    "close": "Close"
+  },
   "more_tools": {
     "title": "More tools",
     "pan": "Pan converter",

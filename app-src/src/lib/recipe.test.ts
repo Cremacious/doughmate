@@ -1,0 +1,90 @@
+import { matchFactor, parseLeadingQuantity, scaleRecipeText, scaleText } from './recipe';
+
+describe('parseLeadingQuantity', () => {
+  it('parses a whole number', () => {
+    expect(parseLeadingQuantity('2 eggs')).toEqual({ value: 2, rest: 'eggs' });
+  });
+
+  it('parses a decimal', () => {
+    expect(parseLeadingQuantity('1.5 cups sugar')).toEqual({ value: 1.5, rest: 'cups sugar' });
+  });
+
+  it('parses a simple fraction', () => {
+    expect(parseLeadingQuantity('3/4 cup butter')).toEqual({ value: 0.75, rest: 'cup butter' });
+  });
+
+  it('parses a mixed number', () => {
+    expect(parseLeadingQuantity('1 1/2 cups flour')).toEqual({ value: 1.5, rest: 'cups flour' });
+  });
+
+  it('ignores surrounding whitespace', () => {
+    expect(parseLeadingQuantity('  2   eggs  ')).toEqual({ value: 2, rest: 'eggs' });
+  });
+
+  it('parses a bare number with no rest', () => {
+    expect(parseLeadingQuantity('3')).toEqual({ value: 3, rest: '' });
+  });
+
+  it('parses a bare fraction with no rest', () => {
+    expect(parseLeadingQuantity('3/4')).toEqual({ value: 0.75, rest: '' });
+  });
+
+  it('parses a bare mixed number with no rest', () => {
+    expect(parseLeadingQuantity('1 1/2')).toEqual({ value: 1.5, rest: '' });
+  });
+
+  it('returns null when there is no leading number', () => {
+    expect(parseLeadingQuantity('pinch of salt')).toBeNull();
+  });
+
+  it('returns null for an empty line', () => {
+    expect(parseLeadingQuantity('   ')).toBeNull();
+  });
+});
+
+describe('scaleText', () => {
+  it('scales a whole number', () => {
+    expect(scaleText('2 eggs', 2)).toBe('4 eggs');
+  });
+
+  it('scales a mixed number and simplifies', () => {
+    expect(scaleText('1 1/2 cups flour', 2)).toBe('3 cups flour');
+  });
+
+  it('scales a fraction into a decimal', () => {
+    expect(scaleText('3/4 cup butter', 2)).toBe('1.5 cup butter');
+  });
+
+  it('halves an amount', () => {
+    expect(scaleText('180 g sugar', 0.5)).toBe('90 g sugar');
+  });
+
+  it('leaves lines without a quantity untouched', () => {
+    expect(scaleText('pinch of salt', 2)).toBe('pinch of salt');
+  });
+
+  it('scales a bare number with no trailing text', () => {
+    expect(scaleText('3', 2)).toBe('6');
+  });
+});
+
+describe('scaleRecipeText', () => {
+  it('scales every line and preserves the ones without amounts', () => {
+    const recipe = '2 eggs\n1 cup flour\npinch of salt';
+    expect(scaleRecipeText(recipe, 2)).toBe('4 eggs\n2 cup flour\npinch of salt');
+  });
+
+  it('preserves blank lines', () => {
+    expect(scaleRecipeText('2 eggs\n\n1 cup milk', 3)).toBe('6 eggs\n\n3 cup milk');
+  });
+});
+
+describe('matchFactor', () => {
+  it('computes the factor to reach an available amount', () => {
+    expect(matchFactor(2, 3)).toBe(1.5);
+  });
+
+  it('returns null when the original amount is zero', () => {
+    expect(matchFactor(0, 3)).toBeNull();
+  });
+});
