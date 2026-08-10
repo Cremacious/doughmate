@@ -2,6 +2,7 @@ import {
   convert,
   convertVolume,
   convertWeight,
+  formatQuantity,
   fromGrams,
   getIngredient,
   isVolumeUnit,
@@ -205,5 +206,29 @@ describe('round', () => {
   it('never returns negative zero', () => {
     expect(Object.is(round(-0.0001, 2), -0)).toBe(false);
     expect(round(-0.0001, 2)).toBe(0);
+  });
+});
+
+describe('formatQuantity', () => {
+  it('shows whole numbers with no decimals for large amounts', () => {
+    expect(formatQuantity(120)).toBe('120');
+    expect(formatQuantity(236.588)).toBe('237');
+  });
+
+  it('shows one decimal for medium amounts', () => {
+    expect(formatQuantity(12.34)).toBe('12.3');
+  });
+
+  it('shows up to two decimals for small amounts', () => {
+    expect(formatQuantity(2.567)).toBe('2.57');
+  });
+
+  it('drops trailing zeros', () => {
+    expect(formatQuantity(2.5)).toBe('2.5');
+    expect(formatQuantity(2)).toBe('2');
+  });
+
+  it('shows zero cleanly', () => {
+    expect(formatQuantity(0)).toBe('0');
   });
 });

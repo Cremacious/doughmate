@@ -43,7 +43,17 @@
     "button_save": "★ Save",
     "button_more_tools": "More tools",
     "button_convert": "Convert",
-    "picker_search_placeholder": "Search ingredients"
+    "picker_search_placeholder": "Search ingredients",
+    "result_placeholder": "Pick an ingredient and an amount"
+  },
+  "units": {
+    "cup": "cup",
+    "tbsp": "tbsp",
+    "tsp": "tsp",
+    "ml": "ml",
+    "g": "g",
+    "oz": "oz",
+    "lb": "lb"
   },
   "more_tools": {
     "title": "More tools",

@@ -153,3 +153,13 @@ export function round(value: number, decimals = 0): number {
   const rounded = Math.round(value * factor) / factor;
   return rounded === 0 ? 0 : rounded;
 }
+
+/**
+ * Format a converted amount for display. Precision scales with magnitude so
+ * big numbers stay clean and small ones stay useful. Trailing zeros are dropped.
+ */
+export function formatQuantity(value: number): string {
+  const magnitude = Math.abs(value);
+  const decimals = magnitude >= 100 ? 0 : magnitude >= 10 ? 1 : 2;
+  return String(round(value, decimals));
+}

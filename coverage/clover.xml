@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1786387219086" clover="3.2.0">
-  <project timestamp="1786387219086" name="All files">
-    <metrics statements="43" coveredstatements="43" conditionals="39" coveredconditionals="39" methods="14" coveredmethods="14" elements="96" coveredelements="96" complexity="0" loc="43" ncloc="43" packages="1" files="1" classes="1"/>
-    <file name="convert.ts" path="/home/chris/Code/doughmate/doughmate-handoff/app-src/src/lib/convert.ts">
-      <metrics statements="43" coveredstatements="43" conditionals="39" coveredconditionals="39" methods="14" coveredmethods="14"/>
+<coverage generated="1786387902547" clover="3.2.0">
+  <project timestamp="1786387902547" name="All files">
+    <metrics statements="46" coveredstatements="46" conditionals="43" coveredconditionals="43" methods="15" coveredmethods="15" elements="104" coveredelements="104" complexity="0" loc="46" ncloc="46" packages="1" files="1" classes="1"/>
+    <file name="convert.ts" path="/home/chris/Code/doughmate/app-src/src/lib/convert.ts">
+      <metrics statements="46" coveredstatements="46" conditionals="43" coveredconditionals="43" methods="15" coveredmethods="15"/>
       <line num="33" count="1" type="stmt"/>
       <line num="36" count="1" type="stmt"/>
       <line num="37" count="1" type="stmt"/>
@@ -44,9 +44,12 @@
       <line num="144" count="1" type="stmt"/>
       <line num="146" count="3" type="stmt"/>
       <line num="147" count="3" type="stmt"/>
-      <line num="152" count="4" type="stmt"/>
-      <line num="153" count="4" type="stmt"/>
-      <line num="154" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="152" count="11" type="stmt"/>
+      <line num="153" count="11" type="stmt"/>
+      <line num="154" count="11" type="cond" truecount="2" falsecount="0"/>
+      <line num="162" count="7" type="stmt"/>
+      <line num="163" count="7" type="cond" truecount="4" falsecount="0"/>
+      <line num="164" count="7" type="stmt"/>
     </file>
   </project>
 </coverage>
