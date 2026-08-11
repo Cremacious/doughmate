@@ -171,8 +171,8 @@
     "field_temperature": "Kitchen temperature",
     "field_notes": "Notes",
     "notifications": {
-      "ready_generic": "{name} is ready for a feed.",
-      "waiting": "Time to feed {name}. She's been waiting {hours} hours.",
+      "ready_generic": "{{name}} is ready for a feed.",
+      "waiting": "Time to feed {{name}}. She's been waiting {{hours}} hours.",
       "peak": "Your starter's close to peak. Want to bake today?",
       "long_absence": "Been a few days. Your starter would love a visit."
     }

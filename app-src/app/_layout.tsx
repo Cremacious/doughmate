@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { ReminderSync } from '@/components/ReminderSync';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { RecipesProvider } from '@/state/recipes';
 import { SettingsProvider } from '@/state/settings';
@@ -49,6 +50,7 @@ function ThemedApp() {
         <Stack.Screen name="butter" options={{ presentation: 'modal' }} />
         <Stack.Screen name="substitutions" options={{ presentation: 'modal' }} />
       </Stack>
+      <ReminderSync />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </>
   );
