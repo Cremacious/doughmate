@@ -168,7 +168,7 @@ export default function RecipeEditorSheet() {
       tags
     );
     if (existing) {
-      updateRecipe(existing.id, input);
+      updateRecipe(existing.id, { ...input, notes: existing.notes, totalTime: existing.totalTime });
     } else {
       addRecipe(input);
     }
