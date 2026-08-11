@@ -56,7 +56,28 @@
     "button_more_tools": "More tools",
     "button_convert": "Convert",
     "picker_search_placeholder": "Search ingredients",
-    "result_placeholder": "Pick an ingredient and an amount"
+    "result_placeholder": "Pick an ingredient and an amount",
+    "save_this": "Save this",
+    "tray_title": "Pick a converter",
+    "result_equals": "That is",
+    "pick_ingredient": "Ingredient",
+    "modes": {
+      "ingredient": "Ingredient",
+      "pan": "Pan",
+      "oven": "Oven",
+      "yeast": "Yeast",
+      "egg": "Egg",
+      "butter": "Butter",
+      "all": "All six"
+    },
+    "modes_hint": {
+      "ingredient": "cups, grams, ml",
+      "pan": "scale between pans",
+      "oven": "F, C, gas mark",
+      "yeast": "active dry, instant, fresh",
+      "egg": "match egg sizes",
+      "butter": "sticks, cups, grams"
+    }
   },
   "units": {
     "cup": "cup",
