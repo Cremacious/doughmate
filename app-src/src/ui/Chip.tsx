@@ -25,7 +25,10 @@ export function Chip({ label, selected = false, onPress }: ChipProps) {
       }}
       style={[
         styles.chip,
-        { height: floured ? 44 : 36, backgroundColor: selected ? palette.primary : palette.bgSunken },
+        {
+          height: floured ? 44 : 36,
+          backgroundColor: selected ? palette.primary : palette.bgSunken,
+        },
       ]}
     >
       <Text

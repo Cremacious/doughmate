@@ -1,6 +1,6 @@
 // Proof Toggle. 51x31 track, 27 knob, 160ms travel (snaps under reduced motion).
 import { useEffect } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { useAppTheme } from '@/hooks/useAppTheme';

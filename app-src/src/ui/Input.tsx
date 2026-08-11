@@ -1,13 +1,7 @@
 // Proof Input. Sunken field, optional label above, focus ring. Numbers render in
 // the tabular numeric face.
 import { useState } from 'react';
-import {
-  type KeyboardTypeOptions,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { type KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { scaleType } from '@/lib/typeScale';

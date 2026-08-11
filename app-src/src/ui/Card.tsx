@@ -15,14 +15,22 @@ export function Card({ children, style, onPress }: CardProps) {
   const { palette } = useAppTheme();
   const content = (
     <View
-      style={[styles.card, { backgroundColor: palette.bgSurface, borderColor: palette.border }, style]}
+      style={[
+        styles.card,
+        { backgroundColor: palette.bgSurface, borderColor: palette.border },
+        style,
+      ]}
     >
       {children}
     </View>
   );
   if (onPress) {
     return (
-      <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.92 : 1 })}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={onPress}
+        style={({ pressed }) => ({ opacity: pressed ? 0.92 : 1 })}
+      >
         {content}
       </Pressable>
     );

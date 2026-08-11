@@ -3,10 +3,7 @@ import '@/i18n';
 
 import { Gabarito_600SemiBold } from '@expo-google-fonts/gabarito';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
-import {
-  SpaceGrotesk_500Medium,
-  SpaceGrotesk_600SemiBold,
-} from '@expo-google-fonts/space-grotesk';
+import { SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -22,6 +19,7 @@ import { RecipesProvider } from '@/state/recipes';
 import { SamMoodProvider } from '@/state/samMood';
 import { SettingsProvider } from '@/state/settings';
 import { StartersProvider } from '@/state/starters';
+import { ToastProvider } from '@/ui/Toast';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -44,7 +42,9 @@ export default function RootLayout() {
             <RecipesProvider>
               <StartersProvider>
                 <SamMoodProvider>
-                  <ThemedApp />
+                  <ToastProvider>
+                    <ThemedApp />
+                  </ToastProvider>
                 </SamMoodProvider>
               </StartersProvider>
             </RecipesProvider>
