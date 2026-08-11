@@ -70,17 +70,17 @@ function ThemedApp() {
           contentStyle: { backgroundColor: bg.primary },
         }}
       >
-        <Stack.Screen name="scaler" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="settings"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
         <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
         <Stack.Screen name="recipe-new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="starter-new" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="more-tools" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="pan" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="oven" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="yeast" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="egg" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="butter" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="substitutions" options={{ presentation: 'modal' }} />
       </Stack>
       <ReminderSync />
       <StatusBar style={isDark ? 'light' : 'dark'} />
