@@ -202,7 +202,6 @@
     "serves": "Serves",
     "reset": "Reset",
     "edit": "Edit",
-    "original": "Original",
     "now_at": "Now at {{factor}}x",
     "meta_ingredients_one": "{{count}} ingredient",
     "meta_ingredients_other": "{{count}} ingredients",
