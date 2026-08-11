@@ -9,6 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { RecipesProvider } from '@/state/recipes';
 import { SettingsProvider } from '@/state/settings';
+import { StartersProvider } from '@/state/starters';
 
 export default function RootLayout() {
   return (
@@ -16,7 +17,9 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <SettingsProvider>
           <RecipesProvider>
-            <ThemedApp />
+            <StartersProvider>
+              <ThemedApp />
+            </StartersProvider>
           </RecipesProvider>
         </SettingsProvider>
       </SafeAreaProvider>
@@ -37,6 +40,7 @@ function ThemedApp() {
       >
         <Stack.Screen name="scaler" options={{ presentation: 'modal' }} />
         <Stack.Screen name="recipe-new" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="starter-new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="more-tools" options={{ presentation: 'modal' }} />
         <Stack.Screen name="pan" options={{ presentation: 'modal' }} />
         <Stack.Screen name="oven" options={{ presentation: 'modal' }} />
