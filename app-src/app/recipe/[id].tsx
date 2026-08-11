@@ -3,31 +3,24 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatQuantity } from '@/lib/convert';
-import { bakersPercentages } from '@/lib/recipe';
+import { bakersPercentages, groupBySection } from '@/lib/recipe';
 import { usePro } from '@/state/pro';
 import { type RecipeIngredient, useRecipes } from '@/state/recipes';
-import { spacing, typography } from '@/theme';
+import { radius, spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
-import { Chip } from '@/ui/Chip';
 import { Stepper } from '@/ui/Stepper';
 import { useToast } from '@/ui/Toast';
 
-const FACTOR_CHIPS = [0.5, 1, 2];
-
-function ingredientText(ingredient: RecipeIngredient, factor: number): string {
-  const { amount, unit, item } = ingredient;
-  if (typeof amount !== 'number') {
-    return item;
-  }
-  const scaled = formatQuantity(amount * factor);
-  const head = unit ? `${scaled} ${unit}` : scaled;
-  return item ? `${head} ${item}` : head;
+function ingAmountText(ingredient: RecipeIngredient, factor: number): string {
+  if (typeof ingredient.amount !== 'number') return ingredient.unit;
+  const scaled = formatQuantity(ingredient.amount * factor);
+  return ingredient.unit ? `${scaled} ${ingredient.unit}` : scaled;
 }
 
 export default function RecipeDetailSheet() {
@@ -60,8 +53,7 @@ export default function RecipeDetailSheet() {
     metaParts.push(recipe.yieldLabel.trim());
   }
 
-  const factorLabel =
-    factor === 1 ? t('recipes.original') : t('recipes.now_at', { factor: formatQuantity(factor) });
+  const scaled = factor !== 1;
 
   const del = () => {
     removeRecipe(recipe.id);
@@ -78,9 +70,21 @@ export default function RecipeDetailSheet() {
       size="tall"
       onClose={() => router.back()}
       header={
-        <Text style={[typography.display.lg, styles.title, { color: palette.textInk }]}>
-          {recipe.name}
-        </Text>
+        <View style={styles.headerRow}>
+          <Text style={[typography.display.lg, styles.title, { color: palette.textInk }]}>
+            {recipe.name}
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('recipes.edit')}
+            onPress={() => router.push(`/recipe-new?id=${recipe.id}`)}
+            style={[styles.editBtn, { backgroundColor: palette.bgSunken }]}
+          >
+            <Text style={[typography.title, { color: palette.textInk }]}>
+              ✎ {t('recipes.edit')}
+            </Text>
+          </Pressable>
+        </View>
       }
       footer={
         <Button
@@ -96,38 +100,35 @@ export default function RecipeDetailSheet() {
         </Text>
 
         {/* Scale */}
-        <Text style={[typography.label, { color: palette.textSoft }]}>
+        <Text style={[typography.label, styles.sectionLabel, { color: palette.textSoft }]}>
           {t('recipes.scale_heading')}
         </Text>
-        <Card style={styles.stack}>
-          <View style={styles.rowBetween}>
+        <Card style={styles.scaleCard}>
+          <View style={styles.scaleTop}>
             <Text style={[typography.body.lg, { color: palette.textInk }]}>
-              {t('recipes.servings')}
+              {t('recipes.serves')}
             </Text>
-            <Text style={[typography.numeric.sm, { color: palette.primaryText }]}>
-              {factorLabel}
-            </Text>
-          </View>
-          <View style={styles.rowBetween}>
             <Stepper
               value={Math.max(1, Math.round(baseServings * factor))}
               onChange={(v) => setFactor(v / baseServings)}
             />
-            <View style={styles.chips}>
-              {FACTOR_CHIPS.map((f) => (
-                <Chip
-                  key={f}
-                  label={`${formatQuantity(f)}x`}
-                  selected={factor === f}
-                  onPress={() => setFactor(f)}
-                />
-              ))}
-            </View>
           </View>
+          {scaled ? (
+            <View style={[styles.scaleNote, { borderTopColor: palette.border }]}>
+              <Text style={[typography.numeric.sm, { color: palette.primaryText }]}>
+                {t('recipes.now_at', { factor: formatQuantity(factor) })}
+              </Text>
+              <Pressable accessibilityRole="button" onPress={() => setFactor(1)}>
+                <Text style={[typography.label, { color: palette.textSoft }]}>
+                  ↺ {t('recipes.reset')}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
         </Card>
 
         {/* Ingredients */}
-        <Text style={[typography.label, { color: palette.textSoft }]}>
+        <Text style={[typography.label, styles.sectionLabel, { color: palette.textSoft }]}>
           {t('recipes.ingredients_heading')}
         </Text>
         <Card style={styles.list}>
@@ -136,16 +137,34 @@ export default function RecipeDetailSheet() {
               {t('recipes.meta_ingredients', { count: 0 })}
             </Text>
           ) : (
-            recipe.ingredients.map((ing, i) => (
-              <Text key={i} style={[typography.body.lg, { color: palette.textInk }]}>
-                {ingredientText(ing, factor)}
-              </Text>
+            groupBySection(recipe.ingredients).map((group, gi) => (
+              <View key={gi} style={styles.group}>
+                {group.section ? (
+                  <View style={[styles.sectionPill, { backgroundColor: palette.proofTealWash }]}>
+                    <Text style={[typography.label, { color: palette.proofTealText }]}>
+                      {group.section}
+                    </Text>
+                  </View>
+                ) : null}
+                {group.items.map((ing, ii) => (
+                  <View key={ii} style={styles.ingRow}>
+                    <Text
+                      style={[typography.numeric.sm, styles.ingAmt, { color: palette.primary }]}
+                    >
+                      {ingAmountText(ing, factor)}
+                    </Text>
+                    <Text style={[typography.body.lg, styles.ingItem, { color: palette.textInk }]}>
+                      {ing.item}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             ))
           )}
         </Card>
 
         {/* Baker's percentages */}
-        <Text style={[typography.label, { color: palette.textSoft }]}>
+        <Text style={[typography.label, styles.sectionLabel, { color: palette.textSoft }]}>
           {t('recipes.bakers_pct')}
         </Text>
         {isPro ? (
@@ -177,7 +196,7 @@ export default function RecipeDetailSheet() {
         {/* Method */}
         {recipe.steps.length > 0 ? (
           <>
-            <Text style={[typography.label, { color: palette.textSoft }]}>
+            <Text style={[typography.label, styles.sectionLabel, { color: palette.textSoft }]}>
               {t('recipes.method_heading')}
             </Text>
             <Card style={styles.steps}>
@@ -193,9 +212,11 @@ export default function RecipeDetailSheet() {
                       {step.text}
                     </Text>
                     {step.time ? (
-                      <Text style={[typography.body.sm, { color: palette.proofTeal }]}>
-                        {step.time}
-                      </Text>
+                      <View style={[styles.timePill, { backgroundColor: palette.proofTealWash }]}>
+                        <Text style={[typography.body.sm, { color: palette.proofTealText }]}>
+                          ⏱ {step.time}
+                        </Text>
+                      </View>
                     ) : null}
                   </View>
                 </View>
@@ -207,7 +228,7 @@ export default function RecipeDetailSheet() {
         {/* Notes */}
         {recipe.notes?.trim() ? (
           <>
-            <Text style={[typography.label, { color: palette.textSoft }]}>
+            <Text style={[typography.label, styles.sectionLabel, { color: palette.textSoft }]}>
               {t('recipes.notes_heading')}
             </Text>
             <Card>
@@ -228,26 +249,71 @@ export default function RecipeDetailSheet() {
 }
 
 const styles = StyleSheet.create({
-  title: { marginTop: spacing.xs, textAlign: 'center', paddingHorizontal: spacing.xl },
-  body: { padding: spacing.xl, gap: spacing.sm },
-  stack: { gap: spacing.md },
-  list: { gap: spacing.xs },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+    alignSelf: 'stretch',
+    width: '100%',
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.xs,
+  },
+  title: { flexShrink: 1 },
+  editBtn: {
+    height: 40,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  body: { padding: spacing.xl, gap: spacing.md },
+  sectionLabel: { marginTop: spacing.sm },
+  list: { gap: spacing.sm },
   rowBetween: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing.md,
   },
-  chips: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-    flexShrink: 1,
-    flexWrap: 'wrap',
-    justifyContent: 'flex-end',
-  },
   locked: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+
+  scaleCard: { gap: spacing.md },
+  scaleTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  scaleNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    paddingTop: spacing.sm,
+  },
+
+  group: { gap: spacing.xs },
+  sectionPill: {
+    alignSelf: 'flex-start',
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 5,
+    marginBottom: spacing['2xs'],
+  },
+  ingRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: spacing.md,
+    paddingVertical: spacing['2xs'],
+  },
+  ingAmt: { minWidth: 66 },
+  ingItem: { flexShrink: 1 },
+
   steps: { gap: spacing.md },
   step: { flexDirection: 'row', gap: spacing.md },
   stepNum: { minWidth: 20 },
   stepText: { flex: 1, gap: spacing['2xs'] },
+  timePill: {
+    alignSelf: 'flex-start',
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    marginTop: spacing['2xs'],
+  },
 });
