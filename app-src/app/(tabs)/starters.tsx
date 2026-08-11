@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AdBanner } from '@/components/AdBanner';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -158,6 +159,8 @@ export default function StartersScreen() {
             );
           })
         )}
+
+        <AdBanner />
       </ScrollView>
 
       {deleted ? (

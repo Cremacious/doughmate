@@ -6,17 +6,23 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AdBanner } from '@/components/AdBanner';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { IngredientPicker } from '@/components/IngredientPicker';
 import { PopIn } from '@/components/PopIn';
 import { UnitField } from '@/components/UnitField';
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { showInterstitialIfReady } from '@/lib/ads';
 import { convert, formatQuantity, getIngredient, type Ingredient, type Unit } from '@/lib/convert';
+import { storage } from '@/lib/storage';
 import { scaleType } from '@/lib/typeScale';
+import { usePro } from '@/state/pro';
 import { useRecipes } from '@/state/recipes';
 import { useSettings } from '@/state/settings';
 import { spacing, typography } from '@/theme';
+
+const CONVERSION_COUNT_KEY = 'doughmate.conversionCount';
 
 const DEFAULT_INGREDIENT: Ingredient = getIngredient('all_purpose_flour')!;
 
@@ -25,6 +31,7 @@ export default function ConvertScreen() {
   const { palette, bg, fontScale } = useAppTheme();
   const { settings } = useSettings();
   const { addRecipe } = useRecipes();
+  const { isPro } = usePro();
   const [savedMsg, setSavedMsg] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -62,6 +69,13 @@ export default function ConvertScreen() {
       clearTimeout(saveTimer.current);
     }
     saveTimer.current = setTimeout(() => setSavedMsg(false), 2500);
+
+    // Free bakers see an interstitial after every fifth saved conversion.
+    const count = Number(storage.getItem(CONVERSION_COUNT_KEY) ?? '0') + 1;
+    storage.setItem(CONVERSION_COUNT_KEY, String(count));
+    if (!isPro && count % 5 === 0) {
+      showInterstitialIfReady();
+    }
   };
 
   return (
@@ -154,6 +168,8 @@ export default function ConvertScreen() {
           variant="secondary"
           onPress={() => router.push('/more-tools')}
         />
+
+        <AdBanner />
       </ScrollView>
     </SafeAreaView>
   );

@@ -3,11 +3,13 @@ import '@/i18n';
 
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ReminderSync } from '@/components/ReminderSync';
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { initAds } from '@/lib/ads';
 import { ProProvider } from '@/state/pro';
 import { RecipesProvider } from '@/state/recipes';
 import { SettingsProvider } from '@/state/settings';
@@ -33,6 +35,10 @@ export default function RootLayout() {
 
 function ThemedApp() {
   const { bg, isDark } = useAppTheme();
+
+  useEffect(() => {
+    initAds();
+  }, []);
 
   return (
     <>
