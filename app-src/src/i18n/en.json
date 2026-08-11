@@ -386,5 +386,8 @@
     "yesterday": "Yesterday",
     "today": "Today",
     "tomorrow": "Tomorrow"
+  },
+  "common": {
+    "close": "Close"
   }
 }
