@@ -19,6 +19,8 @@ export interface Settings {
   flouredFingers: boolean;
   starterReminders: boolean;
   weeklyTip: boolean;
+  /** Whether the baker has finished the first run onboarding. */
+  onboarded: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -31,6 +33,7 @@ export const DEFAULT_SETTINGS: Settings = {
   flouredFingers: false,
   starterReminders: true,
   weeklyTip: true,
+  onboarded: false,
 };
 
 const STORAGE_KEY = 'doughmate.settings.v1';
