@@ -56,7 +56,7 @@ export default function RootLayout() {
 }
 
 function ThemedApp() {
-  const { bg, isDark } = useAppTheme();
+  const { palette, isDark } = useAppTheme();
 
   useEffect(() => {
     initAds();
@@ -67,7 +67,7 @@ function ThemedApp() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: bg.primary },
+          contentStyle: { backgroundColor: palette.bgCanvas },
         }}
       >
         <Stack.Screen

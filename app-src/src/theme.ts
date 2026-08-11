@@ -101,12 +101,6 @@ export const typography = {
     lg: { fontFamily: 'SpaceGrotesk_600SemiBold', fontSize: 30, lineHeight: 34 },
     sm: { fontFamily: 'SpaceGrotesk_500Medium', fontSize: 15, lineHeight: 20 },
   },
-  // LEGACY (remove after migration): old screens read caption and number.*
-  caption: { fontFamily: 'NunitoSans_700Bold', fontSize: 12, lineHeight: 16 },
-  number: {
-    hero: { fontFamily: 'SpaceGrotesk_600SemiBold', fontSize: 64, lineHeight: 64 },
-    lg: { fontFamily: 'SpaceGrotesk_600SemiBold', fontSize: 30, lineHeight: 34 },
-  },
 } as const;
 
 /** Floured fingers mode multiplies every font size and line height, and raises targets. */
