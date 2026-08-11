@@ -1,182 +1,210 @@
 /**
- * Doughmate design tokens.
- * Every component consumes from here. Never hardcode raw values in components.
+ * Doughmate design tokens — "Proof" system, v2.
+ * Consume tokens everywhere, never hardcode. Names are stable so a themes shop
+ * can swap the values later.
  *
- * Usage:
- *   import { colors, typography, spacing, radius, shadow, spring, haptic } from './theme';
+ * A small block of LEGACY aliases at the bottom keeps not-yet-migrated screens
+ * compiling during the redesign. Remove them once every screen is on the new
+ * system (redesign phase 6).
  */
 
-export const colors = {
-  // Light mode (default)
+export type ThemeMode = 'light' | 'dark';
+
+export const palettes = {
   light: {
-    crust: '#C9975B', // Primary brown
-    crustDark: '#8B5A2B', // Deeper crust
-    crustLight: '#D9A76B', // Highlight crust
-    cream: '#FBF5EA', // Background
-    dough: '#F0E4D0', // Card / muted bg
-    butter: '#FFD97D', // Accent yellow
-    jam: '#E36A6A', // CTA red
-    jamDark: '#C15656', // CTA red pressed
-    choc: '#4A3728', // Text
-    chocSoft: '#6B5340', // Secondary text
-    steam: '#F5EDE0', // Softer bg
-    leaf: '#8FA96B', // Success green (rarely used)
+    bgCanvas: '#FFF7EF',
+    bgSurface: '#FFFFFF',
+    bgSunken: '#F6E9DC',
+    border: '#EADBCB',
+    textInk: '#2C1E17',
+    textSoft: '#6F5A4C',
+    textFaint: '#A08D7C',
+    primary: '#F2603C',
+    primaryPressed: '#D84D2C',
+    primaryText: '#C24A26',
+    primaryWash: '#FFF3E8',
+    onPrimary: '#FFF9F4',
+    accentButter: '#FFC24B',
+    proofTeal: '#3E9C8F',
+    proofTealWash: '#E3F1EE',
+    proofTealText: '#2C7A70',
+    success: '#3F8F5F',
+    warning: '#E0A020',
+    danger: '#D64545',
+    dangerWash: '#FBE9E7',
+    pro: '#8E4B7A',
+    proWash: '#F6E8F2',
+    grabber: '#D9C6B2',
+    scrim: 'rgba(44,30,23,0.42)',
+    toastBg: '#2C1E17',
+    toastText: '#FFF7EF',
+    samOutline: '#2C1E17',
+    samCrust: '#E9B478',
+    samCrustTop: '#E9B478',
   },
-  // Dark mode
   dark: {
-    crust: '#D9A76B', // Warmer in dark
-    crustDark: '#B58548',
-    crustLight: '#E6BA7C',
-    cream: '#F5E9D3', // Text (inverted from bg role)
-    dough: '#2A2118', // Card bg
-    butter: '#FFD97D', // Accent stays warm
-    jam: '#E36A6A',
-    jamDark: '#F0857D', // Lighter in dark
-    choc: '#F5E9D3', // Light text on dark
-    chocSoft: '#C9B89A',
-    steam: '#2A2118',
-    leaf: '#A8C084',
-  },
-  // Background layers per mode
-  bg: {
-    light: {
-      primary: '#FBF5EA',
-      elevated: '#FFFFFF',
-      subtle: '#F5EDE0',
-    },
-    dark: {
-      primary: '#1F1810',
-      elevated: '#2A2118',
-      subtle: '#241C15',
-    },
+    bgCanvas: '#17120F',
+    bgSurface: '#211A16',
+    bgSunken: '#1B1512',
+    border: '#342922',
+    textInk: '#F7ECE2',
+    textSoft: '#C0AA9B',
+    textFaint: '#8E7A6C',
+    primary: '#FF7A52',
+    primaryPressed: '#E2643D',
+    primaryText: '#FF9C7B',
+    primaryWash: '#3B231A',
+    onPrimary: '#2A1109',
+    accentButter: '#FFCD6B',
+    proofTeal: '#56B8A9',
+    proofTealWash: '#20302D',
+    proofTealText: '#7ED3C5',
+    success: '#6FBF89',
+    warning: '#F0B84A',
+    danger: '#F16B6B',
+    dangerWash: '#3A1F1E',
+    pro: '#C87BB0',
+    proWash: '#32202C',
+    grabber: '#4B3B31',
+    scrim: 'rgba(0,0,0,0.55)',
+    toastBg: '#F7ECE2',
+    toastText: '#211A16',
+    samOutline: '#12100E',
+    samCrust: '#E9B478',
+    samCrustTop: '#E9B478',
   },
 } as const;
 
+/** Fonts to load with expo-font: Gabarito, Nunito Sans, Space Grotesk (Google, OFL). */
 export const typography = {
   display: {
-    xl: { fontFamily: 'Fredoka', fontSize: 48, lineHeight: 56, fontWeight: '600' as const },
-    lg: { fontFamily: 'Fredoka', fontSize: 36, lineHeight: 44, fontWeight: '600' as const },
-    md: { fontFamily: 'Fredoka', fontSize: 28, lineHeight: 36, fontWeight: '500' as const },
+    xl: { fontFamily: 'Gabarito_600SemiBold', fontSize: 40, lineHeight: 44 },
+    lg: { fontFamily: 'Gabarito_600SemiBold', fontSize: 32, lineHeight: 38 },
+    md: { fontFamily: 'Gabarito_600SemiBold', fontSize: 26, lineHeight: 32 },
   },
-  heading: { fontFamily: 'Fredoka', fontSize: 20, lineHeight: 28, fontWeight: '500' as const },
+  heading: { fontFamily: 'Gabarito_600SemiBold', fontSize: 20, lineHeight: 26 },
+  title: { fontFamily: 'NunitoSans_700Bold', fontSize: 17, lineHeight: 22 },
   body: {
-    lg: { fontFamily: 'Nunito', fontSize: 18, lineHeight: 26, fontWeight: '600' as const },
-    md: { fontFamily: 'Nunito', fontSize: 16, lineHeight: 24, fontWeight: '400' as const },
-    sm: { fontFamily: 'Nunito', fontSize: 14, lineHeight: 20, fontWeight: '400' as const },
+    lg: { fontFamily: 'NunitoSans_400Regular', fontSize: 17, lineHeight: 26 },
+    md: { fontFamily: 'NunitoSans_400Regular', fontSize: 15, lineHeight: 22 },
+    sm: { fontFamily: 'NunitoSans_400Regular', fontSize: 13, lineHeight: 19 },
   },
-  caption: { fontFamily: 'Nunito', fontSize: 12, lineHeight: 16, fontWeight: '600' as const },
-  micro: { fontFamily: 'Nunito', fontSize: 10, lineHeight: 14, fontWeight: '400' as const },
+  label: {
+    fontFamily: 'NunitoSans_700Bold',
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.96,
+    textTransform: 'uppercase' as const,
+  },
+  numeric: {
+    hero: { fontFamily: 'SpaceGrotesk_600SemiBold', fontSize: 64, lineHeight: 64 },
+    lg: { fontFamily: 'SpaceGrotesk_600SemiBold', fontSize: 30, lineHeight: 34 },
+    sm: { fontFamily: 'SpaceGrotesk_500Medium', fontSize: 15, lineHeight: 20 },
+  },
+  // LEGACY (remove after migration): old screens read caption and number.*
+  caption: { fontFamily: 'NunitoSans_700Bold', fontSize: 12, lineHeight: 16 },
   number: {
-    hero: { fontFamily: 'SF Mono', fontSize: 64, lineHeight: 72, fontWeight: '600' as const },
-    lg: { fontFamily: 'SF Mono', fontSize: 32, lineHeight: 40, fontWeight: '500' as const },
+    hero: { fontFamily: 'SpaceGrotesk_600SemiBold', fontSize: 64, lineHeight: 64 },
+    lg: { fontFamily: 'SpaceGrotesk_600SemiBold', fontSize: 30, lineHeight: 34 },
   },
 } as const;
+
+/** Floured fingers mode multiplies every font size and line height, and raises targets. */
+export const fontScale = { normal: 1, flouredFingers: 1.25 } as const;
+export const touchTarget = { normal: 44, flouredFingers: 56 } as const;
 
 export const spacing = {
   '2xs': 4,
   xs: 8,
   sm: 12,
   md: 16,
-  lg: 24,
-  xl: 32,
-  '2xl': 48,
-  '3xl': 64,
+  lg: 20,
+  xl: 24,
+  '2xl': 32,
+  '3xl': 40,
+  '4xl': 56,
 } as const;
 
-export const radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  '2xl': 28,
-  pill: 999,
-} as const;
+export const radius = { sm: 8, md: 12, lg: 16, xl: 22, '2xl': 28, pill: 999 } as const;
 
 export const shadow = {
   none: {},
   sm: {
-    shadowColor: '#8B5A2B',
-    shadowOffset: { width: 0, height: 2 },
+    shadowColor: '#4A2A18',
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2, // Android
+    shadowRadius: 2,
+    elevation: 1,
   },
   md: {
-    shadowColor: '#8B5A2B',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#4A2A18',
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
-    shadowRadius: 12,
+    shadowRadius: 18,
     elevation: 4,
   },
   lg: {
-    shadowColor: '#8B5A2B',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
+    shadowColor: '#4A2A18',
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.16,
+    shadowRadius: 36,
     elevation: 8,
+  },
+  sheet: {
+    shadowColor: '#261608',
+    shadowOffset: { width: 0, height: -12 },
+    shadowOpacity: 0.22,
+    shadowRadius: 40,
+    elevation: 12,
   },
 } as const;
 
-/**
- * Spring physics configs for Reanimated 3.
- * Use these three, no others. Every animation in the app should feel like one system.
- *
- * Usage:
- *   import { withSpring } from 'react-native-reanimated';
- *   scale.value = withSpring(1, spring.quick);
- */
+/** Three springs only. Reduced motion swaps every one for a 120ms opacity fade. */
 export const spring = {
-  quick: { stiffness: 300, damping: 20, mass: 1 }, // ~200ms, button squish
-  medium: { stiffness: 200, damping: 15, mass: 1 }, // ~300ms, Sam reactions, cards
-  soft: { stiffness: 120, damping: 18, mass: 1.2 }, // ~400ms, screen transitions
+  quick: { stiffness: 320, damping: 22, mass: 1 },
+  medium: { stiffness: 210, damping: 18, mass: 1 },
+  soft: { stiffness: 130, damping: 20, mass: 1.1 },
 } as const;
 
-/**
- * Named haptic types. Import expo-haptics and map to these.
- *
- * Usage:
- *   import * as Haptics from 'expo-haptics';
- *   Haptics.impactAsync(haptic.tap);
- */
-export const haptic = {
-  tap: 'Light', // any button press
-  select: 'Selection', // unit picker, tab switch
-  pop: 'Medium', // result lands, save success
-  success: 'NotificationSuccess', // purchase, milestone
-  warning: 'NotificationWarning', // destructive confirm
-} as const;
+export const duration = { instant: 120, fast: 200, normal: 320, slow: 480 } as const;
 
-/**
- * Animation durations for non-spring cases (fades, timing curves).
- */
-export const duration = {
-  instant: 100,
-  fast: 200,
-  normal: 300,
-  slow: 500,
-} as const;
-
-/**
- * Standard easing curves. Use sparingly — springs are preferred.
- */
 export const easing = {
-  standard: [0.4, 0, 0.2, 1] as const,
-  enter: [0.0, 0, 0.2, 1] as const,
+  standard: [0.32, 0.72, 0, 1] as const,
+  enter: [0, 0, 0.2, 1] as const,
   exit: [0.4, 0, 1, 1] as const,
 } as const;
 
-// Convenience export for consumers who want everything
+/** Named haptics, unchanged from v1. */
+export const haptic = {
+  tap: 'Light',
+  select: 'Selection',
+  pop: 'Medium',
+  success: 'NotificationSuccess',
+  warning: 'NotificationWarning',
+} as const;
+
+export const sheet = {
+  radius: radius['2xl'],
+  grabber: { width: 40, height: 5, radius: radius.pill },
+  heights: { half: 0.6, tall: 0.9, full: 1 },
+  dismissThresholdPx: 120,
+  dismissVelocity: 800,
+} as const;
+
 export const theme = {
-  colors,
+  palettes,
   typography,
+  fontScale,
+  touchTarget,
   spacing,
   radius,
   shadow,
   spring,
-  haptic,
   duration,
   easing,
+  haptic,
+  sheet,
 } as const;
 
 export type Theme = typeof theme;
-export type ThemeMode = 'light' | 'dark';
+export type Palette = typeof palettes.light;

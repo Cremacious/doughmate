@@ -1,6 +1,13 @@
-// Root layout. Sets up i18n, settings, gesture handling, safe areas, status bar.
+// Root layout. Sets up fonts, i18n, settings, gesture handling, safe areas, status bar.
 import '@/i18n';
 
+import { Gabarito_600SemiBold } from '@expo-google-fonts/gabarito';
+import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
+import {
+  SpaceGrotesk_500Medium,
+  SpaceGrotesk_600SemiBold,
+} from '@expo-google-fonts/space-grotesk';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -17,6 +24,18 @@ import { SettingsProvider } from '@/state/settings';
 import { StartersProvider } from '@/state/starters';
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Gabarito_600SemiBold,
+    NunitoSans_400Regular,
+    NunitoSans_700Bold,
+    SpaceGrotesk_500Medium,
+    SpaceGrotesk_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
