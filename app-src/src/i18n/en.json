@@ -8,6 +8,17 @@
     "name": "Doughmate",
     "tagline": "Convert, scale, and bake with Sam"
   },
+  "sam": {
+    "reactions": {
+      "idle": "What are we baking?",
+      "cookies": "Ooh, cookies. Good choice.",
+      "sourdough": "My favorite. Let's take our time with this one.",
+      "macarons": "Deep breath. We've got this.",
+      "focaccia": "Something warm. Perfect.",
+      "croissants": "The long game. Let's do it right.",
+      "celebrate": "Look at us."
+    }
+  },
   "onboarding": {
     "screen1": {
       "greeting": "Hi. I'm Sam. Let's make the math easy.",

@@ -6,8 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { PopIn } from '@/components/PopIn';
 import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { useSamMood } from '@/state/samMood';
 
 const TAB_BAR_HEIGHT = 58;
 const SAM_SIZE = 76;
@@ -25,6 +27,7 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   const { palette, bg, isDark } = useAppTheme();
   const insets = useSafeAreaInsets();
+  const { state: samState } = useSamMood();
 
   return (
     <View style={{ flex: 1 }}>
@@ -63,7 +66,9 @@ export default function TabsLayout() {
           pointerEvents: 'none',
         }}
       >
-        <Sam size={SAM_SIZE} />
+        <PopIn trigger={samState}>
+          <Sam size={SAM_SIZE} state={samState} />
+        </PopIn>
       </View>
     </View>
   );

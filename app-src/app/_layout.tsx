@@ -12,6 +12,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { initAds } from '@/lib/ads';
 import { ProProvider } from '@/state/pro';
 import { RecipesProvider } from '@/state/recipes';
+import { SamMoodProvider } from '@/state/samMood';
 import { SettingsProvider } from '@/state/settings';
 import { StartersProvider } from '@/state/starters';
 
@@ -23,7 +24,9 @@ export default function RootLayout() {
           <ProProvider>
             <RecipesProvider>
               <StartersProvider>
-                <ThemedApp />
+                <SamMoodProvider>
+                  <ThemedApp />
+                </SamMoodProvider>
               </StartersProvider>
             </RecipesProvider>
           </ProProvider>

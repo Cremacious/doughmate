@@ -19,6 +19,7 @@ import { storage } from '@/lib/storage';
 import { scaleType } from '@/lib/typeScale';
 import { usePro } from '@/state/pro';
 import { useRecipes } from '@/state/recipes';
+import { useSamMood } from '@/state/samMood';
 import { useSettings } from '@/state/settings';
 import { spacing, typography } from '@/theme';
 
@@ -32,6 +33,7 @@ export default function ConvertScreen() {
   const { settings } = useSettings();
   const { addRecipe } = useRecipes();
   const { isPro } = usePro();
+  const { celebrate } = useSamMood();
   const [savedMsg, setSavedMsg] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -64,6 +66,7 @@ export default function ConvertScreen() {
       name: ingredient.name,
       lines: [`${amountText} ${t(`units.${fromUnit}`)} ${ingredient.name}`],
     });
+    celebrate();
     setSavedMsg(true);
     if (saveTimer.current) {
       clearTimeout(saveTimer.current);
