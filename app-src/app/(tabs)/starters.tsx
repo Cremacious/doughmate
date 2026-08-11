@@ -10,6 +10,8 @@ import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { triggerHaptic } from '@/lib/haptics';
+import { FREE_STARTER_LIMIT } from '@/lib/limits';
+import { usePro } from '@/state/pro';
 import { type Starter, useStarters } from '@/state/starters';
 import { shadow, spacing, typography } from '@/theme';
 
@@ -46,7 +48,16 @@ export default function StartersScreen() {
   const { palette, bg } = useAppTheme();
   const insets = useSafeAreaInsets();
   const { starters, feedStarter, removeStarter, restoreStarter } = useStarters();
+  const { isPro } = usePro();
   const statusFor = useFeedStatus();
+
+  const addStarter = () => {
+    if (!isPro && starters.length >= FREE_STARTER_LIMIT) {
+      router.push('/paywall');
+    } else {
+      router.push('/starter-new');
+    }
+  };
 
   const [now, setNow] = useState(() => Date.now());
   const [deleted, setDeleted] = useState<Starter | null>(null);
@@ -97,11 +108,7 @@ export default function StartersScreen() {
           <Text style={[typography.display.md, { color: palette.choc }]}>
             {t('starters.title')}
           </Text>
-          <Button
-            label={t('starters.button_add')}
-            variant="secondary"
-            onPress={() => router.push('/starter-new')}
-          />
+          <Button label={t('starters.button_add')} variant="secondary" onPress={addStarter} />
         </View>
 
         {starters.length === 0 ? (

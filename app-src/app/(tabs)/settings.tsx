@@ -1,13 +1,15 @@
 // Settings: appearance, sound and feel, preferences, notifications, about.
 // Every control reads and writes the persisted settings store.
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Card } from '@/components/Card';
 import { Chips } from '@/components/Chips';
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { usePro } from '@/state/pro';
 import {
   type FlourStandardPref,
   type ThemePref,
@@ -59,6 +61,7 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const { palette, bg } = useAppTheme();
   const { settings, update } = useSettings();
+  const { isPro } = usePro();
 
   const themeOptions = [
     { key: 'auto' as ThemePref, label: t('settings.theme_auto') },
@@ -142,6 +145,16 @@ export default function SettingsScreen() {
           />
         </Card>
 
+        <SectionTitle>{t('settings.section_pro')}</SectionTitle>
+        <Pressable accessibilityRole="button" onPress={() => router.push('/paywall')}>
+          <Card style={styles.proRow}>
+            <Text style={[typography.body.lg, { color: palette.choc }]}>
+              {isPro ? t('toasts.pro_unlocked') : t('settings.buy_pro')}
+            </Text>
+            <Text style={[typography.body.lg, { color: palette.crust }]}>›</Text>
+          </Card>
+        </Pressable>
+
         <SectionTitle>{t('settings.section_notifications')}</SectionTitle>
         <Card style={styles.stack}>
           <ToggleRow
@@ -186,4 +199,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   rowText: { flexShrink: 1, gap: spacing['2xs'] },
+  proRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
 });

@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ReminderSync } from '@/components/ReminderSync';
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { ProProvider } from '@/state/pro';
 import { RecipesProvider } from '@/state/recipes';
 import { SettingsProvider } from '@/state/settings';
 import { StartersProvider } from '@/state/starters';
@@ -17,11 +18,13 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <SettingsProvider>
-          <RecipesProvider>
-            <StartersProvider>
-              <ThemedApp />
-            </StartersProvider>
-          </RecipesProvider>
+          <ProProvider>
+            <RecipesProvider>
+              <StartersProvider>
+                <ThemedApp />
+              </StartersProvider>
+            </RecipesProvider>
+          </ProProvider>
         </SettingsProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
@@ -40,6 +43,7 @@ function ThemedApp() {
         }}
       >
         <Stack.Screen name="scaler" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
         <Stack.Screen name="recipe-new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="starter-new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="more-tools" options={{ presentation: 'modal' }} />

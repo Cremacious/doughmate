@@ -10,6 +10,8 @@ import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { triggerHaptic } from '@/lib/haptics';
+import { FREE_RECIPE_LIMIT } from '@/lib/limits';
+import { usePro } from '@/state/pro';
 import { type Recipe, useRecipes } from '@/state/recipes';
 import { shadow, spacing, typography } from '@/theme';
 
@@ -18,6 +20,15 @@ export default function RecipesScreen() {
   const { palette, bg } = useAppTheme();
   const insets = useSafeAreaInsets();
   const { recipes, removeRecipe, restoreRecipe } = useRecipes();
+  const { isPro } = usePro();
+
+  const addRecipe = () => {
+    if (!isPro && recipes.length >= FREE_RECIPE_LIMIT) {
+      router.push('/paywall');
+    } else {
+      router.push('/recipe-new');
+    }
+  };
 
   const [deleted, setDeleted] = useState<Recipe | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -50,11 +61,7 @@ export default function RecipesScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.headerRow}>
           <Text style={[typography.display.md, { color: palette.choc }]}>{t('recipes.title')}</Text>
-          <Button
-            label={t('recipes.button_add')}
-            variant="secondary"
-            onPress={() => router.push('/recipe-new')}
-          />
+          <Button label={t('recipes.button_add')} variant="secondary" onPress={addRecipe} />
         </View>
 
         {recipes.length === 0 ? (
