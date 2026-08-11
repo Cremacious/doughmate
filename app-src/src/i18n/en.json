@@ -228,9 +228,8 @@
     "tag_everyday": "Everyday",
     "edit_title": "Edit recipe",
     "add_ingredient": "Add ingredient",
-    "add_section": "Section",
+    "add_section": "Add section",
     "add_step": "Add step",
-    "section_name_placeholder": "Section name",
     "ingredient_item_placeholder": "Ingredient",
     "ingredient_amount_placeholder": "Amt",
     "unit_none": "no unit",
@@ -238,7 +237,8 @@
     "step_text_placeholder": "Describe this step",
     "step_time_placeholder": "Time (optional)",
     "step_time_label": "Time",
-    "save_changes": "Save changes"
+    "save_changes": "Save changes",
+    "section_heading_placeholder": "Add a heading"
   },
   "starters": {
     "title": "Starters",

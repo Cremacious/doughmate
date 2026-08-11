@@ -178,6 +178,13 @@ export default function RecipeEditorSheet() {
 
   const floured = fontScale > 1;
   const deleteButtonSize = floured ? 56 : 48;
+  const sectionHeadHeight = floured ? 56 : 48;
+  // Sections only box up once there is more than one, or one has been named.
+  // A simple single, unnamed group stays bare.
+  const sectioned = sections.length > 1 || sections.some((sec) => sec.name.trim() !== '');
+  const hasAnyIngredient = sections.some((sec) =>
+    sec.ingredients.some((ing) => ing.item.trim() !== '' || ing.amount.trim() !== '')
+  );
   const stepAreaStyle = [
     typography.body.lg,
     styles.stepArea,
@@ -240,78 +247,108 @@ export default function RecipeEditorSheet() {
           </Text>
           <View style={styles.sectionsWrap}>
             {sections.map((section, s) => {
-              const showSectionName = s > 0 || section.name.trim() !== '';
+              const named = section.name.trim() !== '';
+              const ingredientCards = section.ingredients.map((ing, i) => (
+                <Card key={i} style={styles.ingredientCard}>
+                  <Input
+                    value={ing.item}
+                    onChangeText={(text) => updateIngredient(s, i, { item: text })}
+                    placeholder={t('recipes.ingredient_item_placeholder')}
+                  />
+                  <View style={styles.ingredientRow}>
+                    <View style={styles.amountField}>
+                      <Input
+                        value={ing.amount}
+                        onChangeText={(text) => updateIngredient(s, i, { amount: text })}
+                        placeholder={t('recipes.ingredient_amount_placeholder')}
+                        numeric
+                      />
+                    </View>
+                    <View style={styles.unitField}>
+                      <UnitPickerField
+                        value={ing.unit ? t(`units.${ing.unit}` as 'units.g') : ''}
+                        placeholder={t('recipes.unit_none')}
+                        onPress={() => setUnitPicker({ s, i })}
+                      />
+                    </View>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={t('recipes.button_delete')}
+                      onPress={() => removeIngredient(s, i)}
+                      style={[
+                        styles.deleteButton,
+                        {
+                          width: deleteButtonSize,
+                          height: deleteButtonSize,
+                          backgroundColor: palette.bgSunken,
+                        },
+                      ]}
+                    >
+                      <Text style={[typography.heading, { color: palette.textFaint }]}>✕</Text>
+                    </Pressable>
+                  </View>
+                </Card>
+              ));
+              const addIngredientLink = (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => addIngredient(s)}
+                  style={styles.addIngredientLink}
+                >
+                  <Text style={[typography.title, { color: palette.proofTealText }]}>
+                    {`+ ${t('recipes.add_ingredient')}`}
+                  </Text>
+                </Pressable>
+              );
+
+              if (!sectioned) {
+                return (
+                  <View key={s} style={styles.section}>
+                    {ingredientCards}
+                    {addIngredientLink}
+                  </View>
+                );
+              }
+
               return (
-                <View key={s} style={styles.section}>
-                  {showSectionName ? (
-                    <Input
+                <View key={s} style={[styles.sectionBox, { backgroundColor: palette.bgSunken }]}>
+                  <View
+                    style={[
+                      styles.sectionHead,
+                      { height: sectionHeadHeight, backgroundColor: palette.proofTealWash },
+                    ]}
+                  >
+                    <TextInput
                       value={section.name}
                       onChangeText={(text) => setSectionName(s, text)}
-                      placeholder={t('recipes.section_name_placeholder')}
+                      placeholder={t('recipes.section_heading_placeholder')}
+                      placeholderTextColor={palette.textFaint}
+                      style={[
+                        typography.title,
+                        styles.sectionHeadInput,
+                        { color: named ? palette.proofTealText : palette.textSoft },
+                      ]}
                     />
-                  ) : null}
-                  {section.ingredients.map((ing, i) => (
-                    <Card key={i} style={styles.ingredientCard}>
-                      <Input
-                        value={ing.item}
-                        onChangeText={(text) => updateIngredient(s, i, { item: text })}
-                        placeholder={t('recipes.ingredient_item_placeholder')}
-                      />
-                      <View style={styles.ingredientRow}>
-                        <View style={styles.amountField}>
-                          <Input
-                            value={ing.amount}
-                            onChangeText={(text) => updateIngredient(s, i, { amount: text })}
-                            placeholder={t('recipes.ingredient_amount_placeholder')}
-                            numeric
-                          />
-                        </View>
-                        <View style={styles.unitField}>
-                          <UnitPickerField
-                            value={ing.unit ? t(`units.${ing.unit}` as 'units.g') : ''}
-                            placeholder={t('recipes.unit_none')}
-                            onPress={() => setUnitPicker({ s, i })}
-                          />
-                        </View>
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel={t('recipes.button_delete')}
-                          onPress={() => removeIngredient(s, i)}
-                          style={[
-                            styles.deleteButton,
-                            {
-                              width: deleteButtonSize,
-                              height: deleteButtonSize,
-                              backgroundColor: palette.bgSunken,
-                            },
-                          ]}
-                        >
-                          <Text style={[typography.heading, { color: palette.textFaint }]}>✕</Text>
-                        </Pressable>
-                      </View>
-                    </Card>
-                  ))}
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => addIngredient(s)}
-                    style={[styles.dashedButton, { borderColor: palette.border }]}
-                  >
-                    <Text style={[typography.title, { color: palette.primaryText }]}>
-                      {`+ ${t('recipes.add_ingredient')}`}
-                    </Text>
-                  </Pressable>
+                  </View>
+                  {ingredientCards}
+                  {addIngredientLink}
                 </View>
               );
             })}
-            <Pressable
-              accessibilityRole="button"
-              onPress={addSection}
-              style={[styles.dashedButton, { borderColor: palette.border }]}
-            >
-              <Text style={[typography.title, { color: palette.primaryText }]}>
-                {`+ ${t('recipes.add_section')}`}
-              </Text>
-            </Pressable>
+            {hasAnyIngredient ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={addSection}
+                style={[
+                  styles.addSectionButton,
+                  { borderColor: palette.proofTeal, backgroundColor: palette.proofTealWash },
+                ]}
+              >
+                <Text style={[typography.title, { color: palette.proofTealText }]}>
+                  {`+ ${t('recipes.add_section')}`}
+                </Text>
+              </Pressable>
+            ) : null}
           </View>
         </View>
 
@@ -423,6 +460,21 @@ const styles = StyleSheet.create({
   sectionLabel: { marginBottom: spacing.sm },
   sectionsWrap: { gap: spacing.lg },
   section: { gap: spacing.sm },
+  sectionBox: { borderRadius: radius.xl, padding: spacing.sm, gap: spacing.sm },
+  sectionHead: {
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    justifyContent: 'center',
+  },
+  sectionHeadInput: { padding: 0 },
+  addIngredientLink: { alignItems: 'center', paddingVertical: spacing.sm },
+  addSectionButton: {
+    borderWidth: 2,
+    borderRadius: radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
+  },
   ingredientCard: { gap: spacing.sm },
   ingredientRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   amountField: { width: 96 },
