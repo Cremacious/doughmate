@@ -9,6 +9,8 @@ export interface RecipeIngredient {
   amount: number | '';
   unit: string;
   item: string;
+  /** Optional section name (e.g. "Dough"). Absent = the leading unlabeled group. */
+  section?: string;
 }
 
 export interface RecipeStep {

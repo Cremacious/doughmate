@@ -115,6 +115,36 @@ export function bakersPercentages(ingredients: ParsedIngredient[]): BakersRow[] 
   return grams.map((i) => ({ item: i.item, pct: Math.round((i.amount / flour) * 1000) / 10 }));
 }
 
+/** Structural ingredient shape for grouping. Matches state RecipeIngredient. */
+export interface SectionedIngredient {
+  amount: number | '';
+  unit: string;
+  item: string;
+  section?: string;
+}
+
+export interface IngredientGroup {
+  section?: string;
+  items: SectionedIngredient[];
+}
+
+/** Group ingredients by section name, first appearance order, items in original order. */
+export function groupBySection(ingredients: SectionedIngredient[]): IngredientGroup[] {
+  const groups: IngredientGroup[] = [];
+  const byKey = new Map<string, IngredientGroup>();
+  for (const ing of ingredients) {
+    const key = ing.section ?? '';
+    let group = byKey.get(key);
+    if (!group) {
+      group = { section: key === '' ? undefined : key, items: [] };
+      byKey.set(key, group);
+      groups.push(group);
+    }
+    group.items.push(ing);
+  }
+  return groups;
+}
+
 /** Parse a free text ingredient line into amount, unit, and item. */
 export function parseIngredientLine(line: string): ParsedIngredient {
   const parsed = parseLeadingQuantity(line);

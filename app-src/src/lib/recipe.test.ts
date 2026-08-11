@@ -1,5 +1,6 @@
 import {
   bakersPercentages,
+  groupBySection,
   matchFactor,
   parseIngredientLine,
   parseLeadingQuantity,
@@ -177,5 +178,55 @@ describe('bakersPercentages', () => {
         { amount: '', unit: '', item: 'pinch of salt' },
       ])
     ).toBeNull();
+  });
+});
+
+describe('groupBySection', () => {
+  it('puts ingredients with no section into one leading unlabeled group', () => {
+    const groups = groupBySection([
+      { amount: 2, unit: '', item: 'eggs' },
+      { amount: 1, unit: 'cup', item: 'flour' },
+    ]);
+    expect(groups).toEqual([
+      {
+        section: undefined,
+        items: [
+          { amount: 2, unit: '', item: 'eggs' },
+          { amount: 1, unit: 'cup', item: 'flour' },
+        ],
+      },
+    ]);
+  });
+
+  it('groups by section name in first appearance order, keeping item order', () => {
+    const groups = groupBySection([
+      { amount: 500, unit: 'g', item: 'bread flour', section: 'Dough' },
+      { amount: 350, unit: 'g', item: 'water', section: 'Dough' },
+      { amount: 2, unit: 'tbsp', item: 'semolina', section: 'Finish' },
+    ]);
+    expect(groups.map((g) => g.section)).toEqual(['Dough', 'Finish']);
+    expect(groups[0]!.items.map((i) => i.item)).toEqual(['bread flour', 'water']);
+    expect(groups[1]!.items.map((i) => i.item)).toEqual(['semolina']);
+  });
+
+  it('collects non contiguous items of the same section together', () => {
+    const groups = groupBySection([
+      { amount: 1, unit: '', item: 'a', section: 'X' },
+      { amount: 1, unit: '', item: 'b', section: 'Y' },
+      { amount: 1, unit: '', item: 'c', section: 'X' },
+    ]);
+    expect(groups.map((g) => g.section)).toEqual(['X', 'Y']);
+    expect(groups[0]!.items.map((i) => i.item)).toEqual(['a', 'c']);
+  });
+
+  it('treats an empty string section as the unlabeled group', () => {
+    const groups = groupBySection([{ amount: 1, unit: '', item: 'a', section: '' }]);
+    expect(groups).toEqual([
+      { section: undefined, items: [{ amount: 1, unit: '', item: 'a', section: '' }] },
+    ]);
+  });
+
+  it('returns an empty array for no ingredients', () => {
+    expect(groupBySection([])).toEqual([]);
   });
 });
