@@ -11,6 +11,19 @@ export interface Starter {
   lastFedAt: number | null;
   feedCount: number;
   createdAt: number;
+  /** Hydration percentage (e.g. 100). Optional on records saved before v5. */
+  hydration?: number;
+  /** Feed ratio label (e.g. "1:2:2"). Optional on older records. */
+  ratio?: string;
+  notes?: string;
+}
+
+export interface StarterInput {
+  name: string;
+  intervalHours: number;
+  hydration?: number;
+  ratio?: string;
+  notes?: string;
 }
 
 const STORAGE_KEY = 'doughmate.starters.v1';
@@ -29,7 +42,7 @@ function loadStarters(): Starter[] {
 
 interface StartersContextValue {
   starters: Starter[];
-  addStarter: (input: { name: string; intervalHours: number }) => Starter;
+  addStarter: (input: StarterInput) => Starter;
   feedStarter: (id: string) => void;
   removeStarter: (id: string) => void;
   restoreStarter: (starter: Starter) => void;
@@ -47,7 +60,7 @@ export function StartersProvider({ children }: { children: ReactNode }) {
     };
     return {
       starters,
-      addStarter: ({ name, intervalHours }) => {
+      addStarter: ({ name, intervalHours, hydration, ratio, notes }) => {
         const starter: Starter = {
           id: `${Date.now()}-${Math.round(Math.random() * 1e6)}`,
           name,
@@ -55,6 +68,9 @@ export function StartersProvider({ children }: { children: ReactNode }) {
           lastFedAt: null,
           feedCount: 0,
           createdAt: Date.now(),
+          hydration,
+          ratio,
+          notes,
         };
         commit([starter, ...starters]);
         return starter;

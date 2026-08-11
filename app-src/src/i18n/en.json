@@ -22,18 +22,29 @@
   "onboarding": {
     "screen1": {
       "greeting": "Hi. I'm Sam. Let's make the math easy.",
-      "cta": "Get Started",
-      "skip": "Skip"
+      "cta": "Get started",
+      "skip": "Skip",
+      "title": "Hi. I'm Sam.",
+      "body": "Let's make the math easy."
     },
     "screen2": {
       "features": "Convert cups to grams, scale any recipe, and I'll keep you company.",
       "cta": "Next",
-      "skip": "Skip"
+      "skip": "Skip",
+      "title": "I do the fiddly math.",
+      "sample1_value": "120 g",
+      "sample1_label": "cups to grams",
+      "sample2_value": "6h 20m",
+      "sample2_label": "proof time",
+      "sample3_value": "1.8x",
+      "sample3_label": "pan scale"
     },
     "screen3": {
       "prompt": "Want reminders when your starter needs feeding?",
       "yes": "Sure",
-      "no": "Maybe Later"
+      "no": "Maybe later",
+      "title": "Want a nudge at feeding time?",
+      "body": "I'll remind you when a starter needs feeding, and send one baking tip a week."
     }
   },
   "tabs": {
@@ -113,7 +124,8 @@
     "title": "Substitutions",
     "search_placeholder": "Search substitutions",
     "swap_for": "Swap for",
-    "empty": "Nothing matches. Try another ingredient."
+    "empty": "Nothing matches. Try another ingredient.",
+    "pro_teaser": "More swaps and full baker's math with Pro."
   },
   "scaler": {
     "title": "Scale a recipe",
@@ -245,7 +257,20 @@
       "waiting": "Time to feed {{name}}. She's been waiting {{hours}} hours.",
       "peak": "Your starter's close to peak. Want to bake today?",
       "long_absence": "Been a few days. Your starter would love a visit."
-    }
+    },
+    "countdown_fresh": "Fresh",
+    "hydration_badge": "{{value}}%",
+    "waiting": "She has been waiting {{hours}}h.",
+    "interval_value": "{{hours}}h",
+    "button_delete": "Delete starter",
+    "add_title": "Add a starter",
+    "new_notes_placeholder": "Anything you want to remember.",
+    "toast_deleted": "{{name}} removed.",
+    "new_hydration_label": "Hydration",
+    "new_ratio_label": "Feed ratio",
+    "new_interval_label": "Feed every",
+    "new_notes_label": "Notes",
+    "new_name_field": "Name"
   },
   "settings": {
     "title": "Settings",
@@ -284,7 +309,9 @@
     "terms": "Terms",
     "ingredient_sources": "Ingredient sources",
     "version": "Version",
-    "credits": "Credits"
+    "credits": "Credits",
+    "reduced_motion_desc": "A calm version of every animation.",
+    "pro_unlocked_row": "Doughmate Pro unlocked"
   },
   "paywall": {
     "title": "Doughmate Pro",

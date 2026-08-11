@@ -20,6 +20,7 @@ module.exports = {
     'src/lib/butter.ts',
     'src/lib/substitutions.ts',
     'src/lib/sam.ts',
+    'src/lib/starter.ts',
   ],
   coverageThreshold: {
     global: { branches: 100, functions: 100, lines: 100, statements: 100 },

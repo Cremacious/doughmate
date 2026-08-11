@@ -78,7 +78,14 @@ function ThemedApp() {
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />
-        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="paywall"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
         <Stack.Screen
           name="recipe-new"
           options={{
@@ -103,7 +110,14 @@ function ThemedApp() {
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />
-        <Stack.Screen name="starter-new" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="starter-new"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
       </Stack>
       <ReminderSync />
       <StatusBar style={isDark ? 'light' : 'dark'} />
