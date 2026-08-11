@@ -1,93 +1,161 @@
-// New recipe. A name and a few ingredient lines, saved to the Recipe Box.
+// New recipe, a tall sheet. Ingredients and method are one per line; each
+// ingredient line is parsed into amount, unit and item so it can scale later.
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { ModalHeader } from '@/components/ModalHeader';
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { parseIngredientLine } from '@/lib/recipe';
 import { useRecipes } from '@/state/recipes';
 import { radius, spacing, typography } from '@/theme';
+import { BottomSheet } from '@/ui/BottomSheet';
+import { Button } from '@/ui/Button';
+import { Chip } from '@/ui/Chip';
+import { Input } from '@/ui/Input';
+import { useToast } from '@/ui/Toast';
 
-export default function NewRecipeScreen() {
-  const { t } = useTranslation();
-  const { palette, bg } = useAppTheme();
-  const { addRecipe } = useRecipes();
+const TAG_KEYS = ['tag_sourdough', 'tag_bread', 'tag_sweet', 'tag_quick', 'tag_everyday'] as const;
 
-  const [name, setName] = useState('');
-  const [ingredients, setIngredients] = useState('');
-
-  const lines = ingredients
+function toLines(text: string): string[] {
+  return text
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line !== '');
+}
+
+export default function NewRecipeSheet() {
+  const { t } = useTranslation();
+  const { palette, fontScale } = useAppTheme();
+  const { addRecipe } = useRecipes();
+  const { show } = useToast();
+
+  const [name, setName] = useState('');
+  const [yieldLabel, setYieldLabel] = useState('');
+  const [ingredients, setIngredients] = useState('');
+  const [method, setMethod] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+
+  const ingredientLines = toLines(ingredients);
   const trimmedName = name.trim();
-  const canSave = trimmedName !== '' || lines.length > 0;
+  const canSave = trimmedName !== '' || ingredientLines.length > 0;
+
+  const toggleTag = (tag: string) =>
+    setTags((prev) => (prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag]));
 
   const save = () => {
-    addRecipe({ name: trimmedName || lines[0] || t('recipes.title'), lines });
+    addRecipe({
+      name: trimmedName || ingredientLines[0] || t('recipes.new_recipe'),
+      yieldLabel: yieldLabel.trim(),
+      ingredients: ingredientLines.map(parseIngredientLine),
+      steps: toLines(method).map((text) => ({ text })),
+      tags,
+    });
     router.back();
+    show({ message: t('recipes.toast_saved'), variant: 'confirmation' });
   };
 
+  const areaStyle = [
+    typography.body.lg,
+    styles.area,
+    {
+      height: fontScale > 1 ? 180 : 150,
+      backgroundColor: palette.bgSunken,
+      color: palette.textInk,
+    },
+  ];
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bg.primary }]} edges={['top']}>
-      <ModalHeader title={t('recipes.new_title')} />
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Card style={styles.stack}>
+    <BottomSheet
+      size="tall"
+      onClose={() => router.back()}
+      header={
+        <Text style={[typography.display.md, styles.title, { color: palette.textInk }]}>
+          {t('recipes.new_recipe')}
+        </Text>
+      }
+      footer={
+        <Button label={t('recipes.new_save')} onPress={save} disabled={!canSave} haptic="pop" />
+      }
+    >
+      <ScrollView
+        contentContainerStyle={styles.body}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <Input
+          label={t('recipes.new_name_label')}
+          value={name}
+          onChangeText={setName}
+          placeholder={t('recipes.new_name_placeholder')}
+        />
+        <Input
+          label={t('recipes.new_yield_label')}
+          value={yieldLabel}
+          onChangeText={setYieldLabel}
+          placeholder={t('recipes.new_yield_placeholder')}
+        />
+
+        <View style={styles.field}>
+          <Text style={[typography.label, { color: palette.textSoft }]}>
+            {t('recipes.new_ingredients_label')}
+          </Text>
           <TextInput
-            value={name}
-            onChangeText={setName}
-            placeholder={t('recipes.new_name_placeholder')}
-            placeholderTextColor={palette.chocSoft}
-            style={[
-              typography.body.lg,
-              styles.nameInput,
-              { backgroundColor: bg.subtle, color: palette.choc },
-            ]}
+            value={ingredients}
+            onChangeText={setIngredients}
+            placeholder={t('recipes.new_ingredients_placeholder')}
+            placeholderTextColor={palette.textFaint}
+            multiline
+            textAlignVertical="top"
+            style={areaStyle}
           />
+        </View>
 
-          <View>
-            <Text style={[typography.caption, styles.label, { color: palette.chocSoft }]}>
-              {t('recipes.new_ingredients_label')}
-            </Text>
-            <TextInput
-              value={ingredients}
-              onChangeText={setIngredients}
-              placeholder={t('recipes.new_ingredients_placeholder')}
-              placeholderTextColor={palette.chocSoft}
-              multiline
-              textAlignVertical="top"
-              style={[
-                typography.body.md,
-                styles.ingredientsInput,
-                { backgroundColor: bg.subtle, color: palette.choc },
-              ]}
-            />
+        <View style={styles.field}>
+          <Text style={[typography.label, { color: palette.textSoft }]}>
+            {t('recipes.new_method_label')}
+          </Text>
+          <TextInput
+            value={method}
+            onChangeText={setMethod}
+            placeholder={t('recipes.new_method_placeholder')}
+            placeholderTextColor={palette.textFaint}
+            multiline
+            textAlignVertical="top"
+            style={areaStyle}
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={[typography.label, { color: palette.textSoft }]}>
+            {t('recipes.new_tags_label')}
+          </Text>
+          <View style={styles.tags}>
+            {TAG_KEYS.map((key) => {
+              const label = t(`recipes.${key}` as 'recipes.tag_bread');
+              return (
+                <Chip
+                  key={key}
+                  label={label}
+                  selected={tags.includes(label)}
+                  onPress={() => toggleTag(label)}
+                />
+              );
+            })}
           </View>
-        </Card>
-
-        <Button label={t('recipes.button_save')} onPress={save} disabled={!canSave} haptic="pop" />
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: spacing.lg, paddingBottom: spacing['3xl'], gap: spacing.lg },
-  stack: { gap: spacing.lg },
-  nameInput: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-  },
-  label: { marginBottom: spacing.xs },
-  ingredientsInput: {
-    minHeight: 160,
+  title: { marginTop: spacing.xs },
+  body: { padding: spacing.xl, gap: spacing.lg, paddingBottom: spacing['3xl'] },
+  field: { gap: spacing.xs },
+  area: {
+    borderRadius: radius.lg,
     padding: spacing.md,
-    borderRadius: radius.md,
   },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

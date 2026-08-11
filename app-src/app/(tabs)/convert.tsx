@@ -21,6 +21,7 @@ import { type ButterUnit, convertButter } from '@/lib/butter';
 import { convertEggs, type EggId, getEggSize, listEggSizes } from '@/lib/egg';
 import { cToF, fToC, nearestGasMark } from '@/lib/oven';
 import { bakeTimeHint, getPan, listPans, type Pan, panScaleFactor } from '@/lib/pan';
+import { parseIngredientLine } from '@/lib/recipe';
 import { storage } from '@/lib/storage';
 import { convertYeast, getYeastType, listYeastTypes, type YeastId } from '@/lib/yeast';
 import { usePro } from '@/state/pro';
@@ -249,7 +250,7 @@ export default function ConvertScreen() {
     if (!result.valid) {
       return;
     }
-    addRecipe({ name: result.saveName, lines: [result.saveLine] });
+    addRecipe({ name: result.saveName, ingredients: [parseIngredientLine(result.saveLine)] });
     celebrate();
     show({ message: t('recipes.toast_saved'), variant: 'confirmation' });
     setSavedMsg(true);

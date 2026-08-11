@@ -61,3 +61,72 @@ export function matchFactor(originalAmount: number, availableAmount: number): nu
   }
   return availableAmount / originalAmount;
 }
+
+const UNIT_MAP: Record<string, string> = {
+  cup: 'cup',
+  cups: 'cup',
+  tbsp: 'tbsp',
+  tablespoon: 'tbsp',
+  tablespoons: 'tbsp',
+  tsp: 'tsp',
+  teaspoon: 'tsp',
+  teaspoons: 'tsp',
+  ml: 'ml',
+  g: 'g',
+  gram: 'g',
+  grams: 'g',
+  oz: 'oz',
+  ounce: 'oz',
+  ounces: 'oz',
+  lb: 'lb',
+  lbs: 'lb',
+  pound: 'lb',
+  pounds: 'lb',
+  stick: 'stick',
+  sticks: 'stick',
+};
+
+export interface ParsedIngredient {
+  /** Numeric amount, or '' when the line has no leading number. */
+  amount: number | '';
+  /** Canonical unit token, or '' when none was recognised. */
+  unit: string;
+  item: string;
+}
+
+export interface BakersRow {
+  item: string;
+  pct: number;
+}
+
+/**
+ * Baker's percentages: every gram measured ingredient as a percentage of total
+ * flour weight. Returns null when no flour weight is measured in grams.
+ */
+export function bakersPercentages(ingredients: ParsedIngredient[]): BakersRow[] | null {
+  const grams = ingredients.filter(
+    (i): i is { amount: number; unit: string; item: string } =>
+      typeof i.amount === 'number' && i.unit === 'g'
+  );
+  const flour = grams.filter((i) => /flour/i.test(i.item)).reduce((sum, i) => sum + i.amount, 0);
+  if (flour <= 0) {
+    return null;
+  }
+  return grams.map((i) => ({ item: i.item, pct: Math.round((i.amount / flour) * 1000) / 10 }));
+}
+
+/** Parse a free text ingredient line into amount, unit, and item. */
+export function parseIngredientLine(line: string): ParsedIngredient {
+  const parsed = parseLeadingQuantity(line);
+  if (!parsed) {
+    return { amount: '', unit: '', item: line.trim() };
+  }
+  const match = /^(\S+)\s*([\s\S]*)$/.exec(parsed.rest);
+  if (match) {
+    const unit = UNIT_MAP[match[1]!.toLowerCase()];
+    if (unit) {
+      return { amount: parsed.value, unit, item: match[2]!.trim() };
+    }
+  }
+  return { amount: parsed.value, unit: '', item: parsed.rest.trim() };
+}

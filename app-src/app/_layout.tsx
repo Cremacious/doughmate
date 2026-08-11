@@ -79,7 +79,30 @@ function ThemedApp() {
           }}
         />
         <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="recipe-new" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="recipe-new"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="recipe/[id]"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="recipe/[id]/cook"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
         <Stack.Screen name="starter-new" options={{ presentation: 'modal' }} />
       </Stack>
       <ReminderSync />
