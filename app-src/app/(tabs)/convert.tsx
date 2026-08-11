@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { IngredientPicker } from '@/components/IngredientPicker';
+import { PopIn } from '@/components/PopIn';
 import { UnitField } from '@/components/UnitField';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { convert, formatQuantity, getIngredient, type Ingredient, type Unit } from '@/lib/convert';
@@ -115,15 +116,17 @@ export default function ConvertScreen() {
                 {t('converter.result_placeholder')}
               </Text>
             ) : (
-              <Text
-                style={[
-                  typography.number.hero,
-                  scaleType(typography.number.hero, fontScale),
-                  { color: palette.crust },
-                ]}
-              >
-                {formatQuantity(result)}
-              </Text>
+              <PopIn trigger={result}>
+                <Text
+                  style={[
+                    typography.number.hero,
+                    scaleType(typography.number.hero, fontScale),
+                    { color: palette.crust },
+                  ]}
+                >
+                  {formatQuantity(result)}
+                </Text>
+              </PopIn>
             )}
             <View style={styles.toRow}>
               <Text style={[typography.caption, { color: palette.chocSoft }]}>

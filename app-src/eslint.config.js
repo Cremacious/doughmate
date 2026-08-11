@@ -16,6 +16,9 @@ module.exports = defineConfig([
       // i18next's default export also exposes `use`/`t` as named members.
       // Chaining i18n.use(...) is intentional, so silence the false positive.
       'import/no-named-as-default-member': 'off',
+      // Reanimated mutates shared values via `sharedValue.value = ...`, which this
+      // React Compiler rule flags. That is reanimated's intended API, so allow it.
+      'react-hooks/immutability': 'off',
     },
   },
 ]);

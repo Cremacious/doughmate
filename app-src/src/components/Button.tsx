@@ -1,11 +1,13 @@
 // Reusable button. Primary (jam), secondary (dough), and ghost variants.
-// Fires a named haptic on press. Colours and radius come from theme tokens.
+// Squishes on press (unless reduced motion) and fires a named haptic.
 import { Pressable, StyleSheet, Text } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { triggerHaptic, type HapticName } from '@/lib/haptics';
 import { scaleType } from '@/lib/typeScale';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, spring, typography } from '@/theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 
@@ -25,6 +27,15 @@ export function Button({
   haptic = 'tap',
 }: ButtonProps) {
   const { palette, fontScale } = useAppTheme();
+  const reduced = useReducedMotion();
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  const squish = (to: number) => {
+    if (!reduced) {
+      scale.value = withSpring(to, spring.quick);
+    }
+  };
 
   const background =
     variant === 'primary' ? palette.jam : variant === 'secondary' ? palette.dough : 'transparent';
@@ -35,20 +46,30 @@ export function Button({
     <Pressable
       accessibilityRole="button"
       disabled={disabled}
+      onPressIn={() => squish(0.96)}
+      onPressOut={() => squish(1)}
       onPress={() => {
         triggerHaptic(haptic);
         onPress();
       }}
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: background, opacity: disabled ? 0.4 : pressed ? 0.85 : 1 },
-      ]}
     >
-      <Text
-        style={[typography.body.lg, scaleType(typography.body.lg, fontScale), { color: textColor }]}
+      <Animated.View
+        style={[
+          styles.button,
+          animStyle,
+          { backgroundColor: background, opacity: disabled ? 0.4 : 1 },
+        ]}
       >
-        {label}
-      </Text>
+        <Text
+          style={[
+            typography.body.lg,
+            scaleType(typography.body.lg, fontScale),
+            { color: textColor },
+          ]}
+        >
+          {label}
+        </Text>
+      </Animated.View>
     </Pressable>
   );
 }
