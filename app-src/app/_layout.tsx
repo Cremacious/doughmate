@@ -20,6 +20,7 @@ import { RecipesProvider } from '@/state/recipes';
 import { SamMoodProvider } from '@/state/samMood';
 import { SettingsProvider } from '@/state/settings';
 import { StartersProvider } from '@/state/starters';
+import { TimersProvider } from '@/state/timers';
 import { ToastProvider } from '@/ui/Toast';
 
 export default function RootLayout() {
@@ -42,13 +43,15 @@ export default function RootLayout() {
           <ProProvider>
             <RecipesProvider>
               <BakesProvider>
-                <StartersProvider>
-                  <SamMoodProvider>
-                    <ToastProvider>
-                      <ThemedApp />
-                    </ToastProvider>
-                  </SamMoodProvider>
-                </StartersProvider>
+                <TimersProvider>
+                  <StartersProvider>
+                    <SamMoodProvider>
+                      <ToastProvider>
+                        <ThemedApp />
+                      </ToastProvider>
+                    </SamMoodProvider>
+                  </StartersProvider>
+                </TimersProvider>
               </BakesProvider>
             </RecipesProvider>
           </ProProvider>
