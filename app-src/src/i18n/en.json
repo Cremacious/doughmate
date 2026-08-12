@@ -287,7 +287,10 @@
     "new_ratio_label": "Feed ratio",
     "new_interval_label": "Feed every",
     "new_notes_label": "Notes",
-    "new_name_field": "Name"
+    "new_name_field": "Name",
+    "heatmap_label": "Feeding, last 28 days",
+    "heatmap_less": "skipped",
+    "heatmap_more": "fed more"
   },
   "settings": {
     "title": "Settings",
