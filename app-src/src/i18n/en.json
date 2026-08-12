@@ -511,7 +511,10 @@
     "not_enough_body": "This bake needs {{total}}. To be ready by {{target}} you would have started at {{start}}, which has passed.",
     "earliest": "Earliest you can be ready is {{when}}.",
     "use_earliest": "Use earliest time",
-    "empty": "This recipe has no steps to schedule."
+    "empty": "This recipe has no steps to schedule.",
+    "section": "Bake plan",
+    "pill_next": "{{step}} next",
+    "pill_starts": "starts {{when}}"
   },
   "timers": {
     "title": "Timers",

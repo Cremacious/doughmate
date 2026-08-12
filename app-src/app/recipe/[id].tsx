@@ -58,6 +58,7 @@ export default function RecipeDetailSheet() {
   }
 
   const scaled = factor !== 1;
+  const canPlanBake = recipe.steps.some((s) => s.time && parseDuration(s.time) !== null);
 
   const del = () => {
     removeRecipe(recipe.id);
@@ -97,6 +98,14 @@ export default function RecipeDetailSheet() {
             onPress={() => router.push(`/recipe/${recipe.id}/cook`)}
             haptic="pop"
           />
+          {canPlanBake ? (
+            <Button
+              label={t('bakePlan.title')}
+              onPress={() => router.push(`/bake-plan?recipeId=${recipe.id}`)}
+              variant="secondary"
+              haptic="tap"
+            />
+          ) : null}
           <Button
             label={t('bakes.log_a_bake')}
             onPress={() => router.push(`/bake-new?recipeId=${recipe.id}`)}

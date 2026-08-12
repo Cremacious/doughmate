@@ -10,8 +10,10 @@ import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useNow } from '@/hooks/useNow';
 import { formatRemaining } from '@/lib/timer';
+import { useBakePlan } from '@/state/bakePlan';
 import { useTimers } from '@/state/timers';
 import { spacing, typography } from '@/theme';
+import { BakePlanCard } from '@/ui/BakePlanCard';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { Chip } from '@/ui/Chip';
@@ -31,6 +33,7 @@ export default function TimersSheet() {
   const { palette } = useAppTheme();
   const now = useNow();
   const { timers, startTimer, pauseTimer, resumeTimer, cancelTimer } = useTimers();
+  const { plan, cancelPlan } = useBakePlan();
 
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -60,6 +63,19 @@ export default function TimersSheet() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        {plan ? (
+          <View style={styles.section}>
+            <Text style={[typography.label, { color: palette.textSoft }]}>
+              {t('bakePlan.section')}
+            </Text>
+            <BakePlanCard
+              plan={plan}
+              onCancel={cancelPlan}
+              onPress={() => router.push(`/bake-plan?recipeId=${plan.recipeId}`)}
+            />
+          </View>
+        ) : null}
+
         {timers.length === 0 ? (
           <View style={styles.empty}>
             <Sam size={96} />

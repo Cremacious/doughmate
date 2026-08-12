@@ -9,7 +9,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useNow } from '@/hooks/useNow';
 import { triggerHaptic } from '@/lib/haptics';
+import { formatClock, planProgress } from '@/lib/schedule';
 import { formatRemaining, isTimerDone, timerRemainingMs } from '@/lib/timer';
+import { useBakePlan } from '@/state/bakePlan';
 import { useTimers } from '@/state/timers';
 import { radius, shadow, spacing, typography } from '@/theme';
 import { ProgressRing } from './ProgressRing';
@@ -20,9 +22,48 @@ export function TimerPill() {
   const insets = useSafeAreaInsets();
   const now = useNow();
   const { timers } = useTimers();
+  const { plan } = useBakePlan();
 
   if (timers.length === 0) {
-    return null;
+    const progress = plan ? planProgress(plan.steps, plan.finishAt, now) : null;
+    if (!plan || !progress || progress.done) {
+      return null;
+    }
+
+    const nextStep =
+      progress.nextIndex != null
+        ? plan.steps[progress.nextIndex]
+        : progress.currentIndex != null
+          ? plan.steps[progress.currentIndex]
+          : plan.steps[0];
+
+    if (!nextStep) {
+      return null;
+    }
+
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${t('bakePlan.pill_next', { step: nextStep.text })} ${t('bakePlan.pill_starts', { when: formatClock(nextStep.startAt) })}`}
+        onPress={() => {
+          triggerHaptic('tap');
+          router.push('/timers');
+        }}
+        style={[styles.wrap, { bottom: insets.bottom + 90 }]}
+      >
+        <View style={[styles.pill, shadow.md, { backgroundColor: palette.proofTealWash }]}>
+          <View style={[styles.dot, { backgroundColor: palette.proofTeal }]} />
+          <View style={styles.body}>
+            <Text style={[typography.title, { color: palette.textInk }]} numberOfLines={1}>
+              {t('bakePlan.pill_next', { step: nextStep.text })}
+            </Text>
+            <Text style={[typography.numeric.sm, { color: palette.proofTealText }]}>
+              {t('bakePlan.pill_starts', { when: formatClock(nextStep.startAt) })}
+            </Text>
+          </View>
+        </View>
+      </Pressable>
+    );
   }
 
   const primary = timers[0]!;
@@ -74,6 +115,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   body: { flex: 1, gap: 1 },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: radius.pill,
+    marginHorizontal: 9,
+  },
   badge: {
     minWidth: 24,
     height: 24,
