@@ -21,6 +21,8 @@ export interface Settings {
   weeklyTip: boolean;
   /** Whether the baker has finished the first run onboarding. */
   onboarded: boolean;
+  /** Ids of first time tips the baker has dismissed. */
+  dismissedTips: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -34,6 +36,7 @@ export const DEFAULT_SETTINGS: Settings = {
   starterReminders: true,
   weeklyTip: true,
   onboarded: false,
+  dismissedTips: [],
 };
 
 const STORAGE_KEY = 'doughmate.settings.v1';

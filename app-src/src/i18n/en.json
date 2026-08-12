@@ -328,7 +328,9 @@
     "version": "Version",
     "credits": "Credits",
     "reduced_motion_desc": "A calm version of every animation.",
-    "pro_unlocked_row": "Doughmate Pro unlocked"
+    "pro_unlocked_row": "Doughmate Pro unlocked",
+    "show_tips_again": "Show tips again",
+    "tips_reset_toast": "Tips are back."
   },
   "paywall": {
     "title": "Doughmate Pro",
@@ -406,5 +408,11 @@
   },
   "common": {
     "close": "Close"
+  },
+  "tips": {
+    "editor_sections": "Sections group ingredients, like Dough and Filling. Tap Add section to make one; ingredients live inside.",
+    "convert_modes": "Tap a chip up top to switch what you convert: cups, pans, ovens, yeast, eggs, butter.",
+    "starters_feed": "Feed a starter to reset its timer. Turn on reminders and I'll nudge you at feeding time.",
+    "recipe_scale": "Change the servings and every amount rescales. Tap Reset to go back to the original."
   }
 }

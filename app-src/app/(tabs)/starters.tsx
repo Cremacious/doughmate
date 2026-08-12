@@ -13,6 +13,7 @@ import { spacing, typography } from '@/theme';
 import { Button } from '@/ui/Button';
 import { Screen } from '@/ui/Screen';
 import { StarterCard } from '@/ui/StarterCard';
+import { Tip } from '@/ui/Tip';
 import { useToast } from '@/ui/Toast';
 
 const TICK_MS = 60_000;
@@ -75,6 +76,7 @@ export default function StartersScreen() {
       title={t('tabs.starters')}
       footer={<Button label={t('starters.add_title')} onPress={add} haptic="pop" />}
     >
+      <Tip id="starters.feed" text={t('tips.starters_feed')} />
       {starters.map((starter) => (
         <StarterCard
           key={starter.id}

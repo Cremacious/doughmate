@@ -18,6 +18,7 @@ import { spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Card } from '@/ui/Card';
 import { Chip } from '@/ui/Chip';
+import { useToast } from '@/ui/Toast';
 import { Toggle } from '@/ui/Toggle';
 
 const THEMES: ThemePref[] = ['light', 'dark', 'auto'];
@@ -85,7 +86,13 @@ export default function SettingsSheet() {
   const { palette } = useAppTheme();
   const { settings, update } = useSettings();
   const { isPro } = usePro();
+  const { show } = useToast();
   const version = Constants.expoConfig?.version ?? '1.0.0';
+
+  const showTipsAgain = () => {
+    update('dismissedTips', []);
+    show({ message: t('settings.tips_reset_toast'), variant: 'confirmation' });
+  };
 
   return (
     <BottomSheet
@@ -171,6 +178,12 @@ export default function SettingsSheet() {
             value={settings.weeklyTip}
             onValueChange={(v) => update('weeklyTip', v)}
           />
+        </Card>
+        <Card onPress={showTipsAgain} style={styles.proRow}>
+          <Text style={[typography.body.lg, { color: palette.textInk }]}>
+            {t('settings.show_tips_again')}
+          </Text>
+          <Text style={[typography.body.lg, { color: palette.textFaint }]}>↺</Text>
         </Card>
 
         <Text style={[typography.label, { color: palette.textSoft }]}>

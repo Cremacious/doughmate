@@ -23,6 +23,7 @@ import { Chip } from '@/ui/Chip';
 import { Input } from '@/ui/Input';
 import { OptionSheet } from '@/ui/OptionSheet';
 import { Stepper } from '@/ui/Stepper';
+import { Tip } from '@/ui/Tip';
 import { useToast } from '@/ui/Toast';
 import { UnitPickerField } from '@/ui/UnitPickerField';
 
@@ -217,6 +218,7 @@ export default function RecipeEditorSheet() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        <Tip id="editor.sections" text={t('tips.editor_sections')} />
         <Input
           label={t('recipes.new_name_label')}
           value={name}

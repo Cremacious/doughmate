@@ -15,6 +15,7 @@ import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
 import { Stepper } from '@/ui/Stepper';
+import { Tip } from '@/ui/Tip';
 import { useToast } from '@/ui/Toast';
 
 function ingAmountText(ingredient: RecipeIngredient, factor: number): string {
@@ -95,6 +96,7 @@ export default function RecipeDetailSheet() {
       }
     >
       <View style={styles.body}>
+        <Tip id="recipe.scale" text={t('tips.recipe_scale')} />
         <Text style={[typography.body.sm, { color: palette.textSoft }]}>
           {metaParts.join('  ·  ')}
         </Text>

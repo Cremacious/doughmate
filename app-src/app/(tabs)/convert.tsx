@@ -33,6 +33,7 @@ import { PickerField } from '@/ui/PickerField';
 import { ResultDisplay } from '@/ui/ResultDisplay';
 import { ScreenHeader } from '@/ui/ScreenHeader';
 import { Stepper } from '@/ui/Stepper';
+import { Tip } from '@/ui/Tip';
 
 type Mode = 'ingredient' | 'pan' | 'oven' | 'yeast' | 'egg' | 'butter';
 const MODES: Mode[] = ['ingredient', 'pan', 'oven', 'yeast', 'egg', 'butter'];
@@ -283,6 +284,7 @@ export default function ConvertScreen() {
         </ScrollView>
 
         <View style={styles.body}>
+          <Tip id="convert.modes" text={t('tips.convert_modes')} />
           <Card style={styles.resultCard}>
             <ResultDisplay
               label={result.label}
