@@ -153,6 +153,14 @@ function ThemedApp() {
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />
+        <Stack.Screen
+          name="bake-plan"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
       </Stack>
       <ReminderSync />
       <TimerSync />

@@ -9,10 +9,13 @@ export interface StepperProps {
   value: number;
   onChange: (value: number) => void;
   min?: number;
+  max?: number;
   step?: number;
+  /** When true, + past max wraps to min and − below min wraps to max. */
+  wrap?: boolean;
 }
 
-export function Stepper({ value, onChange, min = 1, step = 1 }: StepperProps) {
+export function Stepper({ value, onChange, min = 1, max, step = 1, wrap = false }: StepperProps) {
   const { palette, fontScale } = useAppTheme();
   const size = fontScale > 1 ? 56 : 48;
 
@@ -29,11 +32,28 @@ export function Stepper({ value, onChange, min = 1, step = 1 }: StepperProps) {
     </Pressable>
   );
 
+  const decrement = () => {
+    if (wrap && value <= min && max !== undefined) {
+      onChange(max);
+      return;
+    }
+    onChange(Math.max(min, value - step));
+  };
+
+  const increment = () => {
+    const ceiling = max ?? Infinity;
+    if (wrap && value >= ceiling) {
+      onChange(min);
+      return;
+    }
+    onChange(Math.min(ceiling, value + step));
+  };
+
   return (
     <View style={styles.row}>
-      {button('−', () => onChange(Math.max(min, value - step)))}
+      {button('−', decrement)}
       <Text style={[typography.numeric.lg, { color: palette.textInk }]}>{value}</Text>
-      {button('+', () => onChange(value + step))}
+      {button('+', increment)}
     </View>
   );
 }
