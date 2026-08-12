@@ -22,6 +22,7 @@ module.exports = {
     'src/lib/sam.ts',
     'src/lib/starter.ts',
     'src/lib/starterMood.ts',
+    'src/lib/bake.ts',
   ],
   coverageThreshold: {
     global: { branches: 100, functions: 100, lines: 100, statements: 100 },
