@@ -15,6 +15,7 @@ import { ReminderSync } from '@/components/ReminderSync';
 import { TimerSync } from '@/components/TimerSync';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { initAds } from '@/lib/ads';
+import { BakePlanProvider } from '@/state/bakePlan';
 import { BakesProvider } from '@/state/bakes';
 import { ProProvider } from '@/state/pro';
 import { RecipesProvider } from '@/state/recipes';
@@ -45,13 +46,15 @@ export default function RootLayout() {
             <RecipesProvider>
               <BakesProvider>
                 <TimersProvider>
-                  <StartersProvider>
-                    <SamMoodProvider>
-                      <ToastProvider>
-                        <ThemedApp />
-                      </ToastProvider>
-                    </SamMoodProvider>
-                  </StartersProvider>
+                  <BakePlanProvider>
+                    <StartersProvider>
+                      <SamMoodProvider>
+                        <ToastProvider>
+                          <ThemedApp />
+                        </ToastProvider>
+                      </SamMoodProvider>
+                    </StartersProvider>
+                  </BakePlanProvider>
                 </TimersProvider>
               </BakesProvider>
             </RecipesProvider>
