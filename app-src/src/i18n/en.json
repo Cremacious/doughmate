@@ -501,6 +501,7 @@
     "empty_title": "No timers running.",
     "empty_body": "Start one from a recipe step or set a custom timer.",
     "start_step_timer": "Start {{time}} timer",
+    "step_n": "step {{n}}",
     "notification_body": "{{label}} is done."
   }
 }

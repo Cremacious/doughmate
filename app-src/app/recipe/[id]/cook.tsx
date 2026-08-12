@@ -3,10 +3,12 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { parseDuration } from '@/lib/timer';
 import { useRecipes } from '@/state/recipes';
+import { useTimers } from '@/state/timers';
 import { spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
@@ -18,6 +20,7 @@ export default function CookModeSheet() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getRecipe } = useRecipes();
   const { show } = useToast();
+  const { startTimer } = useTimers();
 
   const recipe = getRecipe(id);
   const steps = recipe?.steps ?? [];
@@ -42,6 +45,7 @@ export default function CookModeSheet() {
 
   const step = steps[index]!;
   const last = index === steps.length - 1;
+  const stepDurationMs = step.time ? parseDuration(step.time) : null;
 
   return (
     <BottomSheet
@@ -105,6 +109,25 @@ export default function CookModeSheet() {
         {step.time ? (
           <Text style={[typography.heading, { color: palette.proofTeal }]}>{step.time}</Text>
         ) : null}
+        {step.time && stepDurationMs !== null ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('timers.start_step_timer', { time: step.time })}
+            onPress={() =>
+              startTimer({
+                label: step.text.trim().slice(0, 40),
+                stepLabel: t('timers.step_n', { n: index + 1 }),
+                recipeId: recipe.id,
+                durationMs: stepDurationMs,
+              })
+            }
+            style={styles.startTimerBtn}
+          >
+            <Text style={[typography.label, { color: palette.proofTeal }]}>
+              ▶ {t('timers.start_step_timer', { time: step.time })}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
     </BottomSheet>
   );
@@ -118,4 +141,5 @@ const styles = StyleSheet.create({
   footerCol: { gap: spacing.sm },
   footerRow: { flexDirection: 'row', gap: spacing.sm },
   footerItem: { flex: 1 },
+  startTimerBtn: { marginTop: spacing['2xs'] },
 });

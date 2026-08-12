@@ -8,8 +8,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatQuantity } from '@/lib/convert';
 import { bakersPercentages, groupBySection } from '@/lib/recipe';
+import { parseDuration } from '@/lib/timer';
 import { usePro } from '@/state/pro';
 import { type RecipeIngredient, useRecipes } from '@/state/recipes';
+import { useTimers } from '@/state/timers';
 import { radius, spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
@@ -31,6 +33,7 @@ export default function RecipeDetailSheet() {
   const { getRecipe, removeRecipe, restoreRecipe } = useRecipes();
   const { isPro } = usePro();
   const { show } = useToast();
+  const { startTimer } = useTimers();
 
   const recipe = getRecipe(id);
   const baseServings = recipe && recipe.servings > 0 ? recipe.servings : 1;
@@ -210,27 +213,49 @@ export default function RecipeDetailSheet() {
               {t('recipes.method_heading')}
             </Text>
             <Card style={styles.steps}>
-              {recipe.steps.map((step, i) => (
-                <View key={i} style={styles.step}>
-                  <Text
-                    style={[typography.numeric.sm, styles.stepNum, { color: palette.textFaint }]}
-                  >
-                    {i + 1}
-                  </Text>
-                  <View style={styles.stepText}>
-                    <Text style={[typography.body.lg, { color: palette.textInk }]}>
-                      {step.text}
+              {recipe.steps.map((step, i) => {
+                const stepDurationMs = step.time ? parseDuration(step.time) : null;
+                return (
+                  <View key={i} style={styles.step}>
+                    <Text
+                      style={[typography.numeric.sm, styles.stepNum, { color: palette.textFaint }]}
+                    >
+                      {i + 1}
                     </Text>
-                    {step.time ? (
-                      <View style={[styles.timePill, { backgroundColor: palette.proofTealWash }]}>
-                        <Text style={[typography.body.sm, { color: palette.proofTealText }]}>
-                          ⏱ {step.time}
-                        </Text>
-                      </View>
-                    ) : null}
+                    <View style={styles.stepText}>
+                      <Text style={[typography.body.lg, { color: palette.textInk }]}>
+                        {step.text}
+                      </Text>
+                      {step.time ? (
+                        <View style={[styles.timePill, { backgroundColor: palette.proofTealWash }]}>
+                          <Text style={[typography.body.sm, { color: palette.proofTealText }]}>
+                            ⏱ {step.time}
+                          </Text>
+                        </View>
+                      ) : null}
+                      {step.time && stepDurationMs !== null ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={t('timers.start_step_timer', { time: step.time })}
+                          onPress={() =>
+                            startTimer({
+                              label: step.text.trim().slice(0, 40),
+                              stepLabel: t('timers.step_n', { n: i + 1 }),
+                              recipeId: recipe.id,
+                              durationMs: stepDurationMs,
+                            })
+                          }
+                          style={styles.startTimerBtn}
+                        >
+                          <Text style={[typography.label, { color: palette.proofTeal }]}>
+                            ▶ {t('timers.start_step_timer', { time: step.time })}
+                          </Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </Card>
           </>
         ) : null}
@@ -325,6 +350,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
+    marginTop: spacing['2xs'],
+  },
+  startTimerBtn: {
+    alignSelf: 'flex-start',
     marginTop: spacing['2xs'],
   },
 });
