@@ -64,4 +64,11 @@ describe('dailyFeedCounts', () => {
     const counts = dailyFeedCounts([(100 - 28) * DAY, 101 * DAY], now, 28);
     expect(counts.every((c) => c === 0)).toBe(true);
   });
+
+  it('defaults to a 28 day window', () => {
+    const now = 100 * DAY + 5 * HOUR;
+    const counts = dailyFeedCounts([100 * DAY + 1 * HOUR], now);
+    expect(counts).toHaveLength(28);
+    expect(counts[27]).toBe(1);
+  });
 });
