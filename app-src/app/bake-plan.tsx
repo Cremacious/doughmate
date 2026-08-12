@@ -72,12 +72,18 @@ export default function BakePlanSheet() {
     );
   }
 
+  // composeFinishAt zeroes seconds/ms (minute granular), so feasibility and
+  // earliest math must compare against a minute floored `now` too — otherwise
+  // a `finishAt` that lands exactly on `now`'s minute reads as already past
+  // by up to 59s of live seconds.
+  const nowMinute = Math.floor(now / 60_000) * 60_000;
+
   const finishAt = composeFinishAt(now, dayOffset, hour12, minute, meridiem);
   const armedForThisRecipe = plan != null && plan.recipeId === recipe.id;
-  const feasible = isFeasible(recipe.steps, finishAt, now);
+  const feasible = isFeasible(recipe.steps, finishAt, nowMinute);
   const schedule = buildSchedule(recipe.steps, finishAt);
   const totalMs = totalActiveMs(recipe.steps);
-  const earliest = earliestFinish(recipe.steps, now);
+  const earliest = earliestFinish(recipe.steps, nowMinute);
 
   const armThisPlan = async () => {
     await ensureNotificationPermission();
@@ -85,11 +91,15 @@ export default function BakePlanSheet() {
     close();
   };
 
-  // Decompose `earliest` back into picker parts. The picker only supports 5
-  // minute increments, so a non multiple of 5 minute is rounded UP to the next
-  // 5 minute mark (never down): feasibility requires finishAt - total >= now,
-  // and earliest === now + total exactly, so rounding up guarantees the
-  // composed finishAt stays at or after `earliest` and therefore feasible.
+  // Decompose `earliest` back into picker parts. `earliest` is already minute
+  // granular (built from nowMinute above), so when its minute lands on a 5
+  // minute boundary the recomposed finishAt equals `earliest` exactly, and
+  // isFeasible(finishAt, nowMinute) reduces to nowMinute >= nowMinute — true.
+  // The picker only supports 5 minute increments, so a non multiple of 5
+  // minute is rounded UP to the next 5 minute mark (never down): feasibility
+  // requires finishAt - total >= nowMinute, and earliest === nowMinute + total
+  // exactly, so rounding up guarantees the composed finishAt stays at or after
+  // `earliest` and therefore feasible either way.
   const useEarliestTime = () => {
     const target = new Date(earliest);
     const startOfNow = new Date(now);
