@@ -112,3 +112,131 @@ export async function cancelAllFeedReminders(): Promise<void> {
     await cancelFeedReminder(starterId);
   }
 }
+
+// Live fermentation timer completion notifications. Tracked under a separate
+// map key so they never collide with the feed reminder ids above.
+const TIMER_MAP_KEY = 'doughmate.notif.timers.v1';
+
+function loadTimerMap(): IdMap {
+  try {
+    return JSON.parse(storage.getItem(TIMER_MAP_KEY) ?? '{}') as IdMap;
+  } catch {
+    return {};
+  }
+}
+
+function saveTimerMap(map: IdMap): void {
+  storage.setItem(TIMER_MAP_KEY, JSON.stringify(map));
+}
+
+export async function cancelTimerNotification(id: string): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  const map = loadTimerMap();
+  const notificationId = map[id];
+  if (notificationId) {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+    delete map[id];
+    saveTimerMap(map);
+  }
+}
+
+export async function scheduleTimerNotification(
+  id: string,
+  title: string,
+  body: string,
+  fireAt: number
+): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  await cancelTimerNotification(id);
+  // Nothing to schedule if the fire time is already past.
+  if (fireAt <= Date.now()) {
+    return;
+  }
+  const notificationId = await Notifications.scheduleNotificationAsync({
+    content: { title, body },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: new Date(fireAt),
+    },
+  });
+  const map = loadTimerMap();
+  map[id] = notificationId;
+  saveTimerMap(map);
+}
+
+export async function cancelAllTimerNotifications(): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  for (const id of Object.keys(loadTimerMap())) {
+    await cancelTimerNotification(id);
+  }
+}
+
+// Bake plan step reminders. Tracked under a separate map key so they never
+// collide with the feed reminder or timer notification ids above.
+const BAKEPLAN_MAP_KEY = 'doughmate.notif.bakeplan.v1';
+
+function loadBakePlanMap(): IdMap {
+  try {
+    return JSON.parse(storage.getItem(BAKEPLAN_MAP_KEY) ?? '{}') as IdMap;
+  } catch {
+    return {};
+  }
+}
+
+function saveBakePlanMap(map: IdMap): void {
+  storage.setItem(BAKEPLAN_MAP_KEY, JSON.stringify(map));
+}
+
+export async function cancelBakePlanNotification(id: string): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  const map = loadBakePlanMap();
+  const notificationId = map[id];
+  if (notificationId) {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+    delete map[id];
+    saveBakePlanMap(map);
+  }
+}
+
+export async function scheduleBakePlanNotification(
+  id: string,
+  title: string,
+  body: string,
+  fireAt: number
+): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  await cancelBakePlanNotification(id);
+  // Nothing to schedule if the fire time is already past.
+  if (fireAt <= Date.now()) {
+    return;
+  }
+  const notificationId = await Notifications.scheduleNotificationAsync({
+    content: { title, body },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: new Date(fireAt),
+    },
+  });
+  const map = loadBakePlanMap();
+  map[id] = notificationId;
+  saveBakePlanMap(map);
+}
+
+export async function cancelAllBakePlanNotifications(): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  for (const id of Object.keys(loadBakePlanMap())) {
+    await cancelBakePlanNotification(id);
+  }
+}

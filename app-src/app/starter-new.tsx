@@ -1,77 +1,153 @@
-// Add a starter: a name and how often it needs feeding.
-import { router } from 'expo-router';
+// Add a starter, a tall sheet. Name, hydration, feed ratio, feed interval and
+// notes. The interval steps in 6 hour jumps. Footer adds the starter.
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { Chips } from '@/components/Chips';
-import { ModalHeader } from '@/components/ModalHeader';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useStarters } from '@/state/starters';
 import { radius, spacing, typography } from '@/theme';
+import { BottomSheet } from '@/ui/BottomSheet';
+import { Button } from '@/ui/Button';
+import { Chip } from '@/ui/Chip';
+import { Input } from '@/ui/Input';
+import { Stepper } from '@/ui/Stepper';
+import { useToast } from '@/ui/Toast';
 
-const INTERVALS = [
-  { key: '12', label: '12h' },
-  { key: '24', label: '24h' },
-  { key: '48', label: '48h' },
-];
+const HYDRATIONS = [80, 100, 125];
+const RATIOS = ['1:1:1', '1:2:2', '1:5:5'];
 
-export default function NewStarterScreen() {
+export default function NewStarterSheet() {
   const { t } = useTranslation();
-  const { palette, bg } = useAppTheme();
-  const { starters, addStarter } = useStarters();
+  const { palette, fontScale } = useAppTheme();
+  const { starters, addStarter, updateStarter, getStarter } = useStarters();
+  const { show } = useToast();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const existing = id ? getStarter(id) : undefined;
 
-  const [name, setName] = useState('');
-  const [interval, setInterval] = useState('24');
+  const [name, setName] = useState(existing?.name ?? '');
+  const [hydration, setHydration] = useState(existing?.hydration ?? 100);
+  const [ratio, setRatio] = useState(existing?.ratio ?? '1:2:2');
+  const [intervalHours, setIntervalHours] = useState(existing?.intervalHours ?? 24);
+  const [notes, setNotes] = useState(existing?.notes ?? '');
 
   const save = () => {
     const fallback = t('starters.new_name_placeholder_next', { number: starters.length + 1 });
-    addStarter({ name: name.trim() || fallback, intervalHours: Number(interval) });
-    router.back();
+    const finalName = name.trim() || fallback;
+    const input = { name: finalName, intervalHours, hydration, ratio, notes: notes.trim() };
+    if (existing) {
+      updateStarter(existing.id, input);
+      router.back();
+      show({ message: t('starters.toast_updated', { name: finalName }), variant: 'confirmation' });
+    } else {
+      addStarter(input);
+      router.back();
+      show({ message: t('starters.toast_added', { name: finalName }), variant: 'confirmation' });
+    }
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bg.primary }]} edges={['top']}>
-      <ModalHeader title={t('starters.new_title')} />
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Card style={styles.stack}>
+    <BottomSheet
+      size="tall"
+      onClose={() => router.back()}
+      header={
+        <Text style={[typography.display.md, styles.title, { color: palette.textInk }]}>
+          {existing ? t('starters.edit_title') : t('starters.add_title')}
+        </Text>
+      }
+      footer={
+        <Button
+          label={existing ? t('starters.save_changes') : t('starters.button_save')}
+          onPress={save}
+          haptic="pop"
+        />
+      }
+    >
+      <ScrollView
+        contentContainerStyle={styles.body}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <Input
+          label={t('starters.new_name_field')}
+          value={name}
+          onChangeText={setName}
+          placeholder={t('starters.new_name_placeholder')}
+        />
+
+        <View style={styles.field}>
+          <Text style={[typography.label, { color: palette.textSoft }]}>
+            {t('starters.new_hydration_label')}
+          </Text>
+          <View style={styles.chips}>
+            {HYDRATIONS.map((h) => (
+              <Chip
+                key={h}
+                label={t('starters.hydration_badge', { value: h })}
+                selected={hydration === h}
+                onPress={() => setHydration(h)}
+              />
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.field}>
+          <Text style={[typography.label, { color: palette.textSoft }]}>
+            {t('starters.new_ratio_label')}
+          </Text>
+          <View style={styles.chips}>
+            {RATIOS.map((r) => (
+              <Chip key={r} label={r} selected={ratio === r} onPress={() => setRatio(r)} />
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.rowField}>
+          <Text style={[typography.label, { color: palette.textSoft }]}>
+            {t('starters.new_interval_label')}
+          </Text>
+          <View style={styles.intervalRow}>
+            <Stepper value={intervalHours} onChange={setIntervalHours} min={6} step={6} />
+            <Text style={[typography.numeric.sm, { color: palette.textSoft }]}>
+              {t('starters.interval_value', { hours: intervalHours })}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.field}>
+          <Text style={[typography.label, { color: palette.textSoft }]}>
+            {t('starters.new_notes_label')}
+          </Text>
           <TextInput
-            value={name}
-            onChangeText={setName}
-            placeholder={t('starters.new_name_placeholder')}
-            placeholderTextColor={palette.chocSoft}
+            value={notes}
+            onChangeText={setNotes}
+            placeholder={t('starters.new_notes_placeholder')}
+            placeholderTextColor={palette.textFaint}
+            multiline
+            textAlignVertical="top"
             style={[
               typography.body.lg,
-              styles.nameInput,
-              { backgroundColor: bg.subtle, color: palette.choc },
+              styles.area,
+              {
+                height: fontScale > 1 ? 120 : 100,
+                backgroundColor: palette.bgSunken,
+                color: palette.textInk,
+              },
             ]}
           />
-
-          <View>
-            <Text style={[typography.caption, styles.label, { color: palette.chocSoft }]}>
-              {t('starters.field_interval')}
-            </Text>
-            <Chips options={INTERVALS} value={interval} onChange={setInterval} />
-          </View>
-        </Card>
-
-        <Button label={t('starters.button_save')} onPress={save} haptic="pop" />
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: spacing.lg, paddingBottom: spacing['3xl'], gap: spacing.lg },
-  stack: { gap: spacing.lg },
-  nameInput: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-  },
-  label: { marginBottom: spacing.xs },
+  title: { marginTop: spacing.xs },
+  body: { padding: spacing.xl, gap: spacing.lg, paddingBottom: spacing['3xl'] },
+  field: { gap: spacing.xs },
+  rowField: { gap: spacing.sm },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  intervalRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+  area: { borderRadius: radius.lg, padding: spacing.md },
 });

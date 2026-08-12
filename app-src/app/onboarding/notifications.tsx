@@ -1,8 +1,10 @@
+// Onboarding step 6 of 6: offer feeding reminders and the weekly tip.
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { OnboardingPage } from '@/components/OnboardingPage';
+import { Sam } from '@/components/Sam';
 import { useSettings } from '@/state/settings';
+import { OnboardingScaffold } from '@/ui/OnboardingScaffold';
 
 export default function Notifications() {
   const { t } = useTranslation();
@@ -15,12 +17,15 @@ export default function Notifications() {
   };
 
   return (
-    <OnboardingPage
-      title={t('tabs.starters')}
-      body={t('onboarding.screen3.prompt')}
-      primaryLabel={t('onboarding.screen3.yes')}
+    <OnboardingScaffold
+      step={6}
+      total={6}
+      hero={<Sam size={150} state="idle" />}
+      title={t('onboarding.reminders.title')}
+      body={t('onboarding.reminders.body')}
+      primaryLabel={t('onboarding.reminders.yes')}
       onPrimary={() => finish(true)}
-      secondaryLabel={t('onboarding.screen3.no')}
+      secondaryLabel={t('onboarding.reminders.no')}
       onSecondary={() => finish(false)}
     />
   );

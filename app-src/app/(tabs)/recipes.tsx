@@ -1,170 +1,132 @@
-// The Recipe Box. Lists saved recipes with delete + undo, and entries to add a
-// new recipe or open the scaler.
+// Recipes tab: the Recipe Box, and the Bakes journal, switched by a segmented
+// control. Recipes keeps its tag filter, RecipeCard list, and New recipe button.
+// Bakes shows a chronological list of BakeCards (or a Sam empty state) and a Log
+// a bake button.
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AdBanner } from '@/components/AdBanner';
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
+import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { triggerHaptic } from '@/lib/haptics';
-import { FREE_RECIPE_LIMIT } from '@/lib/limits';
-import { usePro } from '@/state/pro';
-import { type Recipe, useRecipes } from '@/state/recipes';
-import { shadow, spacing, typography } from '@/theme';
+import { useBakes } from '@/state/bakes';
+import { useRecipes } from '@/state/recipes';
+import { spacing, typography } from '@/theme';
+import { BakeCard } from '@/ui/BakeCard';
+import { Button } from '@/ui/Button';
+import { Chip } from '@/ui/Chip';
+import { RecipeCard } from '@/ui/RecipeCard';
+import { Screen } from '@/ui/Screen';
+import { SegmentedControl } from '@/ui/SegmentedControl';
 
 export default function RecipesScreen() {
   const { t } = useTranslation();
-  const { palette, bg } = useAppTheme();
-  const insets = useSafeAreaInsets();
-  const { recipes, removeRecipe, restoreRecipe } = useRecipes();
-  const { isPro } = usePro();
+  const { palette } = useAppTheme();
+  const { recipes } = useRecipes();
+  const { bakes } = useBakes();
+  const [tag, setTag] = useState<string | null>(null);
+  const [segment, setSegment] = useState<'recipes' | 'bakes'>('recipes');
+  const [now] = useState(() => Date.now());
 
-  const addRecipe = () => {
-    if (!isPro && recipes.length >= FREE_RECIPE_LIMIT) {
-      router.push('/paywall');
-    } else {
-      router.push('/recipe-new');
-    }
-  };
+  const tags = useMemo(() => {
+    const set = new Set<string>();
+    recipes.forEach((r) => r.tags.forEach((x) => set.add(x)));
+    return [...set];
+  }, [recipes]);
 
-  const [deleted, setDeleted] = useState<Recipe | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const shown = useMemo(
+    () => (tag ? recipes.filter((r) => r.tags.includes(tag)) : recipes),
+    [recipes, tag]
+  );
 
-  const clearTimer = () => {
-    if (timer.current) {
-      clearTimeout(timer.current);
-      timer.current = null;
-    }
-  };
+  const newRecipe = () => router.push('/recipe-new');
+  const logABake = () => router.push('/bake-new');
 
-  const onDelete = (recipe: Recipe) => {
-    triggerHaptic('warning');
-    setDeleted(recipe);
-    removeRecipe(recipe.id);
-    clearTimer();
-    timer.current = setTimeout(() => setDeleted(null), 4000);
-  };
-
-  const onUndo = () => {
-    if (deleted) {
-      restoreRecipe(deleted);
-    }
-    setDeleted(null);
-    clearTimer();
-  };
+  const footer =
+    segment === 'recipes' ? (
+      <Button label={t('recipes.new_recipe')} onPress={newRecipe} haptic="pop" />
+    ) : (
+      <Button label={t('bakes.log_a_bake')} onPress={logABake} haptic="pop" />
+    );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bg.primary }]} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.headerRow}>
-          <Text style={[typography.display.md, { color: palette.choc }]}>{t('recipes.title')}</Text>
-          <Button label={t('recipes.button_add')} variant="secondary" onPress={addRecipe} />
-        </View>
+    <Screen title={t('tabs.recipes')} footer={footer}>
+      <SegmentedControl
+        options={[
+          { id: 'recipes', label: t('bakes.seg_recipes') },
+          { id: 'bakes', label: t('bakes.seg_bakes') },
+        ]}
+        value={segment}
+        onChange={setSegment}
+      />
 
-        {recipes.length === 0 ? (
+      {segment === 'recipes' ? (
+        recipes.length === 0 ? (
           <View style={styles.empty}>
-            <Text style={[typography.body.lg, styles.center, { color: palette.chocSoft }]}>
+            <Sam size={132} />
+            <Text style={[typography.display.md, styles.emptyTitle, { color: palette.textInk }]}>
               {t('recipes.empty_title')}
             </Text>
-            <Text style={[typography.body.md, styles.center, { color: palette.chocSoft }]}>
-              {t('recipes.empty_body')}
+            <Text style={[typography.body.md, styles.emptyBody, { color: palette.textSoft }]}>
+              {t('recipes.empty_body_full')}
             </Text>
-            <Button
-              label={t('scaler.title')}
-              variant="ghost"
-              onPress={() => router.push('/scaler')}
-            />
           </View>
         ) : (
-          recipes.map((recipe) => (
-            <Card key={recipe.id} style={styles.card}>
-              <Text style={[typography.body.lg, { color: palette.choc }]}>{recipe.name}</Text>
-              {recipe.lines.length > 0 ? (
-                <Text style={[typography.body.sm, { color: palette.chocSoft }]}>
-                  {recipe.lines.join('\n')}
-                </Text>
-              ) : null}
-              <View style={styles.cardActions}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() =>
-                    router.push({
-                      pathname: '/scaler',
-                      params: { recipe: recipe.lines.join('\n') },
-                    })
-                  }
-                >
-                  <Text style={[typography.body.md, { color: palette.crust }]}>
-                    {t('recipes.button_scale')}
-                  </Text>
-                </Pressable>
-                <Pressable accessibilityRole="button" onPress={() => onDelete(recipe)}>
-                  <Text style={[typography.body.md, { color: palette.jam }]}>
-                    {t('recipes.button_delete')}
-                  </Text>
-                </Pressable>
-              </View>
-            </Card>
-          ))
-        )}
+          <>
+            {tags.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.tagRow}
+              >
+                <Chip
+                  label={t('recipes.tag_all')}
+                  selected={tag === null}
+                  onPress={() => setTag(null)}
+                />
+                {tags.map((x) => (
+                  <Chip key={x} label={x} selected={tag === x} onPress={() => setTag(x)} />
+                ))}
+              </ScrollView>
+            ) : null}
 
-        <AdBanner />
-      </ScrollView>
-
-      {deleted ? (
-        <View
-          style={[
-            styles.undo,
-            shadow.lg,
-            { backgroundColor: bg.elevated, bottom: insets.bottom + 78 },
-          ]}
-        >
-          <Text style={[typography.body.md, { color: palette.choc }]}>
-            {t('recipes.toast_deleted')}
+            {shown.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                onPress={() => router.push(`/recipe/${recipe.id}`)}
+              />
+            ))}
+          </>
+        )
+      ) : bakes.length === 0 ? (
+        <View style={styles.empty}>
+          <Sam size={132} />
+          <Text style={[typography.display.md, styles.emptyTitle, { color: palette.textInk }]}>
+            {t('bakes.empty_title')}
           </Text>
-          <Pressable accessibilityRole="button" onPress={onUndo}>
-            <Text style={[typography.body.lg, { color: palette.crust }]}>
-              {t('recipes.button_undo')}
-            </Text>
-          </Pressable>
+          <Text style={[typography.body.md, styles.emptyBody, { color: palette.textSoft }]}>
+            {t('bakes.empty_body')}
+          </Text>
         </View>
-      ) : null}
-    </SafeAreaView>
+      ) : (
+        bakes.map((b) => (
+          <BakeCard
+            key={b.id}
+            bake={b}
+            now={now}
+            onPress={() => router.push(`/bake-new?id=${b.id}`)}
+          />
+        ))
+      )}
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: spacing.lg, paddingBottom: spacing['3xl'] * 2, gap: spacing.md },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  empty: { alignItems: 'center', gap: spacing.sm, marginTop: spacing['3xl'] },
-  center: { textAlign: 'center' },
-  card: { gap: spacing.sm },
-  cardActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.xl,
-    marginTop: spacing.xs,
-  },
-  undo: {
-    position: 'absolute',
-    left: spacing.lg,
-    right: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 16,
-  },
+  tagRow: { gap: spacing.sm, paddingBottom: spacing.xs },
+  empty: { alignItems: 'center', paddingTop: spacing['3xl'], gap: spacing.sm },
+  emptyTitle: { textAlign: 'center', marginTop: spacing.md },
+  emptyBody: { textAlign: 'center', maxWidth: 280 },
 });

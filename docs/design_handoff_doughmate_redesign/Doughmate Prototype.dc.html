@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EDE6DE;font-family:"Nunito Sans",system-ui,sans-serif;color:#2C1E17}
+a{color:#C24A26}a:hover{color:#F2603C}
+*{box-sizing:border-box}
+input,textarea,button{font-family:inherit}
+input:focus,textarea:focus{outline:none}
+.dm-scroll{scrollbar-width:none}
+.dm-scroll::-webkit-scrollbar{display:none}
+</style></helmet>
+
+<div style="padding:40px 44px 64px;display:flex;gap:36px;align-items:flex-start">
+
+  <!-- ================= CONTROLS ================= -->
+  <div style="width:268px;flex:none;display:flex;flex-direction:column;gap:18px;position:sticky;top:40px">
+    <div>
+      <div style="font:700 11px/1 'Nunito Sans';letter-spacing:.16em;text-transform:uppercase;color:#C24A26;margin-bottom:10px">Doughmate · step 3 of 3</div>
+      <div style="font:600 30px/34px Gabarito">The prototype</div>
+      <div style="font:400 14px/21px 'Nunito Sans';color:#6F5A4C;margin-top:8px">Tappable. Four tabs, six converter modes swapping in place, sheets that drag down to dismiss. Real repo data and real math.</div>
+    </div>
+
+    <div style="background:#fff;border-radius:22px;padding:18px;box-shadow:0 6px 18px rgba(74,42,24,.08);display:flex;flex-direction:column;gap:16px">
+      <div>
+        <div style="font:700 11px/16px 'Nunito Sans';letter-spacing:.09em;text-transform:uppercase;color:#8B7869;margin-bottom:8px">Appearance</div>
+        <div style="display:flex;gap:8px">
+          <button style="{{ ctlLight }}" onClick="{{ setLight }}">Light</button>
+          <button style="{{ ctlDark }}" onClick="{{ setDark }}">Dark</button>
+        </div>
+      </div>
+      <div>
+        <div style="font:700 11px/16px 'Nunito Sans';letter-spacing:.09em;text-transform:uppercase;color:#8B7869;margin-bottom:8px">Accessibility</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button style="{{ ctlFF }}" onClick="{{ toggleFF }}">Floured fingers mode</button>
+          <button style="{{ ctlRM }}" onClick="{{ toggleRM }}">Reduced motion</button>
+        </div>
+      </div>
+      <div>
+        <div style="font:700 11px/16px 'Nunito Sans';letter-spacing:.09em;text-transform:uppercase;color:#8B7869;margin-bottom:8px">Account</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button style="{{ ctlPro }}" onClick="{{ togglePro }}">Pro unlocked</button>
+          <button style="{{ ctlPlain }}" onClick="{{ startOnboarding }}">Replay onboarding</button>
+          <button style="{{ ctlPlain }}" onClick="{{ emptyAll }}">Empty every list</button>
+          <button style="{{ ctlPlain }}" onClick="{{ resetAll }}">Reset the prototype</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="font:400 12px/19px 'Nunito Sans';color:#8B7869">Sheets close by dragging the grabber down or tapping the dimmed area. There is no back button anywhere.</div>
+  </div>
+
+  <!-- ================= PHONE ================= -->
+  <div style="flex:none;display:flex;flex-direction:column;gap:12px">
+    <div style="font:700 12px/1 'Nunito Sans';color:#6F5A4C">{{ screenLabel }}</div>
+    <div style="{{ phoneStyle }}">
+
+      <!-- status bar -->
+      <div style="height:52px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 8px">
+        <span style="font:700 .875em/1 'Nunito Sans';color:var(--ink,#2C1E17)">9:41</span>
+        <span style="font:700 .6875em/1 'Nunito Sans';letter-spacing:.08em;color:var(--ink,#2C1E17)">▮▮▮ ᯤ ▰</span>
+      </div>
+
+      <!-- header -->
+      <div style="flex:none;padding:4px 24px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="font:600 2em/1.15 Gabarito;color:var(--ink,#2C1E17)">{{ tabTitle }}</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <sc-if value="{{ pro }}" hint-placeholder-val="{{ false }}">
+            <span style="height:28px;padding:0 10px;border-radius:999px;background:var(--plumWash,#F6E8F2);color:var(--plum,#8E4B7A);font:700 .6875em/28px 'Nunito Sans';letter-spacing:.06em;text-transform:uppercase">Pro</span>
+          </sc-if>
+          <button aria-label="Settings" onClick="{{ openSettings }}" style="width:44px;height:44px;flex:none;border:0;border-radius:999px;background:var(--sunken,#F6E9DC);display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--soft,#6F5A4C)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- convert mode chips -->
+      <sc-if value="{{ isConvert }}" hint-placeholder-val="{{ true }}">
+        <div class="dm-scroll" style="flex:none;display:flex;gap:8px;padding:2px 24px 12px;overflow-x:auto">
+          <sc-for list="{{ modeChips }}" as="chip" hint-placeholder-count="6">
+            <button onClick="{{ chip.onPress }}" style="{{ chip.style }}">
+              <span style="{{ chip.iconStyle }}"></span>{{ chip.label }}
+            </button>
+          </sc-for>
+          <button onClick="{{ openTray }}" style="{{ trayChipStyle }}">All six</button>
+        </div>
+      </sc-if>
+
+      <!-- ===== scrolling content ===== -->
+      <div class="dm-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:0 24px 16px">
+
+        <!-- CONVERT -->
+        <sc-if value="{{ isConvert }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="{{ convertCardStyle }}">
+
+            <sc-if value="{{ isIngredientMode }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Ingredient</div>
+                  <button onClick="{{ openIngPicker }}" style="width:100%;min-height:56px;border:0;border-radius:16px;background:var(--sunken,#F6E9DC);display:flex;align-items:center;justify-content:space-between;padding:0 16px;cursor:pointer">
+                    <span style="font:700 1.0625em/1.3 'Nunito Sans';color:var(--ink,#2C1E17);text-align:left">{{ ingName }}</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--soft,#6F5A4C)" stroke-width="2.2" stroke-linecap="round"><path d="M6 9.5l6 6 6-6"></path></svg>
+                  </button>
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Amount</div>
+                  <input value="{{ amount }}" onChange="{{ setAmount }}" inputMode="decimal" style="{{ inputStyle }}">
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">From</div>
+                  <div class="dm-scroll" style="display:flex;gap:8px;overflow-x:auto">
+                    <sc-for list="{{ fromUnits }}" as="u" hint-placeholder-count="7"><button onClick="{{ u.onPress }}" style="{{ u.style }}">{{ u.label }}</button></sc-for>
+                  </div>
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">To</div>
+                  <div class="dm-scroll" style="display:flex;gap:8px;overflow-x:auto">
+                    <sc-for list="{{ toUnits }}" as="u" hint-placeholder-count="7"><button onClick="{{ u.onPress }}" style="{{ u.style }}">{{ u.label }}</button></sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isPanMode }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Recipe pan</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ panFromChips }}" as="p" hint-placeholder-count="8"><button onClick="{{ p.onPress }}" style="{{ p.style }}">{{ p.label }}</button></sc-for></div>
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Your pan</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ panToChips }}" as="p" hint-placeholder-count="8"><button onClick="{{ p.onPress }}" style="{{ p.style }}">{{ p.label }}</button></sc-for></div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isOvenMode }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Temperature</div>
+                  <input value="{{ ovenVal }}" onChange="{{ setOvenVal }}" inputMode="numeric" style="{{ inputStyle }}">
+                </div>
+                <div style="display:flex;gap:8px"><sc-for list="{{ ovenUnitChips }}" as="u" hint-placeholder-count="2"><button onClick="{{ u.onPress }}" style="{{ u.style }}">{{ u.label }}</button></sc-for></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isYeastMode }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Teaspoons</div>
+                  <input value="{{ yeastAmt }}" onChange="{{ setYeastAmt }}" inputMode="decimal" style="{{ inputStyle }}">
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">You have</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ yeastFromChips }}" as="y" hint-placeholder-count="3"><button onClick="{{ y.onPress }}" style="{{ y.style }}">{{ y.label }}</button></sc-for></div>
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">You want</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ yeastToChips }}" as="y" hint-placeholder-count="3"><button onClick="{{ y.onPress }}" style="{{ y.style }}">{{ y.label }}</button></sc-for></div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isEggMode }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:8px">How many</div>
+                  <div style="display:flex;align-items:center;gap:14px">
+                    <button onClick="{{ eggMinus }}" style="{{ stepBtnStyle }}"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 12h12"></path></svg></button>
+                    <span style="min-width:56px;text-align:center;font:600 1.5em/1 Space Grotesk;color:var(--ink,#2C1E17)">{{ eggCount }}</span>
+                    <button onClick="{{ eggPlus }}" style="{{ stepBtnStyle }}"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 6v12M6 12h12"></path></svg></button>
+                  </div>
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Recipe wants</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ eggFromChips }}" as="e" hint-placeholder-count="5"><button onClick="{{ e.onPress }}" style="{{ e.style }}">{{ e.label }}</button></sc-for></div>
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">You have</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ eggToChips }}" as="e" hint-placeholder-count="5"><button onClick="{{ e.onPress }}" style="{{ e.style }}">{{ e.label }}</button></sc-for></div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isButterMode }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Amount</div>
+                  <input value="{{ butterAmt }}" onChange="{{ setButterAmt }}" inputMode="decimal" style="{{ inputStyle }}">
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">From</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ butterFromChips }}" as="b" hint-placeholder-count="5"><button onClick="{{ b.onPress }}" style="{{ b.style }}">{{ b.label }}</button></sc-for></div>
+                </div>
+                <div>
+                  <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">To</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ butterToChips }}" as="b" hint-placeholder-count="5"><button onClick="{{ b.onPress }}" style="{{ b.style }}">{{ b.label }}</button></sc-for></div>
+                </div>
+              </div>
+            </sc-if>
+
+              <div style="{{ inCardResultStyle }}">
+                <div style="font:700 .6875em/1.4 'Nunito Sans';letter-spacing:.09em;text-transform:uppercase;color:var(--primaryText,#C24A26)">{{ resultLabel }}</div>
+                <div style="display:flex;align-items:flex-end;gap:8px">
+                  <span style="font:600 3.2em/.92 Space Grotesk;font-variant-numeric:tabular-nums;color:var(--ink,#2C1E17)">{{ resultValue }}</span>
+                  <span style="font:600 1.25em/1.5 Gabarito;color:var(--soft,#6F5A4C)">{{ resultUnit }}</span>
+                </div>
+                <div style="font:400 .8125em/1.45 'Nunito Sans';color:var(--soft,#6F5A4C);text-wrap:pretty">{{ resultNote }}</div>
+              </div>
+            </div>
+
+            <sc-if value="{{ showSamMoment }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--wash,#FFF3E8)">
+                <span style="{{ samInlineStyle }}">
+                  <svg width="42" height="36" viewBox="0 0 200 170"><g stroke="var(--samInk,#2C1E17)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 104c0-34 36-56 82-56s82 22 82 56c0 22-30 34-82 34s-82-12-82-34z" fill="#E9B478"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="#E9B478" stroke="none"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="none"></path><path d="M62 72l14 14M96 66l16 16M132 72l14 14" stroke-width="5.5"></path></g><ellipse cx="66" cy="116" rx="11" ry="6" fill="#F2603C" opacity=".3"></ellipse><ellipse cx="136" cy="116" rx="11" ry="6" fill="#F2603C" opacity=".3"></ellipse><circle cx="79" cy="106" r="6.5" fill="var(--samInk,#2C1E17)"></circle><circle cx="123" cy="106" r="6.5" fill="var(--samInk,#2C1E17)"></circle><path d="M90 120q11 9 22 0" stroke="var(--samInk,#2C1E17)" stroke-width="5" fill="none" stroke-linecap="round"></path></svg>
+                </span>
+                <span style="font:400 .9375em/1.45 'Nunito Sans';color:var(--ink,#2C1E17)">{{ samLine }}</span>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- RECIPES -->
+        <sc-if value="{{ isRecipes }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div class="dm-scroll" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px">
+              <sc-for list="{{ tagFilters }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.onPress }}" style="{{ f.style }}">{{ f.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ hasRecipes }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <sc-for list="{{ recipeCards }}" as="r" hint-placeholder-count="3">
+                  <button onClick="{{ r.onPress }}" style="{{ r.cardStyle }}">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;width:100%">
+                      <span style="font:600 1.25em/1.25 Gabarito;color:var(--ink,#2C1E17);text-align:left">{{ r.name }}</span>
+                      <span style="font:500 .8125em/1.4 Space Grotesk;color:var(--faint,#A08D7C);flex:none">{{ r.time }}</span>
+                    </div>
+                    <div style="font:400 .8125em/1.4 'Nunito Sans';color:var(--soft,#6F5A4C);text-align:left">{{ r.meta }}</div>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                      <sc-for list="{{ r.tags }}" as="t" hint-placeholder-count="2"><span style="{{ t.style }}">{{ t.label }}</span></sc-for>
+                    </div>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ recipesEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:0 12px">
+                <svg width="132" height="112" viewBox="0 0 200 170"><g stroke="var(--samInk,#2C1E17)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 104c0-34 36-56 82-56s82 22 82 56c0 22-30 34-82 34s-82-12-82-34z" fill="#E9B478"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="#E9B478" stroke="none"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="none"></path><path d="M62 72l14 14M96 66l16 16M132 72l14 14" stroke-width="5"></path></g><ellipse cx="66" cy="116" rx="11" ry="6" fill="#F2603C" opacity=".28"></ellipse><ellipse cx="136" cy="116" rx="11" ry="6" fill="#F2603C" opacity=".28"></ellipse><circle cx="79" cy="106" r="6" fill="var(--samInk,#2C1E17)"></circle><circle cx="123" cy="106" r="6" fill="var(--samInk,#2C1E17)"></circle><path d="M90 120q11 9 22 0" stroke="var(--samInk,#2C1E17)" stroke-width="4.5" fill="none" stroke-linecap="round"></path></svg>
+                <div style="font:600 1.375em/1.3 Gabarito;color:var(--ink,#2C1E17)">No recipes yet.</div>
+                <div style="font:400 .9375em/1.5 'Nunito Sans';color:var(--soft,#6F5A4C)">Save a conversion or write one from scratch.</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- STARTERS -->
+        <sc-if value="{{ isStarters }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ starterCards }}" as="s" hint-placeholder-count="2">
+              <div style="{{ s.cardStyle }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                  <span style="font:600 1.25em/1.25 Gabarito;color:var(--ink,#2C1E17)">{{ s.name }}</span>
+                  <span style="{{ s.badgeStyle }}">{{ s.hydration }}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px">
+                  <span style="{{ s.ringStyle }}">
+                    <span style="{{ s.ringInnerStyle }}"></span>
+                  </span>
+                  <span style="display:flex;flex-direction:column">
+                    <span style="{{ s.countdownStyle }}">{{ s.countdown }}</span>
+                    <span style="font:400 .75em/1.4 'Nunito Sans';color:var(--faint,#A08D7C)">{{ s.sub }}</span>
+                  </span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <button onClick="{{ s.onFeed }}" style="{{ s.feedStyle }}">Feed now</button>
+                  <button onClick="{{ s.onDelete }}" aria-label="Delete starter" style="{{ s.deleteStyle }}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 12.5h9L18 7"></path></svg>
+                  </button>
+                </div>
+                <div style="font:400 .8125em/1.4 'Nunito Sans';color:var(--faint,#A08D7C)">{{ s.fedCount }}</div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ startersEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:0 12px">
+                <svg width="132" height="112" viewBox="0 0 200 170"><g stroke="var(--samInk,#2C1E17)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 104c0-34 36-56 82-56s82 22 82 56c0 22-30 34-82 34s-82-12-82-34z" fill="#E9B478"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="#E9B478" stroke="none"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="none"></path><path d="M62 72l14 14M96 66l16 16M132 72l14 14" stroke-width="5"></path></g><path d="M72 108q7 7 14 0M114 108q7 7 14 0" stroke="var(--samInk,#2C1E17)" stroke-width="5" fill="none" stroke-linecap="round"></path><path d="M94 122q7 5 14 0" stroke="var(--samInk,#2C1E17)" stroke-width="4.5" fill="none" stroke-linecap="round"></path><g stroke="#3E9C8F" stroke-width="4.5" fill="none" stroke-linecap="round"><path d="M86 40q8-8 0-16"></path><path d="M104 34q8-8 0-16"></path><path d="M122 40q8-8 0-16"></path></g></svg>
+                <div style="font:600 1.375em/1.3 Gabarito;color:var(--ink,#2C1E17)">No starters yet.</div>
+                <div style="font:400 .9375em/1.5 'Nunito Sans';color:var(--soft,#6F5A4C)">Let's meet the first one.</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- SWAPS -->
+        <sc-if value="{{ isSwaps }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px;height:52px;border-radius:16px;background:var(--sunken,#F6E9DC);padding:0 14px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--faint,#A08D7C)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4 4"></path></svg>
+              <input value="{{ search }}" onChange="{{ setSearch }}" placeholder="Search substitutions" style="{{ searchInputStyle }}">
+            </div>
+            <sc-for list="{{ swapCards }}" as="s" hint-placeholder-count="4">
+              <div style="{{ s.cardStyle }}">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                  <span style="font:700 1.0625em/1.35 'Nunito Sans';color:var(--ink,#2C1E17)">{{ s.missing }}</span>
+                  <span style="font:500 .75em/1.4 Space Grotesk;color:var(--faint,#A08D7C)">{{ s.amount }}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;color:var(--primary,#F2603C)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 8h9l-3-3M19 16h-9l3 3"></path></svg>
+                  <span style="font:700 .6875em/1.4 'Nunito Sans';letter-spacing:.09em;text-transform:uppercase">swap for</span>
+                </div>
+                <div style="font:400 .9375em/1.5 'Nunito Sans';color:var(--ink,#2C1E17)">{{ s.substitute }}</div>
+                <div style="font:400 .8125em/1.45 'Nunito Sans';color:var(--faint,#A08D7C)">{{ s.notes }}</div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ swapsEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:20px;text-align:center;font:400 .9375em/1.5 'Nunito Sans';color:var(--soft,#6F5A4C)">Nothing matches. Try another ingredient.</div>
+            </sc-if>
+            <sc-if value="{{ swapsProTeaser }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ openPaywall }}" style="{{ proTeaserStyle }}">
+                <span style="font:700 .9375em/1.4 'Nunito Sans'">80 more swaps with Pro</span>
+                <span style="font:400 .8125em/1.45 'Nunito Sans';opacity:.85">Dairy free, gluten free, vegan and sugar swaps.</span>
+              </button>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- ===== bottom anchored ===== -->
+      <sc-if value="{{ isConvert }}" hint-placeholder-val="{{ true }}">
+        <div style="{{ anchorFadeStyle }}"></div>
+        <div ref="{{ anchorRef }}" style="{{ anchorBlockStyle }}">
+          <button onClick="{{ onSave }}" style="{{ primaryBtnStyle }}">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l2.6 5.6 6 .8-4.4 4.3 1.1 6.1L12 17.4l-5.3 2.9 1.1-6.1L3.4 9.9l6-.8z"></path></svg>
+            Save this
+          </button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isRecipes }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ anchorFadeStyle }}"></div>
+        <div ref="{{ anchorRef }}" style="{{ anchorBlockStyle }}"><button onClick="{{ openNewRecipe }}" style="{{ primaryBtnStyle }}">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 6v12M6 12h12"></path></svg>New recipe</button></div>
+      </sc-if>
+      <sc-if value="{{ isStarters }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ anchorFadeStyle }}"></div>
+        <div ref="{{ anchorRef }}" style="{{ anchorBlockStyle }}"><button onClick="{{ openNewStarter }}" style="{{ primaryBtnStyle }}">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 6v12M6 12h12"></path></svg>Add a starter</button></div>
+      </sc-if>
+
+      <!-- ===== tab bar ===== -->
+      <div style="flex:none;margin:0 16px 14px;padding:10px 8px;border-radius:26px;background:var(--surface,#fff);border:1px solid var(--border,#EADBCB);box-shadow:0 6px 18px rgba(74,42,24,.10);display:grid;grid-template-columns:repeat(4,1fr)">
+        <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="4">
+          <button onClick="{{ tb.onPress }}" style="{{ tb.style }}">
+            <span style="{{ tb.pillStyle }}"><span style="{{ tb.iconStyle }}"></span></span>
+            <span style="font:700 .6875em/1 'Nunito Sans'">{{ tb.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+
+      <!-- ===== toast ===== -->
+      <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ toastStyle }}">
+          <sc-if value="{{ toastSam }}" hint-placeholder-val="{{ false }}">
+            <svg width="34" height="29" viewBox="0 0 200 170" style="flex:none"><g stroke="#2C1E17" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 104c0-34 36-56 82-56s82 22 82 56c0 22-30 34-82 34s-82-12-82-34z" fill="#E9B478"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="#E9B478" stroke="none"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="none"></path></g><path d="M72 102q7-8 14 0M114 102q7-8 14 0" stroke="#2C1E17" stroke-width="5.5" fill="none" stroke-linecap="round"></path><path d="M88 116h24q0 14-12 14t-12-14z" fill="#2C1E17"></path></svg>
+          </sc-if>
+          <span style="font:400 .9375em/1.4 'Nunito Sans';flex:1">{{ toastText }}</span>
+          <sc-if value="{{ toastHasAction }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ toastAction }}" style="{{ toastActionStyle }}">{{ toastActionLabel }}</button>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ===== sheet ===== -->
+      <div onClick="{{ closeSheet }}" style="{{ backdropStyle }}"></div>
+      <div style="{{ sheetStyle }}">
+        <div onPointerDown="{{ dragStart }}" onPointerMove="{{ dragMove }}" onPointerUp="{{ dragEnd }}" style="flex:none;padding:10px 0 6px;display:flex;justify-content:center;cursor:grab;touch-action:none">
+          <span style="width:40px;height:5px;border-radius:999px;background:var(--grabber,#D9C6B2);display:block"></span>
+        </div>
+
+        <!-- mode tray -->
+        <sc-if value="{{ sheetIsTray }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:6px 20px 24px;display:flex;flex-direction:column;gap:14px">
+            <div style="font:600 1.375em/1.3 Gabarito;color:var(--ink,#2C1E17)">What are we converting?</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <sc-for list="{{ trayItems }}" as="m" hint-placeholder-count="6">
+                <button onClick="{{ m.onPress }}" style="{{ m.style }}">
+                  <span style="{{ m.iconStyle }}"></span>
+                  <span style="font:700 1em/1.3 'Nunito Sans'">{{ m.label }}</span>
+                  <span style="font:400 .75em/1.35 'Nunito Sans';color:var(--faint,#A08D7C)">{{ m.hint }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ingredient picker -->
+        <sc-if value="{{ sheetIsIngPicker }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:6px 20px 8px;display:flex;flex-direction:column;gap:12px">
+            <div style="font:600 1.375em/1.3 Gabarito;color:var(--ink,#2C1E17)">Pick an ingredient</div>
+            <div style="display:flex;align-items:center;gap:10px;height:52px;border-radius:16px;background:var(--sunken,#F6E9DC);padding:0 14px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--faint,#A08D7C)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4 4"></path></svg>
+              <input value="{{ ingSearch }}" onChange="{{ setIngSearch }}" placeholder="Search ingredients" style="{{ searchInputStyle }}">
+            </div>
+          </div>
+          <div class="dm-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:0 20px 24px">
+            <sc-for list="{{ ingResults }}" as="i" hint-placeholder-count="8">
+              <button onClick="{{ i.onPress }}" style="{{ i.style }}">
+                <span style="font:400 1.0625em/1.4 'Nunito Sans'">{{ i.name }}</span>
+                <span style="font:500 .8125em/1.4 Space Grotesk;color:var(--faint,#A08D7C)">{{ i.weight }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- recipe detail -->
+        <sc-if value="{{ sheetIsRecipe }}" hint-placeholder-val="{{ false }}">
+          <div class="dm-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:6px 20px 20px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:600 1.75em/1.2 Gabarito;color:var(--ink,#2C1E17)">{{ detail.name }}</div>
+              <div style="font:400 .875em/1.45 'Nunito Sans';color:var(--soft,#6F5A4C)">{{ detail.meta }}</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ detail.tags }}" as="t" hint-placeholder-count="2"><span style="{{ t.style }}">{{ t.label }}</span></sc-for></div>
+            </div>
+
+            <div style="{{ detailBlockStyle }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <span style="font:700 .75em/1.4 'Nunito Sans';letter-spacing:.09em;text-transform:uppercase;color:var(--soft,#6F5A4C)">{{ detail.yieldLabel }}</span>
+                <span style="font:500 .8125em/1.4 Space Grotesk;color:var(--primaryText,#C24A26)">{{ detail.scaleLabel }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <button onClick="{{ scaleDown }}" style="{{ stepBtnStyle }}"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 12h12"></path></svg></button>
+                  <span style="min-width:56px;text-align:center;font:600 1.5em/1 Space Grotesk;color:var(--ink,#2C1E17)">{{ detail.servings }}</span>
+                  <button onClick="{{ scaleUp }}" style="{{ stepBtnStyle }}"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 6v12M6 12h12"></path></svg></button>
+                </div>
+                <div style="{{ scaleChipRowStyle }}"><sc-for list="{{ scaleChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onPress }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:600 1.25em/1.3 Gabarito;color:var(--ink,#2C1E17)">Ingredients</div>
+              <div style="{{ detailListStyle }}">
+                <sc-for list="{{ detail.ingredients }}" as="ing" hint-placeholder-count="5">
+                  <div style="{{ ing.rowStyle }}">
+                    <span style="font:400 1em/1.4 'Nunito Sans';color:var(--ink,#2C1E17)">{{ ing.item }}</span>
+                    <span style="font:600 1em/1.4 Space Grotesk;font-variant-numeric:tabular-nums;color:var(--ink,#2C1E17)">{{ ing.qty }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                <span style="font:600 1.25em/1.3 Gabarito;color:var(--ink,#2C1E17)">Baker's percentages</span>
+                <span style="{{ proBadgeStyle }}">Pro</span>
+              </div>
+              <sc-if value="{{ pro }}" hint-placeholder-val="{{ false }}">
+                <div style="{{ detailListStyle }}">
+                  <sc-for list="{{ detail.bakers }}" as="b" hint-placeholder-count="4">
+                    <div style="{{ b.rowStyle }}">
+                      <span style="font:400 1em/1.4 'Nunito Sans';color:var(--ink,#2C1E17)">{{ b.item }}</span>
+                      <span style="font:600 1em/1.4 Space Grotesk;color:var(--teal,#3E9C8F)">{{ b.pct }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ notPro }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ openPaywall }}" style="{{ lockedCardStyle }}">
+                  <span style="font:700 .9375em/1.4 'Nunito Sans'">See the flour, water and salt percentages</span>
+                  <span style="font:400 .8125em/1.45 'Nunito Sans';opacity:.85">Part of Pro, with the fermentation timer.</span>
+                </button>
+              </sc-if>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:600 1.25em/1.3 Gabarito;color:var(--ink,#2C1E17)">Method</div>
+              <sc-for list="{{ detail.steps }}" as="st" hint-placeholder-count="4">
+                <div style="{{ st.rowStyle }}">
+                  <span style="{{ st.numStyle }}">{{ st.n }}</span>
+                  <span style="display:flex;flex-direction:column;gap:3px">
+                    <span style="font:400 1em/1.5 'Nunito Sans';color:var(--ink,#2C1E17)">{{ st.text }}</span>
+                    <span style="{{ st.timeStyle }}">{{ st.time }}</span>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:600 1.25em/1.3 Gabarito;color:var(--ink,#2C1E17)">Notes</div>
+              <div style="{{ detailBlockStyle }}"><span style="font:400 .9375em/1.55 'Nunito Sans';color:var(--soft,#6F5A4C)">{{ detail.notes }}</span></div>
+            </div>
+
+            <button onClick="{{ deleteFromDetail }}" style="{{ destructiveBtnStyle }}">Delete recipe</button>
+          </div>
+          <div style="{{ sheetFooterStyle }}">
+            <button onClick="{{ startCook }}" style="{{ primaryBtnStyle }}">Start baking</button>
+          </div>
+        </sc-if>
+
+        <!-- cook mode -->
+        <sc-if value="{{ sheetIsCook }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;display:flex;flex-direction:column;padding:6px 24px 20px;gap:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <span style="font:700 .75em/1.4 'Nunito Sans';letter-spacing:.09em;text-transform:uppercase;color:var(--soft,#6F5A4C)">{{ cook.name }}</span>
+              <span style="font:500 .8125em/1.4 Space Grotesk;color:var(--faint,#A08D7C)">{{ cook.counter }}</span>
+            </div>
+            <div style="display:flex;gap:6px"><sc-for list="{{ cook.dots }}" as="d" hint-placeholder-count="5"><span style="{{ d.style }}"></span></sc-for></div>
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px">
+              <span style="{{ cookNumStyle }}">{{ cook.n }}</span>
+              <span style="font:600 1.75em/1.3 Gabarito;color:var(--ink,#2C1E17);text-wrap:pretty">{{ cook.text }}</span>
+              <span style="{{ cookTimeStyle }}">{{ cook.time }}</span>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button onClick="{{ cookPrev }}" style="{{ quietBtnStyle }}">Back a step</button>
+              <button onClick="{{ cookNext }}" style="{{ primaryBtnStyle }}">{{ cook.nextLabel }}</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- new recipe -->
+        <sc-if value="{{ sheetIsNewRecipe }}" hint-placeholder-val="{{ false }}">
+          <div class="dm-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:6px 20px 16px;display:flex;flex-direction:column;gap:16px">
+            <div style="font:600 1.5em/1.25 Gabarito;color:var(--ink,#2C1E17)">New recipe</div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Name</div>
+              <input value="{{ nrName }}" onChange="{{ setNrName }}" placeholder="Name your recipe" style="{{ inputStyle }}">
+            </div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Yield</div>
+              <input value="{{ nrYield }}" onChange="{{ setNrYield }}" placeholder="12 cookies" style="{{ inputStyle }}">
+            </div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Ingredients</div>
+              <textarea value="{{ nrIngredients }}" onChange="{{ setNrIngredients }}" placeholder="One on each line
+250 g bread flour
+180 g water" style="{{ textareaStyle }}"></textarea>
+              <div style="font:400 .75em/1.5 'Nunito Sans';color:var(--faint,#A08D7C);margin-top:6px">Sam reads the amount and the unit, so each line scales on its own later.</div>
+            </div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Method</div>
+              <textarea value="{{ nrSteps }}" onChange="{{ setNrSteps }}" placeholder="One step on each line" style="{{ textareaStyle }}"></textarea>
+            </div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:8px">Tags</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ nrTagChips }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.onPress }}" style="{{ t.style }}">{{ t.label }}</button></sc-for></div>
+            </div>
+          </div>
+          <div style="{{ sheetFooterStyle }}">
+            <button onClick="{{ saveNewRecipe }}" style="{{ primaryBtnStyle }}">Save recipe</button>
+          </div>
+        </sc-if>
+
+        <!-- new starter -->
+        <sc-if value="{{ sheetIsNewStarter }}" hint-placeholder-val="{{ false }}">
+          <div class="dm-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:6px 20px 16px;display:flex;flex-direction:column;gap:16px">
+            <div style="font:600 1.5em/1.25 Gabarito;color:var(--ink,#2C1E17)">Add a starter</div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Name</div>
+              <input value="{{ nsName }}" onChange="{{ setNsName }}" placeholder="Starter" style="{{ inputStyle }}">
+            </div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:8px">Hydration</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ nsHydrationChips }}" as="h" hint-placeholder-count="3"><button onClick="{{ h.onPress }}" style="{{ h.style }}">{{ h.label }}</button></sc-for></div>
+            </div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:8px">Feed ratio</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ nsRatioChips }}" as="r" hint-placeholder-count="3"><button onClick="{{ r.onPress }}" style="{{ r.style }}">{{ r.label }}</button></sc-for></div>
+            </div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:8px">Feed every</div>
+              <div style="display:flex;align-items:center;gap:12px">
+                <button onClick="{{ nsIntervalDown }}" style="{{ stepBtnStyle }}"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 12h12"></path></svg></button>
+                <span style="min-width:80px;text-align:center;font:600 1.5em/1 Space Grotesk;color:var(--ink,#2C1E17)">{{ nsIntervalLabel }}</span>
+                <button onClick="{{ nsIntervalUp }}" style="{{ stepBtnStyle }}"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 6v12M6 12h12"></path></svg></button>
+              </div>
+            </div>
+            <div>
+              <div style="font:700 .75em/16px 'Nunito Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--soft,#6F5A4C);margin-bottom:6px">Notes</div>
+              <textarea value="{{ nsNotes }}" onChange="{{ setNsNotes }}" placeholder="Lives on the windowsill" style="{{ textareaStyle }}"></textarea>
+            </div>
+          </div>
+          <div style="{{ sheetFooterStyle }}">
+            <button onClick="{{ saveNewStarter }}" style="{{ primaryBtnStyle }}">Add starter</button>
+          </div>
+        </sc-if>
+
+        <!-- settings -->
+        <sc-if value="{{ sheetIsSettings }}" hint-placeholder-val="{{ false }}">
+          <div class="dm-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:6px 20px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="font:600 1.5em/1.25 Gabarito;color:var(--ink,#2C1E17)">Settings</div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:700 .6875em/1.4 'Nunito Sans';letter-spacing:.1em;text-transform:uppercase;color:var(--faint,#A08D7C)">Appearance</div>
+              <div style="{{ detailBlockStyle }}">
+                <div style="font:400 1.0625em/1.4 'Nunito Sans';color:var(--ink,#2C1E17);margin-bottom:10px">Theme</div>
+                <div style="{{ segmentedTrackStyle }}"><sc-for list="{{ themeSegments }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onPress }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:700 .6875em/1.4 'Nunito Sans';letter-spacing:.1em;text-transform:uppercase;color:var(--faint,#A08D7C)">Sound and feel</div>
+              <div style="{{ detailListStyle }}">
+                <sc-for list="{{ feelToggles }}" as="t" hint-placeholder-count="3">
+                  <button onClick="{{ t.onPress }}" style="{{ t.rowStyle }}">
+                    <span style="display:flex;flex-direction:column;gap:2px;text-align:left">
+                      <span style="font:400 1.0625em/1.35 'Nunito Sans';color:var(--ink,#2C1E17)">{{ t.label }}</span>
+                      <span style="{{ t.descStyle }}">{{ t.desc }}</span>
+                    </span>
+                    <span style="{{ t.trackStyle }}"><span style="{{ t.knobStyle }}"></span></span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:700 .6875em/1.4 'Nunito Sans';letter-spacing:.1em;text-transform:uppercase;color:var(--faint,#A08D7C)">Preferences</div>
+              <div style="{{ detailBlockStyle }}">
+                <div style="font:400 1.0625em/1.4 'Nunito Sans';color:var(--ink,#2C1E17);margin-bottom:10px">Default units</div>
+                <div style="{{ segmentedTrackStyle }}"><sc-for list="{{ unitSegments }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onPress }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div>
+                <div style="font:400 1.0625em/1.4 'Nunito Sans';color:var(--ink,#2C1E17);margin:16px 0 10px">Flour standard</div>
+                <div style="{{ segmentedTrackStyle }}"><sc-for list="{{ flourSegments }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onPress }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div>
+              </div>
+              <div style="{{ detailListStyle }}">
+                <sc-for list="{{ prefToggles }}" as="t" hint-placeholder-count="1">
+                  <button onClick="{{ t.onPress }}" style="{{ t.rowStyle }}">
+                    <span style="display:flex;flex-direction:column;gap:2px;text-align:left">
+                      <span style="font:400 1.0625em/1.35 'Nunito Sans';color:var(--ink,#2C1E17)">{{ t.label }}</span>
+                      <span style="{{ t.descStyle }}">{{ t.desc }}</span>
+                    </span>
+                    <span style="{{ t.trackStyle }}"><span style="{{ t.knobStyle }}"></span></span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:700 .6875em/1.4 'Nunito Sans';letter-spacing:.1em;text-transform:uppercase;color:var(--faint,#A08D7C)">Notifications</div>
+              <div style="{{ detailListStyle }}">
+                <sc-for list="{{ notifToggles }}" as="t" hint-placeholder-count="2">
+                  <button onClick="{{ t.onPress }}" style="{{ t.rowStyle }}">
+                    <span style="font:400 1.0625em/1.35 'Nunito Sans';color:var(--ink,#2C1E17);text-align:left">{{ t.label }}</span>
+                    <span style="{{ t.trackStyle }}"><span style="{{ t.knobStyle }}"></span></span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:700 .6875em/1.4 'Nunito Sans';letter-spacing:.1em;text-transform:uppercase;color:var(--faint,#A08D7C)">Pro</div>
+              <button onClick="{{ openPaywall }}" style="{{ proRowStyle }}">
+                <span style="font:700 1.0625em/1.35 'Nunito Sans'">{{ proRowLabel }}</span>
+                <span style="font:600 .875em/1.35 'Nunito Sans';opacity:.8">{{ proRowValue }}</span>
+              </button>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:700 .6875em/1.4 'Nunito Sans';letter-spacing:.1em;text-transform:uppercase;color:var(--faint,#A08D7C)">About</div>
+              <div style="{{ detailListStyle }}">
+                <div style="{{ aboutRowStyle }}"><span style="font:400 1.0625em/1.35 'Nunito Sans';color:var(--ink,#2C1E17)">Ingredient sources</span><span style="font:400 .875em/1.35 'Nunito Sans';color:var(--faint,#A08D7C)">King Arthur</span></div>
+                <div style="{{ aboutRowStyle }}"><span style="font:400 1.0625em/1.35 'Nunito Sans';color:var(--ink,#2C1E17)">Version</span><span style="font:500 .875em/1.35 Space Grotesk;color:var(--faint,#A08D7C)">2.0.0</span></div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- paywall -->
+        <sc-if value="{{ sheetIsPaywall }}" hint-placeholder-val="{{ false }}">
+          <div class="dm-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:2px 24px 12px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+            <svg width="150" height="128" viewBox="0 0 200 170"><g stroke="var(--samInk,#2C1E17)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M30 62l-12-14M170 62l12-14" stroke-width="7"></path><path d="M18 104c0-34 36-56 82-56s82 22 82 56c0 22-30 34-82 34s-82-12-82-34z" fill="#E9B478"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="#E9B478" stroke="none"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="none"></path><path d="M62 72l14 14M96 66l16 16M132 72l14 14" stroke-width="5"></path></g><ellipse cx="64" cy="116" rx="12" ry="7" fill="#F2603C" opacity=".34"></ellipse><ellipse cx="138" cy="116" rx="12" ry="7" fill="#F2603C" opacity=".34"></ellipse><path d="M72 102q7-8 14 0M114 102q7-8 14 0" stroke="var(--samInk,#2C1E17)" stroke-width="5" fill="none" stroke-linecap="round"></path><path d="M88 116h24q0 14-12 14t-12-14z" fill="var(--samInk,#2C1E17)"></path><g fill="#FFC24B" stroke="var(--samInk,#2C1E17)" stroke-width="3"><path d="M46 34l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"></path><path d="M156 40l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"></path></g></svg>
+            <div style="font:600 1.75em/1.2 Gabarito;color:var(--ink,#2C1E17)">Doughmate Pro</div>
+            <div style="font:400 .9375em/1.5 'Nunito Sans';color:var(--soft,#6F5A4C)">Single purchase, no subscription.</div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:8px;margin-top:4px">
+              <sc-for list="{{ perks }}" as="p" hint-placeholder-count="6">
+                <div style="{{ p.rowStyle }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--plum,#8E4B7A)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>
+                  <span style="font:400 1em/1.4 'Nunito Sans';color:var(--ink,#2C1E17)">{{ p.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="{{ sheetFooterStyle }}">
+            <button onClick="{{ buyPro }}" style="{{ proBtnStyle }}">Get Pro for $4.99</button>
+            <button onClick="{{ restorePro }}" style="{{ quietBtnStyle }}">Restore purchases</button>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- ===== onboarding ===== -->
+      <sc-if value="{{ onboarding }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ onboardingStyle }}">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center;padding:0 32px">
+            <sc-if value="{{ onbStep1 }}" hint-placeholder-val="{{ false }}">
+              <svg width="188" height="160" viewBox="0 0 200 170"><g stroke="var(--samInk,#2C1E17)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 104c0-34 36-56 82-56s82 22 82 56c0 22-30 34-82 34s-82-12-82-34z" fill="#E9B478"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="#E9B478" stroke="none"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="none"></path><path d="M62 72l14 14M96 66l16 16M132 72l14 14" stroke-width="5"></path></g><ellipse cx="66" cy="116" rx="11" ry="6" fill="#F2603C" opacity=".28"></ellipse><ellipse cx="136" cy="116" rx="11" ry="6" fill="#F2603C" opacity=".28"></ellipse><circle cx="79" cy="106" r="6" fill="var(--samInk,#2C1E17)"></circle><circle cx="123" cy="106" r="6" fill="var(--samInk,#2C1E17)"></circle><circle cx="81" cy="104" r="2" fill="#FFF7EF"></circle><circle cx="125" cy="104" r="2" fill="#FFF7EF"></circle><path d="M90 120q11 9 22 0" stroke="var(--samInk,#2C1E17)" stroke-width="4.5" fill="none" stroke-linecap="round"></path></svg>
+            </sc-if>
+            <sc-if value="{{ onbStep2 }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+                <div style="{{ onbCardStyle }}"><span style="font:600 1.9em/1 Space Grotesk;color:var(--primary,#F2603C)">120<span style="font:600 1em/1 Gabarito;color:var(--soft,#6F5A4C)"> g</span></span><span style="font:400 .8125em/1.4 'Nunito Sans';color:var(--soft,#6F5A4C)">1 cup all purpose flour</span></div>
+                <div style="{{ onbCardStyle }}"><span style="font:600 1.9em/1 Space Grotesk;color:var(--teal,#3E9C8F)">6h 20m</span><span style="font:400 .8125em/1.4 'Nunito Sans';color:var(--soft,#6F5A4C)">until Betty needs a feed</span></div>
+                <div style="{{ onbCardStyle }}"><span style="font:600 1.9em/1 Space Grotesk;color:var(--ink,#2C1E17)">1.8x</span><span style="font:400 .8125em/1.4 'Nunito Sans';color:var(--soft,#6F5A4C)">going from an 8 inch round to a 9 by 13</span></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ onbStep3 }}" hint-placeholder-val="{{ false }}">
+              <svg width="188" height="160" viewBox="0 0 200 170"><g stroke="var(--samInk,#2C1E17)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 104c0-34 36-56 82-56s82 22 82 56c0 22-30 34-82 34s-82-12-82-34z" fill="#E9B478"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="#E9B478" stroke="none"></path><path d="M22 96c14-26 44-38 78-38s64 12 78 38" fill="none"></path><path d="M62 72l14 14M96 66l16 16M132 72l14 14" stroke-width="5"></path></g><path d="M72 108q7 7 14 0M114 108q7 7 14 0" stroke="var(--samInk,#2C1E17)" stroke-width="5" fill="none" stroke-linecap="round"></path><path d="M94 122q7 5 14 0" stroke="var(--samInk,#2C1E17)" stroke-width="4.5" fill="none" stroke-linecap="round"></path><g stroke="#3E9C8F" stroke-width="4.5" fill="none" stroke-linecap="round"><path d="M86 40q8-8 0-16"></path><path d="M104 34q8-8 0-16"></path><path d="M122 40q8-8 0-16"></path></g></svg>
+            </sc-if>
+            <div style="font:600 1.9em/1.25 Gabarito;color:var(--ink,#2C1E17);text-wrap:pretty">{{ onbTitle }}</div>
+            <div style="font:400 1.0625em/1.55 'Nunito Sans';color:var(--soft,#6F5A4C);text-wrap:pretty">{{ onbBody }}</div>
+            <div style="display:flex;gap:7px"><sc-for list="{{ onbDots }}" as="d" hint-placeholder-count="3"><span style="{{ d.style }}"></span></sc-for></div>
+          </div>
+          <div style="flex:none;padding:0 24px 28px;display:flex;flex-direction:column;gap:10px">
+            <button onClick="{{ onbNext }}" style="{{ primaryBtnStyle }}">{{ onbCta }}</button>
+            <button onClick="{{ onbSkip }}" style="{{ quietBtnStyle }}">{{ onbSkipLabel }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <!-- ================= NOTES ================= -->
+  <div style="width:300px;flex:none;display:flex;flex-direction:column;gap:14px;position:sticky;top:40px">
+    <div style="background:#fff;border-radius:22px;padding:20px;box-shadow:0 6px 18px rgba(74,42,24,.08);display:flex;flex-direction:column;gap:12px">
+      <div style="font:600 20px/26px Gabarito">Try this</div>
+      <div style="font:400 13.5px/21px 'Nunito Sans';color:#6F5A4C">Switch converter modes on the chip row and watch the calculator swap in place. The result and Save stay in the same spot.</div>
+      <div style="font:400 13.5px/21px 'Nunito Sans';color:#6F5A4C">Open a recipe, scale it with the stepper, then tap Start baking for cook mode.</div>
+      <div style="font:400 13.5px/21px 'Nunito Sans';color:#6F5A4C">Feed Betty. Delete a recipe and undo it. Turn on Pro to unlock baker's percentages.</div>
+      <div style="font:400 13.5px/21px 'Nunito Sans';color:#6F5A4C">Drag any sheet down by its grabber.</div>
+    </div>
+    <div style="background:#fff;border-radius:22px;padding:20px;box-shadow:0 6px 18px rgba(74,42,24,.08);display:flex;flex-direction:column;gap:10px">
+      <div style="font:600 20px/26px Gabarito">Where Sam shows up</div>
+      <div style="font:400 13.5px/21px 'Nunito Sans';color:#6F5A4C">On a result, on a save, in both empty states, in errors, on the paywall, and through onboarding. Nowhere else. He is never parked on screen.</div>
+    </div>
+    <div style="background:#fff;border-radius:22px;padding:20px;box-shadow:0 6px 18px rgba(74,42,24,.08);display:flex;flex-direction:column;gap:10px">
+      <div style="font:600 20px/26px Gabarito">Still to build</div>
+      <div style="font:400 13.5px/21px 'Nunito Sans';color:#6F5A4C">Fermentation timer running state, themes shop, widgets, and weekly tips all have a home in the system already: timer uses the proof teal ring, themes swap the token values, tips use the Sam inline block.</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:980}}">
+const L = {
+  bg:'#FFF7EF', surface:'#FFFFFF', sunken:'#F6E9DC', border:'#EADBCB', ink:'#2C1E17', soft:'#6F5A4C',
+  faint:'#A08D7C', primary:'#F2603C', primaryPressed:'#D84D2C', primaryText:'#C24A26', wash:'#FFF3E8',
+  butter:'#FFC24B', teal:'#3E9C8F', tealWash:'#E3F1EE', tealText:'#2C7A70', success:'#3F8F5F',
+  danger:'#D64545', dangerWash:'#FBE9E7', plum:'#8E4B7A', plumWash:'#F6E8F2', onPrimary:'#FFF9F4',
+  grabber:'#D9C6B2', samInk:'#2C1E17', toastBg:'#2C1E17', toastInk:'#FFF7EF', scrim:'rgba(44,30,23,.42)'
+};
+const D = {
+  bg:'#17120F', surface:'#211A16', sunken:'#1B1512', border:'#342922', ink:'#F7ECE2', soft:'#C0AA9B',
+  faint:'#8E7A6C', primary:'#FF7A52', primaryPressed:'#E2643D', primaryText:'#FF9C7B', wash:'#3B231A',
+  butter:'#FFCD6B', teal:'#56B8A9', tealWash:'#20302D', tealText:'#7ED3C5', success:'#6FBF89',
+  danger:'#F16B6B', dangerWash:'#3A1F1E', plum:'#C87BB0', plumWash:'#32202C', onPrimary:'#2A1109',
+  grabber:'#4B3B31', samInk:'#12100E', toastBg:'#F7ECE2', toastInk:'#211A16', scrim:'rgba(0,0,0,.55)'
+};
+
+const INGREDIENTS = [
+  {id:'all_purpose_flour', name:'All purpose flour', cat:'flour', cup:120, tbsp:7.5, tsp:2.5},
+  {id:'bread_flour', name:'Bread flour', cat:'flour', cup:120, tbsp:7.5, tsp:2.5},
+  {id:'whole_wheat_flour', name:'Whole wheat flour', cat:'flour', cup:113, tbsp:7, tsp:2.3},
+  {id:'cake_flour', name:'Cake flour', cat:'flour', cup:113, tbsp:7, tsp:2.3},
+  {id:'pastry_flour', name:'Pastry flour', cat:'flour', cup:106, tbsp:6.6, tsp:2.2},
+  {id:'self_rising_flour', name:'Self rising flour', cat:'flour', cup:113, tbsp:7, tsp:2.3},
+  {id:'rye_flour', name:'Rye flour', cat:'flour', cup:106, tbsp:6.6, tsp:2.2},
+  {id:'almond_flour', name:'Almond flour', cat:'flour', cup:96, tbsp:6, tsp:2},
+  {id:'coconut_flour', name:'Coconut flour', cat:'flour', cup:112, tbsp:7, tsp:2.3},
+  {id:'semolina', name:'Semolina', cat:'flour', cup:167, tbsp:10.4, tsp:3.5},
+  {id:'cornmeal', name:'Cornmeal', cat:'flour', cup:156, tbsp:9.75, tsp:3.25},
+  {id:'cornstarch', name:'Cornstarch', cat:'starch', cup:128, tbsp:8, tsp:2.7},
+  {id:'granulated_sugar', name:'Granulated sugar', cat:'sugar', cup:198, tbsp:12.4, tsp:4.1},
+  {id:'butter', name:'Butter', cat:'fat', cup:227, tbsp:14.2, tsp:4.7}
+];
+const PANS = [
+  {id:'round_6', name:'6" round', area:28.3}, {id:'round_7', name:'7" round', area:38.5},
+  {id:'round_8', name:'8" round', area:50.3}, {id:'round_9', name:'9" round', area:63.6},
+  {id:'round_10', name:'10" round', area:78.5}, {id:'square_8', name:'8" square', area:64},
+  {id:'square_9', name:'9" square', area:81}, {id:'rect_9x13', name:'9x13 rectangle', area:117},
+  {id:'loaf_9x5', name:'9x5 loaf', area:45}, {id:'loaf_8x4', name:'8x4 loaf', area:32},
+  {id:'springform_9', name:'9" springform', area:63.6}, {id:'bundt_10', name:'10" bundt', area:62.8},
+  {id:'muffin_12', name:'12 cup muffin tin', area:44}
+];
+const YEAST = {active_dry:{name:'Active dry', g:3.5}, instant:{name:'Instant', g:3.1}, fresh:{name:'Fresh', g:12}};
+const YEAST_RATIO = {active_dry:{instant:0.75, fresh:2.5, active_dry:1}, instant:{active_dry:1.33, fresh:3, instant:1}, fresh:{active_dry:0.4, instant:0.333, fresh:1}};
+const EGGS = {small:{name:'Small', g:38}, medium:{name:'Medium', g:44}, large:{name:'Large', g:50}, extra_large:{name:'Extra large', g:56}, jumbo:{name:'Jumbo', g:63}};
+const GAS = [[275,1],[300,2],[325,3],[350,4],[375,5],[400,6],[425,7],[450,8],[475,9]];
+const SWAPS = [
+  {id:'buttermilk_diy', missing:'Buttermilk', amount:'1 cup', substitute:'1 cup milk plus 1 tablespoon white vinegar or lemon juice. Stir and let sit 5 minutes.', notes:'Nearly identical results in baking.'},
+  {id:'sour_cream_yogurt', missing:'Sour cream', amount:'1 cup', substitute:'1 cup full fat Greek yogurt', notes:'1:1 swap. Adds a slight tang.'},
+  {id:'egg_flax', missing:'Egg (1 large)', amount:'1 egg', substitute:'1 tablespoon ground flaxseed plus 3 tablespoons water. Mix and let sit 5 minutes to thicken.', notes:'Works for cookies, muffins, quick breads. Not for airy or leavened bakes.'},
+  {id:'butter_oil_cake', missing:'Butter (for cakes)', amount:'1 cup', substitute:'1 cup vegetable oil', notes:'Cake will be more moist. Not ideal for cookies where creaming matters.'},
+  {id:'butter_oil_cookie', missing:'Butter (for cookies)', amount:'1 cup', substitute:'3/4 cup vegetable oil', notes:'Cookies spread more and taste less rich.'},
+  {id:'brown_sugar_diy', missing:'Brown sugar', amount:'1 cup', substitute:'1 cup white sugar plus 1 tablespoon molasses for light, or 2 tablespoons for dark. Mix well.', notes:'Nearly identical results.'},
+  {id:'cake_flour_diy', missing:'Cake flour', amount:'1 cup', substitute:'3/4 cup plus 2 tablespoons all purpose flour plus 2 tablespoons cornstarch. Sift twice.', notes:'The cornstarch lowers the protein like cake flour does.'},
+  {id:'self_rising_flour_diy', missing:'Self rising flour', amount:'1 cup', substitute:'1 cup all purpose flour plus 1 1/2 teaspoons baking powder plus 1/4 teaspoon salt', notes:"Use immediately, don't store the mix."},
+  {id:'baking_powder_diy', missing:'Baking powder', amount:'1 teaspoon', substitute:'1/4 teaspoon baking soda plus 1/2 teaspoon cream of tartar', notes:'Use immediately.'},
+  {id:'heavy_cream_cooking', missing:'Heavy cream (for cooking, not whipping)', amount:'1 cup', substitute:'3/4 cup milk plus 1/4 cup melted butter', notes:"Won't whip. Fine for sauces, ganache, baked goods."},
+  {id:'milk_water_butter', missing:'Milk', amount:'1 cup', substitute:'1 cup water plus 1 1/2 teaspoons melted butter', notes:"For baking only. Won't taste right in coffee or on cereal."},
+  {id:'vanilla_maple', missing:'Vanilla extract', amount:'1 teaspoon', substitute:'1 teaspoon maple syrup', notes:'Mild flavor swap. Works in most cookies and cakes.'},
+  {id:'cocoa_choc', missing:'Unsweetened chocolate', amount:'1 ounce', substitute:'3 tablespoons cocoa powder plus 1 tablespoon butter or oil', notes:'Melts differently, but chemistry works.'},
+  {id:'molasses_brown', missing:'Molasses', amount:'1 cup', substitute:'3/4 cup brown sugar plus 1/4 cup water. Warm to dissolve.', notes:'Milder flavor than real molasses.'},
+  {id:'corn_syrup_honey', missing:'Corn syrup', amount:'1 cup', substitute:'1 cup honey', notes:'Changes color and flavor slightly. Fine for most baking.'},
+  {id:'cornstarch_flour', missing:'Cornstarch (as thickener)', amount:'1 tablespoon', substitute:'2 tablespoons all purpose flour', notes:'For sauces and pie fillings.'},
+  {id:'yeast_baking_soda', missing:'Yeast', amount:'1 packet', substitute:'There is no true substitute. For quick breads only: use baking powder or a combo of baking soda plus acid.', notes:'Real yeast breads need the real thing. Hmm.'},
+  {id:'cream_of_tartar_lemon', missing:'Cream of tartar', amount:'1 teaspoon', substitute:'2 teaspoons lemon juice or white vinegar', notes:'Works for meringues and some acid uses.'}
+];
+const MODES = [
+  {id:'ingredient', label:'Ingredient', hint:'Cups to grams and back'},
+  {id:'pan', label:'Pan', hint:'Swap tin, scale batter'},
+  {id:'oven', label:'Oven', hint:'Fahrenheit, Celsius, gas'},
+  {id:'yeast', label:'Yeast', hint:'Active dry, instant, fresh'},
+  {id:'egg', label:'Egg', hint:'Any size to any size'},
+  {id:'butter', label:'Butter', hint:'Sticks, cups, grams'}
+];
+const SEED_RECIPES = [
+  {id:'r1', name:'Saturday sourdough', tags:['sourdough','slow rise'], time:'18h', yieldLabel:'1 loaf', servings:1,
+   ingredients:[{amt:500,unit:'g',item:'Bread flour'},{amt:350,unit:'g',item:'Water'},{amt:100,unit:'g',item:'Active starter'},{amt:10,unit:'g',item:'Fine sea salt'}],
+   steps:[{text:'Mix flour and water. Rest for one hour so the flour drinks.', time:'1h'},{text:'Add the starter and salt. Squeeze until it feels like one dough.', time:'10m'},{text:'Fold every 45 minutes, four times. Gentle hands.', time:'3h'},{text:'Shape, then rest in the fridge overnight.', time:'12h'},{text:'Bake covered at 250C for 20 minutes, then uncovered for 20.', time:'40m'},{text:'Cool on a rack. Wait an hour before slicing. I know.', time:'1h'}],
+   notes:'She likes a cold overnight rest. If your kitchen is warm, shorten the bulk by an hour.'},
+  {id:'r2', name:'Brown butter cookies', tags:['cookies','weeknight'], time:'1h 30m', yieldLabel:'24 cookies', servings:24,
+   ingredients:[{amt:227,unit:'g',item:'Butter, browned'},{amt:300,unit:'g',item:'All purpose flour'},{amt:200,unit:'g',item:'Brown sugar'},{amt:100,unit:'g',item:'Granulated sugar'},{amt:2,unit:'',item:'Eggs'},{amt:5,unit:'g',item:'Fine sea salt'},{amt:6,unit:'g',item:'Baking soda'}],
+   steps:[{text:'Brown the butter until it smells like toffee. Cool it slightly.', time:'10m'},{text:'Whisk in both sugars, then the eggs, one at a time.', time:'5m'},{text:'Fold in flour, salt and baking soda. Stop while it looks shaggy.', time:'3m'},{text:'Chill the dough for one hour. This is the whole trick.', time:'1h'},{text:'Bake at 180C for 11 minutes. Pull them looking underdone.', time:'11m'}],
+   notes:'Brown the butter the night before if you like. Flaky salt on top before baking.'},
+  {id:'r3', name:'Rosemary focaccia', tags:['focaccia','slow rise'], time:'5h', yieldLabel:'1 tray', servings:12,
+   ingredients:[{amt:500,unit:'g',item:'Bread flour'},{amt:400,unit:'g',item:'Water'},{amt:10,unit:'g',item:'Fine sea salt'},{amt:4,unit:'g',item:'Instant yeast'},{amt:40,unit:'g',item:'Olive oil'}],
+   steps:[{text:'Stir everything but the oil into a wet shaggy dough.', time:'5m'},{text:'Rest four hours at room temperature. Fold twice early on.', time:'4h'},{text:'Oil the tray well. Stretch the dough to the corners.', time:'10m'},{text:'Dimple with oiled fingers. Rosemary, flaky salt, more oil.', time:'5m'},{text:'Bake at 220C for 22 minutes until the edges go deep gold.', time:'22m'}],
+   notes:'More oil than feels sensible. That is what makes the bottom crisp.'}
+];
+const HOUR = 3600000;
+
+class Component extends DCLogic {
+  state = {
+    theme:'light', ff:false, reduced:false, pro:false, tab:'convert', mode:'ingredient',
+    ing:'all_purpose_flour', amount:'1', fromU:'cup', toU:'g', flourStd:120, units:'metric',
+    panFrom:'round_8', panTo:'rect_9x13', ovenVal:'350', ovenUnit:'F',
+    yeastAmt:'1', yeastFrom:'active_dry', yeastTo:'instant',
+    eggCount:3, eggFrom:'large', eggTo:'medium',
+    butterAmt:'1', butterFrom:'cup', butterTo:'g',
+    sheet:null, dragY:0, dragging:false, dragFrom:0,
+    recipes:SEED_RECIPES, starters:[], detailId:null, scale:1, cookStep:0,
+    search:'', ingSearch:'', tagFilter:'All',
+    nrName:'', nrYield:'', nrIngredients:'', nrSteps:'', nrTags:[],
+    nsName:'', nsHydration:100, nsRatio:'1:1:1', nsInterval:12, nsNotes:'',
+    toast:null, samLine:null, sound:true, haptics:true, reminders:true, weeklyTip:true,
+    onbStep:0, now:Date.now(), anchorH:0
+  };
+
+  componentDidMount() {
+    const base = Date.now();
+    this.setState({ starters:[
+      {id:'s1', name:'Betty', hydration:100, ratio:'1:1:1', interval:12, lastFed: base - 5.7*HOUR, feedCount:14},
+      {id:'s2', name:'Rye guy', hydration:80, ratio:'1:2:2', interval:24, lastFed: base - 25*HOUR, feedCount:3}
+    ]});
+    this.timer = setInterval(() => this.setState({ now: Date.now() }), 30000);
+  }
+  componentWillUnmount() { clearInterval(this.timer); if (this.toastTimer) clearTimeout(this.toastTimer); }
+
+  get C() { return this.state.theme === 'dark' ? D : L; }
+
+  say(line) {
+    this.setState({ samLine: line });
+    if (this.samTimer) clearTimeout(this.samTimer);
+    this.samTimer = setTimeout(() => this.setState({ samLine: null }), 4200);
+  }
+  toast(text, opts) {
+    const o = opts || {};
+    this.setState({ toast: { text, sam: !!o.sam, actionLabel: o.actionLabel || null, action: o.action || null } });
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => this.setState({ toast: null }), 4200);
+  }
+
+  // ---------- math ----------
+  ingredient(id) { return INGREDIENTS.find(i => i.id === id) || INGREDIENTS[0]; }
+  perCup(ing) { return ing.cat === 'flour' ? ing.cup * (this.state.flourStd / 120) : ing.cup; }
+  toGrams(ing, amt, unit) {
+    const cup = this.perCup(ing);
+    if (unit === 'cup') return amt * cup;
+    if (unit === 'tbsp') return amt * ing.tbsp;
+    if (unit === 'tsp') return amt * ing.tsp;
+    if (unit === 'ml') return (amt / 236.6) * cup;
+    if (unit === 'g') return amt;
+    if (unit === 'oz') return amt * 28.3495;
+    if (unit === 'lb') return amt * 453.592;
+    if (unit === 'stick') return amt * (ing.cup / 2);
+    return amt;
+  }
+  fromGrams(ing, g, unit) {
+    const cup = this.perCup(ing);
+    if (unit === 'cup') return g / cup;
+    if (unit === 'tbsp') return g / ing.tbsp;
+    if (unit === 'tsp') return g / ing.tsp;
+    if (unit === 'ml') return (g / cup) * 236.6;
+    if (unit === 'g') return g;
+    if (unit === 'oz') return g / 28.3495;
+    if (unit === 'lb') return g / 453.592;
+    if (unit === 'stick') return g / (ing.cup / 2);
+    return g;
+  }
+  fmt(n) {
+    if (!Number.isFinite(n)) return '';
+    if (n >= 100) return String(Math.round(n));
+    if (n >= 10) return String(Math.round(n * 10) / 10);
+    return String(Math.round(n * 100) / 100);
+  }
+  unitWord(u, n) {
+    const words = { cup:'cups', tbsp:'tablespoons', tsp:'teaspoons', ml:'millilitres', g:'grams', oz:'ounces', lb:'pounds', stick:'sticks' };
+    if (n === 1) return { cup:'cup', tbsp:'tablespoon', tsp:'teaspoon', ml:'millilitres', g:'grams', oz:'ounce', lb:'pound', stick:'stick' }[u];
+    return words[u];
+  }
+
+  result() {
+    const s = this.state;
+    if (s.mode === 'ingredient') {
+      const ing = this.ingredient(s.ing);
+      const amt = Number(s.amount);
+      if (!Number.isFinite(amt) || s.amount.trim() === '') return { label:'Waiting on a number', value:'', unit:'', note:"Hmm, that number's tricky. Want to try again?" };
+      const out = this.fromGrams(ing, this.toGrams(ing, amt, s.fromU), s.toU);
+      return {
+        label: s.amount + ' ' + s.fromU + ' ' + ing.name.toLowerCase() + ' equals',
+        value: this.fmt(out), unit: this.unitWord(s.toU, out),
+        note: ing.cat === 'flour' ? 'Using the ' + s.flourStd + 'g per cup standard.' : 'Weights from the King Arthur chart.'
+      };
+    }
+    if (s.mode === 'pan') {
+      const a = PANS.find(p => p.id === s.panFrom), b = PANS.find(p => p.id === s.panTo);
+      const ratio = b.area / a.area;
+      const note = ratio > 1.08 ? 'Bigger pan, thinner batter. Check early and shorten the time a little.'
+        : ratio < 0.92 ? 'Smaller pan, deeper batter. Give it longer, and maybe lower the heat.'
+        : 'About the same. Just check a few minutes early.';
+      return { label: a.name + ' to ' + b.name + ', scale your recipe by', value: (Math.round(ratio * 100) / 100) + 'x', unit:'', note };
+    }
+    if (s.mode === 'oven') {
+      const v = Number(s.ovenVal);
+      if (!Number.isFinite(v) || s.ovenVal.trim() === '') return { label:'Waiting on a number', value:'', unit:'', note:"Hmm, that number's tricky. Want to try again?" };
+      if (s.ovenUnit === 'F') {
+        const c = Math.round(((v - 32) * 5 / 9) / 5) * 5;
+        const gas = GAS.reduce((best, g) => Math.abs(g[0] - v) < Math.abs(best[0] - v) ? g : best, GAS[0]);
+        return { label: v + ' Fahrenheit reads as', value: String(c), unit:'Celsius', note:'Gas mark ' + gas[1] + '.' };
+      }
+      const f = Math.round((v * 9 / 5 + 32) / 5) * 5;
+      const gas = GAS.reduce((best, g) => Math.abs(g[0] - f) < Math.abs(best[0] - f) ? g : best, GAS[0]);
+      return { label: v + ' Celsius reads as', value: String(f), unit:'Fahrenheit', note:'Gas mark ' + gas[1] + '.' };
+    }
+    if (s.mode === 'yeast') {
+      const amt = Number(s.yeastAmt);
+      if (!Number.isFinite(amt)) return { label:'Waiting on a number', value:'', unit:'', note:"Hmm, that number's tricky. Want to try again?" };
+      const out = amt * YEAST_RATIO[s.yeastFrom][s.yeastTo];
+      return { label: s.yeastAmt + ' tsp ' + YEAST[s.yeastFrom].name.toLowerCase() + ' equals', value: this.fmt(out), unit:'tsp ' + YEAST[s.yeastTo].name.toLowerCase(), note: this.fmt(out * YEAST[s.yeastTo].g) + ' grams by weight.' };
+    }
+    if (s.mode === 'egg') {
+      const out = (s.eggCount * EGGS[s.eggFrom].g) / EGGS[s.eggTo].g;
+      const rounded = Math.round(out);
+      return { label: s.eggCount + ' ' + EGGS[s.eggFrom].name.toLowerCase() + ' eggs equals', value: this.fmt(out), unit: EGGS[s.eggTo].name.toLowerCase() + ' eggs', note: 'Use ' + rounded + ' and call it close enough, or weigh ' + Math.round(s.eggCount * EGGS[s.eggFrom].g) + ' grams of beaten egg.' };
+    }
+    const ing = this.ingredient('butter');
+    const amt = Number(s.butterAmt);
+    if (!Number.isFinite(amt)) return { label:'Waiting on a number', value:'', unit:'', note:"Hmm, that number's tricky. Want to try again?" };
+    const out = this.fromGrams(ing, this.toGrams(ing, amt, s.butterFrom), s.butterTo);
+    return { label: s.butterAmt + ' ' + s.butterFrom + ' butter equals', value: this.fmt(out), unit: this.unitWord(s.butterTo, out), note: 'One stick is half a cup, 113 grams.' };
+  }
+
+  // ---------- style helpers ----------
+  chip(active, extra) {
+    const C = this.C;
+    return Object.assign({
+      height: this.state.ff ? 52 : 44, padding:'0 15px', border:0, borderRadius:999, cursor:'pointer', flex:'none',
+      background: active ? C.ink : C.sunken, color: active ? C.bg : C.soft,
+      font:'700 ' + (this.state.ff ? 16 : 14) + 'px/1 "Nunito Sans"', display:'flex', alignItems:'center', gap:8,
+      whiteSpace:'nowrap', transition: this.state.reduced ? 'none' : 'background 160ms ease, color 160ms ease'
+    }, extra || {});
+  }
+  smallChip(active) {
+    const C = this.C;
+    return { height: this.state.ff ? 44 : 36, padding:'0 13px', border:0, borderRadius:999, cursor:'pointer',
+      background: active ? C.primary : C.sunken, color: active ? C.onPrimary : C.soft,
+      font:'700 ' + (this.state.ff ? 15 : 13) + 'px/1 "Nunito Sans"', whiteSpace:'nowrap' };
+  }
+  tag(kind) {
+    const C = this.C;
+    const map = { sourdough:[C.wash, C.primaryText], 'slow rise':[C.tealWash, C.tealText], cookies:[C.plumWash, C.plum], focaccia:[C.tealWash, C.tealText], weeknight:['rgba(255,194,75,.22)', this.state.theme === 'dark' ? C.butter : '#8A6420'] };
+    const pair = map[kind] || [C.sunken, C.soft];
+    return { height:26, padding:'0 10px', borderRadius:999, background:pair[0], color:pair[1], font:'700 11px/26px "Nunito Sans"' };
+  }
+  card() {
+    const C = this.C;
+    return { background:C.surface, border:'1px solid ' + C.border, borderRadius:22, padding:16, display:'flex', flexDirection:'column', gap:10, textAlign:'left', cursor:'pointer', width:'100%' };
+  }
+
+  render_ctl(active, tone) {
+    const bg = active ? (tone === 'pro' ? '#8E4B7A' : '#2C1E17') : '#F6E9DC';
+    return { height:40, border:0, borderRadius:999, background:bg, color: active ? '#fff' : '#6F5A4C', font:'700 13px/1 "Nunito Sans"', cursor:'pointer', flex:1, padding:'0 12px' };
+  }
+
+  // ---------- actions ----------
+  setMode = (id) => () => { this.setState({ mode:id, sheet:null }); this.say(null); };
+  openSheet = (name) => this.setState({ sheet:name, dragY:0 });
+
+  onSave = () => {
+    const r = this.result();
+    if (!r.value) { this.say("Hmm, that number's tricky. Want to try again?"); return; }
+    const name = r.label.replace(' equals', '');
+    const rec = { id:'c' + Date.now(), name, tags:['saved'], time:'', yieldLabel:'From the calculator', servings:1,
+      ingredients:[{ amt:r.value, unit:r.unit, item:name }], steps:[], notes:'Saved from Convert.' };
+    this.setState({ recipes:[rec].concat(this.state.recipes) });
+    this.say('Look at us.');
+    this.toast('Saved to your Recipe Box.', { sam:true });
+  };
+
+  feed = (id) => () => {
+    const starters = this.state.starters.map(s => s.id === id ? Object.assign({}, s, { lastFed: Date.now(), feedCount: s.feedCount + 1 }) : s);
+    const s = starters.find(x => x.id === id);
+    this.setState({ starters });
+    this.toast('Well fed. ' + s.name + ' is happy.', { sam:true });
+  };
+  deleteStarter = (id) => () => {
+    const gone = this.state.starters.find(s => s.id === id);
+    this.setState({ starters: this.state.starters.filter(s => s.id !== id) });
+    this.toast(gone.name + ' is gone.', { actionLabel:'Undo', action:() => this.setState({ starters: this.state.starters.concat([gone]), toast:null }) });
+  };
+  deleteRecipe = (id) => {
+    const gone = this.state.recipes.find(r => r.id === id);
+    this.setState({ recipes: this.state.recipes.filter(r => r.id !== id), sheet:null });
+    this.toast('Recipe deleted.', { actionLabel:'Undo', action:() => this.setState({ recipes:[gone].concat(this.state.recipes), toast:null }) });
+  };
+
+  renderVals() {
+    const s = this.state, C = this.C, ff = s.ff;
+    const res = this.result();
+    const detail = s.recipes.find(r => r.id === s.detailId) || s.recipes[0] || SEED_RECIPES[0];
+    const sheetOpen = !!s.sheet;
+    const tall = s.sheet === 'recipe' || s.sheet === 'newRecipe' || s.sheet === 'settings' || s.sheet === 'ingPicker' || s.sheet === 'newStarter' || s.sheet === 'cook';
+    const trans = s.reduced ? 'opacity 120ms linear' : 'transform 320ms cubic-bezier(.32,.72,0,1), opacity 200ms linear';
+
+    const ICON_D = {
+      ingredient:'M4 8h9M9.5 4.5 13 8l-3.5 3.5M20 16h-9M14.5 12.5 11 16l3.5 3.5',
+      convert:'M4 8h9M9.5 4.5 13 8l-3.5 3.5M20 16h-9M14.5 12.5 11 16l3.5 3.5',
+      pan:'M3.5 9.5h17v7a3 3 0 0 1-3 3h-11a3 3 0 0 1-3-3zM8 9.5V7M16 9.5V7',
+      oven:'M10 4a2 2 0 1 1 4 0v9a4 4 0 1 1-4 0z',
+      yeast:'M12 3c3 4 5 6 5 9a5 5 0 0 1-10 0c0-3 2-5 5-9z',
+      egg:'M12 4c3.4 0 6 4.4 6 8.4A6 6 0 0 1 6 12.4C6 8.4 8.6 4 12 4z',
+      butter:'M4 15l6-8h10l-6 8zM10 7v8M4 15h10',
+      recipes:'M4 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v14H6a2 2 0 0 0-2 2z',
+      starters:'M8 3h8M9.5 3v4.5L6 15.5A3 3 0 0 0 8.7 20h6.6A3 3 0 0 0 18 15.5L14.5 7.5V3M7 15h10',
+      swaps:'M5 8h9l-3-3M19 16h-9l3 3'
+    };
+
+    const v = {
+      // theme + shell
+      themeVars: { '--bg':C.bg, '--surface':C.surface, '--sunken':C.sunken, '--border':C.border, '--ink':C.ink,
+        '--soft':C.soft, '--faint':C.faint, '--primary':C.primary, '--primaryText':C.primaryText, '--wash':C.wash,
+        '--butter':C.butter, '--teal':C.teal, '--danger':C.danger, '--plum':C.plum, '--plumWash':C.plumWash,
+        '--grabber':C.grabber, '--samInk':C.samInk, '--onPrimary':C.onPrimary },
+      phoneStyle: { width:390, height:844, borderRadius:46, overflow:'hidden', position:'relative', display:'flex',
+        flexDirection:'column', background:C.bg, fontSize: (ff ? 20 : 16) + 'px',
+        boxShadow: s.theme === 'dark' ? '0 22px 50px rgba(20,12,8,.45)' : '0 22px 50px rgba(74,42,24,.20)',
+        '--bg':C.bg, '--surface':C.surface, '--sunken':C.sunken, '--border':C.border, '--ink':C.ink, '--soft':C.soft,
+        '--faint':C.faint, '--primary':C.primary, '--primaryText':C.primaryText, '--wash':C.wash, '--butter':C.butter,
+        '--teal':C.teal, '--danger':C.danger, '--plum':C.plum, '--plumWash':C.plumWash, '--grabber':C.grabber,
+        '--samInk':C.samInk, '--onPrimary':C.onPrimary },
+      screenLabel: (s.tab === 'convert' ? 'Convert · ' + MODES.find(m => m.id === s.mode).label : s.tab === 'recipes' ? 'Recipes' : s.tab === 'starters' ? 'Starters' : 'Substitutions')
+        + ' · ' + (s.theme === 'dark' ? 'dark' : 'light') + (ff ? ' · floured fingers' : '') + (s.reduced ? ' · reduced motion' : ''),
+      tabTitle: s.tab === 'convert' ? 'Convert' : s.tab === 'recipes' ? 'Recipes' : s.tab === 'starters' ? 'Starters' : 'Swaps',
+      pro: s.pro, notPro: !s.pro,
+
+      // controls
+      ctlLight: this.render_ctl(s.theme === 'light'), ctlDark: this.render_ctl(s.theme === 'dark'),
+      ctlFF: this.render_ctl(ff), ctlRM: this.render_ctl(s.reduced), ctlPro: this.render_ctl(s.pro, 'pro'),
+      ctlPlain: this.render_ctl(false),
+      setLight: () => this.setState({ theme:'light' }), setDark: () => this.setState({ theme:'dark' }),
+      toggleFF: () => this.setState({ ff: !ff }), toggleRM: () => this.setState({ reduced: !s.reduced }),
+      togglePro: () => this.setState({ pro: !s.pro }),
+      startOnboarding: () => this.setState({ onbStep:1, sheet:null }),
+      emptyAll: () => this.setState({ recipes:[], starters:[], tab:'recipes', sheet:null }),
+      resetAll: () => this.setState({ recipes:SEED_RECIPES, tab:'convert', mode:'ingredient', sheet:null, toast:null, samLine:null,
+        starters:[{ id:'s1', name:'Betty', hydration:100, ratio:'1:1:1', interval:12, lastFed: Date.now() - 5.7*HOUR, feedCount:14 },
+                  { id:'s2', name:'Rye guy', hydration:80, ratio:'1:2:2', interval:24, lastFed: Date.now() - 25*HOUR, feedCount:3 }] }),
+
+      // tabs
+      isConvert: s.tab === 'convert', isRecipes: s.tab === 'recipes', isStarters: s.tab === 'starters', isSwaps: s.tab === 'swaps',
+      tabs: [['convert','Convert'],['recipes','Recipes'],['starters','Starters'],['swaps','Swaps']].map(([id, label]) => {
+        const active = s.tab === id;
+        return { label, onPress: () => this.setState({ tab:id, sheet:null }),
+          style: { border:0, background:'transparent', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:5, padding:0, color: active ? C.primary : C.faint },
+          pillStyle: { width:44, height:30, borderRadius:999, background: active ? C.wash : 'transparent', display:'flex', alignItems:'center', justifyContent:'center' },
+          iconStyle: { display:'flex' , alignItems:'center' },
+          icon: null };
+      }).map((t, i) => Object.assign(t, { iconStyle: { display:'flex', alignItems:'center', justifyContent:'center' } })),
+
+      // convert modes
+      isIngredientMode: s.mode === 'ingredient', isPanMode: s.mode === 'pan', isOvenMode: s.mode === 'oven',
+      isYeastMode: s.mode === 'yeast', isEggMode: s.mode === 'egg', isButterMode: s.mode === 'butter',
+      modeChips: MODES.map(m => ({ label:m.label, onPress:this.setMode(m.id), style:this.chip(s.mode === m.id),
+        iconStyle: { display:'none' } })),
+      trayChipStyle: this.chip(false, { background:'transparent', border:'1.5px solid ' + C.border, color:C.faint }),
+      openTray: () => this.openSheet('tray'),
+      trayItems: MODES.map(m => ({ label:m.label, hint:m.hint, onPress:this.setMode(m.id),
+        style: { border:'1px solid ' + (s.mode === m.id ? C.primary : C.border), background: s.mode === m.id ? C.wash : C.surface,
+          borderRadius:20, padding:14, display:'flex', flexDirection:'column', gap:4, alignItems:'flex-start', cursor:'pointer', color:C.ink, minHeight:88 },
+        iconStyle: { display:'none' } })),
+
+      ingName: this.ingredient(s.ing).name,
+      amount: s.amount, setAmount: (e) => this.setState({ amount:e.target.value }),
+      openIngPicker: () => this.openSheet('ingPicker'),
+      ingSearch: s.ingSearch, setIngSearch: (e) => this.setState({ ingSearch:e.target.value }),
+      ingResults: INGREDIENTS.filter(i => i.name.toLowerCase().includes(s.ingSearch.toLowerCase())).map(i => ({
+        name:i.name, weight: i.cup + ' g per cup', onPress: () => this.setState({ ing:i.id, sheet:null, ingSearch:'' }),
+        style: { width:'100%', border:0, background: i.id === s.ing ? C.wash : 'transparent', borderRadius:14, minHeight:52,
+          padding:'0 14px', display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer',
+          color: i.id === s.ing ? C.primaryText : C.ink } })),
+      fromUnits: ['cup','tbsp','tsp','ml','g','oz','lb'].map(u => ({ label:u, onPress: () => this.setState({ fromU:u }), style:this.smallChip(s.fromU === u) })),
+      toUnits: ['g','oz','lb','cup','tbsp','tsp','ml'].map(u => ({ label:u, onPress: () => this.setState({ toU:u }), style:this.smallChip(s.toU === u) })),
+      panFromChips: PANS.map(p => ({ label:p.name, onPress: () => this.setState({ panFrom:p.id }), style:this.smallChip(s.panFrom === p.id) })),
+      panToChips: PANS.map(p => ({ label:p.name, onPress: () => this.setState({ panTo:p.id }), style:this.smallChip(s.panTo === p.id) })),
+      ovenVal: s.ovenVal, setOvenVal: (e) => this.setState({ ovenVal:e.target.value }),
+      ovenUnitChips: [['F','Fahrenheit'],['C','Celsius']].map(([id, label]) => ({ label, onPress: () => this.setState({ ovenUnit:id }), style:this.smallChip(s.ovenUnit === id) })),
+      yeastAmt: s.yeastAmt, setYeastAmt: (e) => this.setState({ yeastAmt:e.target.value }),
+      yeastFromChips: Object.keys(YEAST).map(k => ({ label:YEAST[k].name, onPress: () => this.setState({ yeastFrom:k }), style:this.smallChip(s.yeastFrom === k) })),
+      yeastToChips: Object.keys(YEAST).map(k => ({ label:YEAST[k].name, onPress: () => this.setState({ yeastTo:k }), style:this.smallChip(s.yeastTo === k) })),
+      eggCount: s.eggCount, eggMinus: () => this.setState({ eggCount: Math.max(1, s.eggCount - 1) }), eggPlus: () => this.setState({ eggCount: s.eggCount + 1 }),
+      eggFromChips: Object.keys(EGGS).map(k => ({ label:EGGS[k].name, onPress: () => this.setState({ eggFrom:k }), style:this.smallChip(s.eggFrom === k) })),
+      eggToChips: Object.keys(EGGS).map(k => ({ label:EGGS[k].name, onPress: () => this.setState({ eggTo:k }), style:this.smallChip(s.eggTo === k) })),
+      butterAmt: s.butterAmt, setButterAmt: (e) => this.setState({ butterAmt:e.target.value }),
+      butterFromChips: ['cup','stick','tbsp','g','oz'].map(u => ({ label:u, onPress: () => this.setState({ butterFrom:u }), style:this.smallChip(s.butterFrom === u) })),
+      butterToChips: ['g','oz','cup','stick','tbsp'].map(u => ({ label:u, onPress: () => this.setState({ butterTo:u }), style:this.smallChip(s.butterTo === u) })),
+
+      // result + Sam
+      resultLabel: res.label, resultValue: res.value || '—', resultUnit: res.unit, resultNote: res.note,
+      convertCardStyle: { background:C.surface, borderRadius:22, padding:18, display:'flex', flexDirection:'column', gap:14,
+        boxShadow:'0 6px 18px rgba(74,42,24,.08)', border: s.theme === 'dark' ? '1px solid ' + C.border : 'none' },
+      inCardResultStyle: { marginTop:4, paddingTop:14, borderTop:'1px solid ' + C.border, display:'flex', flexDirection:'column', gap:4 },
+      anchorFadeStyle: { flex:'none', height:24, marginTop:-24, position:'relative', zIndex:1, pointerEvents:'none',
+        background:'linear-gradient(to top, ' + C.bg + ', rgba(0,0,0,0))' },
+      anchorBlockStyle: { flex:'none', position:'relative', zIndex:1, background:C.bg, padding:'0 24px 10px',
+        display:'flex', flexDirection:'column', gap:10, visibility: sheetOpen ? 'hidden' : 'visible' },
+      primaryBtnStyle: { width:'100%', minHeight: ff ? 56 : 48, border:0, borderRadius:999, background:C.primary, color:C.onPrimary,
+        font:'700 ' + (ff ? 19 : 16) + 'px/1 "Nunito Sans"', display:'flex', alignItems:'center', justifyContent:'center', gap:9, cursor:'pointer',
+        boxShadow:'0 6px 18px rgba(242,96,60,.28)' },
+      quietBtnStyle: { width:'100%', minHeight: ff ? 56 : 48, border:'1.5px solid ' + C.border, borderRadius:999, background:'transparent',
+        color:C.soft, font:'700 ' + (ff ? 18 : 16) + 'px/1 "Nunito Sans"', cursor:'pointer' },
+      destructiveBtnStyle: { width:'100%', minHeight: ff ? 56 : 48, border:0, borderRadius:999, background:C.dangerWash, color:C.danger,
+        font:'700 ' + (ff ? 18 : 16) + 'px/1 "Nunito Sans"', cursor:'pointer', marginTop:4 },
+      proBtnStyle: { width:'100%', minHeight: ff ? 60 : 52, border:0, borderRadius:999, background:C.plum, color:'#fff',
+        font:'700 ' + (ff ? 20 : 17) + 'px/1 "Nunito Sans"', cursor:'pointer' },
+      stepBtnStyle: { width: ff ? 56 : 48, height: ff ? 56 : 48, flex:'none', border:0, borderRadius:999, background:C.sunken, color:C.soft,
+        display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' },
+      inputStyle: { width:'100%', minHeight: ff ? 64 : 56, border:0, borderRadius:16, background:C.sunken, color:C.ink,
+        padding:'0 16px', font:'600 ' + (ff ? 24 : 20) + 'px/1.2 "Space Grotesk"' },
+      textareaStyle: { width:'100%', minHeight:96, border:0, borderRadius:16, background:C.sunken, color:C.ink, padding:14,
+        font:'400 ' + (ff ? 18 : 15) + 'px/1.55 "Nunito Sans"', resize:'vertical' },
+      searchInputStyle: { flex:1, border:0, background:'transparent', color:C.ink, font:'400 ' + (ff ? 19 : 16) + 'px/1.3 "Nunito Sans"' },
+      showSamMoment: !!s.samLine, samLine: s.samLine || '', samInlineStyle: { display:'flex', flex:'none' },
+
+      // recipes
+      hasRecipes: s.recipes.length > 0, recipesEmpty: s.recipes.length === 0,
+      tagFilters: ['All','sourdough','cookies','focaccia','slow rise'].map(t => ({ label:t, onPress: () => this.setState({ tagFilter:t }), style:this.smallChip(s.tagFilter === t) })),
+      recipeCards: s.recipes.filter(r => s.tagFilter === 'All' || (r.tags || []).indexOf(s.tagFilter) >= 0).map(r => ({
+        name:r.name, time:r.time || '', meta: (r.ingredients.length + ' ingredients') + (r.steps.length ? ' · ' + r.steps.length + ' steps' : '') + ' · ' + r.yieldLabel,
+        tags: (r.tags || []).map(t => ({ label:t, style:this.tag(t) })),
+        cardStyle: this.card(), onPress: () => this.setState({ detailId:r.id, scale:1, sheet:'recipe', dragY:0 }) })),
+      openNewRecipe: () => this.setState({ sheet:'newRecipe', dragY:0, nrName:'', nrYield:'', nrIngredients:'', nrSteps:'', nrTags:[] }),
+
+      // recipe detail
+      detail: {
+        name: detail.name,
+        meta: detail.yieldLabel + (detail.time ? ' · ' + detail.time : ''),
+        tags: (detail.tags || []).map(t => ({ label:t, style:this.tag(t) })),
+        yieldLabel: detail.yieldLabel,
+        scaleLabel: s.scale === 1 ? 'Original' : 'Now at ' + (Math.round(s.scale * 100) / 100) + 'x',
+        servings: Math.max(1, Math.round(detail.servings * s.scale)),
+        ingredients: detail.ingredients.map((i, idx) => ({
+          item:i.item, qty: (typeof i.amt === 'number' ? this.fmt(i.amt * s.scale) : i.amt) + (i.unit ? ' ' + i.unit : ''),
+          rowStyle: { display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, minHeight: ff ? 56 : 48,
+            padding:'0 14px', borderBottom: idx === detail.ingredients.length - 1 ? 'none' : '1px solid ' + C.border } })),
+        bakers: (() => {
+          const flour = detail.ingredients.filter(i => /flour|semolina/i.test(i.item) && i.unit === 'g').reduce((a, i) => a + i.amt, 0);
+          if (!flour) return [{ item:'No flour weight yet', pct:'', rowStyle:{ padding:14 } }];
+          return detail.ingredients.filter(i => i.unit === 'g').map((i, idx, arr) => ({
+            item:i.item, pct: Math.round((i.amt / flour) * 1000) / 10 + '%',
+            rowStyle: { display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, minHeight: ff ? 56 : 48,
+              padding:'0 14px', borderBottom: idx === arr.length - 1 ? 'none' : '1px solid ' + C.border } }));
+        })(),
+        steps: detail.steps.map((st, i) => ({
+          n: i + 1, text: st.text, time: st.time,
+          rowStyle: { display:'flex', gap:12, alignItems:'flex-start', padding:'12px 14px', background:C.surface, border:'1px solid ' + C.border, borderRadius:18 },
+          numStyle: { width:28, height:28, flex:'none', borderRadius:999, background:C.wash, color:C.primaryText,
+            font:'700 13px/28px "Space Grotesk"', textAlign:'center' },
+          timeStyle: { font:'500 12px/1.4 "Space Grotesk"', color:C.teal } })),
+        notes: detail.notes
+      },
+      detailBlockStyle: { background:C.surface, border:'1px solid ' + C.border, borderRadius:20, padding:14 },
+      detailListStyle: { background:C.surface, border:'1px solid ' + C.border, borderRadius:20, overflow:'hidden' },
+      scaleChipRowStyle: { display:'flex', gap:8, flexWrap:'wrap' },
+      scaleChips: [[0.5,'0.5x'],[1,'1x'],[2,'2x']].map(([f, label]) => ({ label, onPress: () => this.setState({ scale:f }), style:this.smallChip(s.scale === f) })),
+      scaleUp: () => this.setState({ scale: Math.round((s.scale + 0.25) * 100) / 100 }),
+      scaleDown: () => this.setState({ scale: Math.max(0.25, Math.round((s.scale - 0.25) * 100) / 100) }),
+      proBadgeStyle: { height:24, padding:'0 9px', borderRadius:999, background:C.plumWash, color:C.plum, font:'700 10px/24px "Nunito Sans"', letterSpacing:'.08em', textTransform:'uppercase' },
+      lockedCardStyle: { width:'100%', border:'1px solid ' + C.plum, background:C.plumWash, color:C.plum, borderRadius:20, padding:14,
+        display:'flex', flexDirection:'column', gap:4, alignItems:'flex-start', textAlign:'left', cursor:'pointer' },
+      deleteFromDetail: () => this.deleteRecipe(detail.id),
+      startCook: () => this.setState({ sheet:'cook', cookStep:0, dragY:0 }),
+
+      // cook mode
+      cook: {
+        name: detail.name, counter: 'Step ' + (s.cookStep + 1) + ' of ' + Math.max(1, detail.steps.length),
+        n: String(s.cookStep + 1), text: (detail.steps[s.cookStep] || { text:'Nothing written down yet.' }).text,
+        time: (detail.steps[s.cookStep] || {}).time || '',
+        nextLabel: s.cookStep >= detail.steps.length - 1 ? 'All done' : 'Next step',
+        dots: detail.steps.map((x, i) => ({ style: { width: i === s.cookStep ? 22 : 8, height:8, borderRadius:999,
+          background: i <= s.cookStep ? C.primary : C.border, display:'block', transition: s.reduced ? 'none' : 'width 200ms ease' } })) },
+      cookNumStyle: { font:'600 64px/1 "Space Grotesk"', color:C.wash === C.bg ? C.primary : C.primary, opacity:.9 },
+      cookTimeStyle: { font:'500 15px/1.4 "Space Grotesk"', color:C.teal },
+      cookNext: () => { if (s.cookStep >= detail.steps.length - 1) { this.setState({ sheet:null }); this.toast('Beautiful. Enjoy it.', { sam:true }); } else this.setState({ cookStep: s.cookStep + 1 }); },
+      cookPrev: () => this.setState({ cookStep: Math.max(0, s.cookStep - 1) }),
+
+      // new recipe
+      nrName: s.nrName, setNrName: (e) => this.setState({ nrName:e.target.value }),
+      nrYield: s.nrYield, setNrYield: (e) => this.setState({ nrYield:e.target.value }),
+      nrIngredients: s.nrIngredients, setNrIngredients: (e) => this.setState({ nrIngredients:e.target.value }),
+      nrSteps: s.nrSteps, setNrSteps: (e) => this.setState({ nrSteps:e.target.value }),
+      nrTagChips: ['sourdough','cookies','focaccia','slow rise','weeknight'].map(t => ({ label:t,
+        onPress: () => this.setState({ nrTags: s.nrTags.indexOf(t) >= 0 ? s.nrTags.filter(x => x !== t) : s.nrTags.concat([t]) }),
+        style: this.smallChip(s.nrTags.indexOf(t) >= 0) })),
+      saveNewRecipe: () => {
+        const parse = (line) => {
+          const m = line.trim().match(/^([\d./]+)\s*(g|kg|ml|cup|cups|tbsp|tsp|oz|lb)?\s*(.*)$/i);
+          if (!m) return { amt:line.trim(), unit:'', item:line.trim() };
+          const raw = m[1];
+          let num = Number(raw);
+          if (!Number.isFinite(num) && raw.indexOf('/') > 0) {
+            const parts = raw.split('/');
+            num = Number(parts[0]) / Number(parts[1]);
+          }
+          return { amt: Number.isFinite(num) ? num : raw, unit: m[2] || '', item: m[3] || line.trim() };
+        };
+        const ings = s.nrIngredients.split('\n').filter(l => l.trim()).map(parse);
+        const steps = s.nrSteps.split('\n').filter(l => l.trim()).map(t => ({ text:t.trim(), time:'' }));
+        const rec = { id:'n' + Date.now(), name: s.nrName.trim() || 'New recipe', tags:s.nrTags, time:'',
+          yieldLabel: s.nrYield.trim() || 'Makes what it makes', servings:1, ingredients: ings.length ? ings : [{ amt:'', unit:'', item:'Nothing yet' }],
+          steps, notes:'' };
+        this.setState({ recipes:[rec].concat(s.recipes), sheet:null });
+        this.toast('Saved to your Recipe Box.', { sam:true });
+      },
+
+      // starters
+      startersEmpty: s.starters.length === 0,
+      starterCards: s.starters.map(st => {
+        const msLeft = st.lastFed + st.interval * HOUR - s.now;
+        const ready = msLeft <= 0;
+        const hours = Math.floor(Math.abs(msLeft) / HOUR), mins = Math.round((Math.abs(msLeft) % HOUR) / 60000);
+        const pct = Math.max(0, Math.min(1, 1 - msLeft / (st.interval * HOUR)));
+        const circ = 2 * Math.PI * 17;
+        return {
+          name:st.name, hydration: st.hydration + '% hydration',
+          countdown: ready ? 'Feed now' : hours + 'h ' + mins + 'm',
+          sub: ready ? 'she has been waiting ' + hours + 'h' : 'until her next feed',
+          fedCount: st.feedCount > 0 ? 'Fed ' + st.feedCount + ' times' : 'Fresh starter. Feed when you like.',
+          cardStyle: { background:C.surface, border:'1px solid ' + (ready ? C.primary : C.border), borderRadius:22, padding:16, display:'flex', flexDirection:'column', gap:12 },
+          badgeStyle: { height:28, padding:'0 10px', borderRadius:999, background:C.tealWash, color:C.tealText, font:'700 11px/28px "Nunito Sans"', flex:'none' },
+          countdownStyle: { font:'600 ' + (ff ? 26 : 22) + 'px/1.1 "Space Grotesk"', color: ready ? C.primary : C.ink },
+          ringStyle: { width:44, height:44, flex:'none', borderRadius:999, display:'block',
+            background: 'conic-gradient(' + (ready ? C.primary : C.teal) + ' ' + Math.round(pct * 360) + 'deg, ' + C.sunken + ' 0deg)',
+            padding:5, boxSizing:'border-box' },
+          ringInnerStyle: { display:'block', width:'100%', height:'100%', borderRadius:999, background:C.surface },
+          feedStyle: { flex:1, minHeight: ff ? 56 : 46, border:0, borderRadius:999, background: ready ? C.primary : C.sunken,
+            color: ready ? C.onPrimary : C.soft, font:'700 ' + (ff ? 18 : 15) + 'px/1 "Nunito Sans"', cursor:'pointer' },
+          deleteStyle: { width: ff ? 56 : 46, height: ff ? 56 : 46, flex:'none', border:0, borderRadius:999, background:C.sunken,
+            color:C.danger, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' },
+          onFeed: this.feed(st.id), onDelete: this.deleteStarter(st.id) };
+      }),
+      openNewStarter: () => this.setState({ sheet:'newStarter', dragY:0, nsName:'', nsHydration:100, nsRatio:'1:1:1', nsInterval:12, nsNotes:'' }),
+      nsName: s.nsName, setNsName: (e) => this.setState({ nsName:e.target.value }),
+      nsNotes: s.nsNotes, setNsNotes: (e) => this.setState({ nsNotes:e.target.value }),
+      nsHydrationChips: [80,100,125].map(h => ({ label:h + '%', onPress: () => this.setState({ nsHydration:h }), style:this.smallChip(s.nsHydration === h) })),
+      nsRatioChips: ['1:1:1','1:2:2','1:5:5'].map(r => ({ label:r, onPress: () => this.setState({ nsRatio:r }), style:this.smallChip(s.nsRatio === r) })),
+      nsIntervalLabel: s.nsInterval + 'h',
+      nsIntervalUp: () => this.setState({ nsInterval: s.nsInterval + 12 }),
+      nsIntervalDown: () => this.setState({ nsInterval: Math.max(6, s.nsInterval - 6) }),
+      saveNewStarter: () => {
+        const name = s.nsName.trim() || 'Starter';
+        this.setState({ starters: s.starters.concat([{ id:'s' + Date.now(), name, hydration:s.nsHydration, ratio:s.nsRatio,
+          interval:s.nsInterval, lastFed: Date.now(), feedCount:0 }]), sheet:null, tab:'starters' });
+        this.toast('Meet ' + name + '.', { sam:true });
+      },
+
+      // swaps
+      search: s.search, setSearch: (e) => this.setState({ search:e.target.value }),
+      swapCards: SWAPS.filter(x => (x.missing + ' ' + x.substitute).toLowerCase().includes(s.search.toLowerCase())).map(x => ({
+        missing:x.missing, amount:x.amount, substitute:x.substitute, notes:x.notes,
+        cardStyle: { background:C.surface, border:'1px solid ' + C.border, borderRadius:22, padding:16, display:'flex', flexDirection:'column', gap:7 } })),
+      swapsEmpty: SWAPS.filter(x => (x.missing + ' ' + x.substitute).toLowerCase().includes(s.search.toLowerCase())).length === 0,
+      swapsProTeaser: !s.pro,
+      proTeaserStyle: { width:'100%', border:'1px solid ' + C.plum, background:C.plumWash, color:C.plum, borderRadius:22, padding:16,
+        display:'flex', flexDirection:'column', gap:4, alignItems:'flex-start', textAlign:'left', cursor:'pointer' },
+
+      // sheets
+      backdropStyle: { position:'absolute', inset:0, zIndex:3, background:C.scrim, opacity: sheetOpen ? 1 : 0,
+        pointerEvents: sheetOpen ? 'auto' : 'none', transition:'opacity 200ms linear' },
+      sheetStyle: { position:'absolute', left:0, right:0, bottom:0, zIndex:4, height: tall ? '90%' : 'auto', maxHeight:'92%',
+        background:C.bg, borderRadius:'28px 28px 0 0', boxShadow:'0 -12px 40px rgba(38,22,12,.28)', display:'flex', flexDirection:'column',
+        transform: sheetOpen ? 'translateY(' + s.dragY + 'px)' : 'translateY(102%)', transition: s.dragging ? 'none' : trans,
+        pointerEvents: sheetOpen ? 'auto' : 'none', overflow:'hidden' },
+      sheetFooterStyle: { flex:'none', padding:'12px 20px 22px', borderTop:'1px solid ' + C.border, background:C.surface, display:'flex', flexDirection:'column', gap:8 },
+      closeSheet: () => this.setState({ sheet:null, dragY:0 }),
+      dragStart: (e) => { this.setState({ dragging:true, dragFrom:e.clientY }); if (e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId); },
+      dragMove: (e) => { if (s.dragging) this.setState({ dragY: Math.max(0, e.clientY - s.dragFrom) }); },
+      dragEnd: () => { if (s.dragY > 120) this.setState({ sheet:null, dragY:0, dragging:false }); else this.setState({ dragY:0, dragging:false }); },
+      sheetIsTray: s.sheet === 'tray', sheetIsIngPicker: s.sheet === 'ingPicker', sheetIsRecipe: s.sheet === 'recipe',
+      sheetIsCook: s.sheet === 'cook', sheetIsNewRecipe: s.sheet === 'newRecipe', sheetIsNewStarter: s.sheet === 'newStarter',
+      sheetIsSettings: s.sheet === 'settings', sheetIsPaywall: s.sheet === 'paywall',
+      openSettings: () => this.openSheet('settings'), openPaywall: () => this.openSheet('paywall'),
+
+      // settings
+      segmentedTrackStyle: { background:C.sunken, borderRadius:999, padding:4, display:'flex', gap:4 },
+      themeSegments: [['light','Light'],['dark','Dark'],['auto','Auto']].map(([id, label]) => ({ label,
+        onPress: () => this.setState({ theme: id === 'auto' ? 'light' : id }),
+        style: { flex:1, minHeight: ff ? 48 : 40, border:0, borderRadius:999, cursor:'pointer',
+          background: s.theme === id ? C.surface : 'transparent', color: s.theme === id ? C.ink : C.soft,
+          font:'700 ' + (ff ? 16 : 14) + 'px/1 "Nunito Sans"', boxShadow: s.theme === id ? '0 1px 3px rgba(74,42,24,.14)' : 'none' } })),
+      unitSegments: [['metric','Metric'],['imperial','Imperial']].map(([id, label]) => ({ label,
+        onPress: () => this.setState({ units:id, fromU: id === 'metric' ? 'ml' : 'cup' }),
+        style: { flex:1, minHeight: ff ? 48 : 40, border:0, borderRadius:999, cursor:'pointer',
+          background: s.units === id ? C.surface : 'transparent', color: s.units === id ? C.ink : C.soft,
+          font:'700 ' + (ff ? 16 : 14) + 'px/1 "Nunito Sans"' } })),
+      flourSegments: [[120,'120g per cup'],[125,'125g per cup']].map(([id, label]) => ({ label,
+        onPress: () => this.setState({ flourStd:id }),
+        style: { flex:1, minHeight: ff ? 48 : 40, border:0, borderRadius:999, cursor:'pointer',
+          background: s.flourStd === id ? C.surface : 'transparent', color: s.flourStd === id ? C.ink : C.soft,
+          font:'700 ' + (ff ? 15 : 13) + 'px/1 "Nunito Sans"' } })),
+      feelToggles: [['reduced','Reduced motion','A calm version of every animation.', s.reduced], ['sound','Sound effects','', s.sound], ['haptics','Haptics','', s.haptics]]
+        .map(([key, label, desc, on], i, arr) => this.toggleRow(key, label, desc, on, i === arr.length - 1)),
+      prefToggles: [['ff','Floured fingers mode','Extra large text and bigger targets for messy hands.', ff]].map(([key, label, desc, on]) => this.toggleRow(key, label, desc, on, true)),
+      notifToggles: [['reminders','Starter reminders','', s.reminders], ['weeklyTip','Weekly baking tip from Sam','', s.weeklyTip]]
+        .map(([key, label, desc, on], i, arr) => this.toggleRow(key, label, desc, on, i === arr.length - 1)),
+      proRowStyle: { width:'100%', border:0, borderRadius:20, background:C.plumWash, color:C.plum, minHeight: ff ? 68 : 60,
+        padding:'0 16px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:10, cursor:'pointer' },
+      proRowLabel: s.pro ? 'Doughmate Pro' : 'Get Doughmate Pro',
+      proRowValue: s.pro ? 'Unlocked ›' : '$4.99 ›',
+      aboutRowStyle: { minHeight: ff ? 60 : 52, padding:'0 14px', display:'flex', alignItems:'center', justifyContent:'space-between',
+        gap:10, borderBottom:'1px solid ' + C.border },
+      perks: ['Unlimited recipes','Unlimited starters',"Baker's percentages",'Fermentation timer','Every theme','No ads, ever'].map(label => ({
+        label, rowStyle: { display:'flex', alignItems:'center', gap:10, background:C.surface, border:'1px solid ' + C.border,
+          borderRadius:16, padding:'12px 14px' } })),
+      buyPro: () => { this.setState({ pro:true, sheet:null }); this.toast('Pro unlocked. Thank you.', { sam:true }); },
+      restorePro: () => this.toast('Nothing to restore right now. Purchases follow your account.'),
+
+      // toast
+      hasToast: !!s.toast, toastText: s.toast ? s.toast.text : '', toastSam: !!(s.toast && s.toast.sam),
+      toastHasAction: !!(s.toast && s.toast.actionLabel), toastActionLabel: s.toast ? s.toast.actionLabel : '',
+      toastAction: s.toast && s.toast.action ? s.toast.action : () => {},
+      anchorRef: (el) => {
+        if (!el) return;
+        const h = el.offsetHeight;
+        if (h && h !== this.state.anchorH) this.setState({ anchorH: h });
+      },
+      toastStyle: { position:'absolute', zIndex:2, left:20, right:20, bottom: 112 + (s.tab === 'swaps' ? 0 : (s.anchorH || 0) + 8), background: s.toast && s.toast.sam ? C.wash : C.toastBg,
+        color: s.toast && s.toast.sam ? C.ink : C.toastInk, borderRadius:20, padding:'13px 15px', display:'flex',
+        alignItems:'center', gap:11, boxShadow:'0 14px 36px rgba(74,42,24,.22)' },
+      toastActionStyle: { border:0, background:'transparent', color: s.toast && s.toast.sam ? C.primaryText : C.butter,
+        font:'700 15px/1 "Nunito Sans"', cursor:'pointer', flex:'none' },
+
+      // onboarding
+      onboarding: s.onbStep > 0, onbStep1: s.onbStep === 1, onbStep2: s.onbStep === 2, onbStep3: s.onbStep === 3,
+      onboardingStyle: { position:'absolute', inset:0, background:C.bg, display:'flex', flexDirection:'column', zIndex:5 },
+      onbCardStyle: { background:C.surface, border:'1px solid ' + C.border, borderRadius:20, padding:16, display:'flex',
+        flexDirection:'column', gap:4, alignItems:'flex-start', textAlign:'left' },
+      onbTitle: s.onbStep === 1 ? "Hi. I'm Sam." : s.onbStep === 2 ? 'I do the fiddly math.' : 'Want a nudge at feeding time?',
+      onbBody: s.onbStep === 1 ? "Let's make the math easy." : s.onbStep === 2 ? "Cups to grams, pans, ovens, eggs and yeast. Scale any recipe, and I'll keep you company."
+        : 'I can remind you when your starter is ready, and send one baking tip each week.',
+      onbCta: s.onbStep === 1 ? 'Get started' : s.onbStep === 2 ? 'Next' : 'Sure',
+      onbSkipLabel: s.onbStep === 3 ? 'Maybe later' : 'Skip',
+      onbDots: [1,2,3].map(i => ({ style: { width: i === s.onbStep ? 22 : 8, height:8, borderRadius:999,
+        background: i === s.onbStep ? C.primary : C.border, display:'block' } })),
+      onbNext: () => { if (s.onbStep >= 3) { this.setState({ onbStep:0, reminders:true }); this.toast("I'll give you a nudge.", { sam:true }); } else this.setState({ onbStep: s.onbStep + 1 }); },
+      onbSkip: () => this.setState({ onbStep:0 }),
+
+      onSave: this.onSave
+    };
+
+    // tab icons as react elements inside the pill spans
+    v.tabs = v.tabs.map((t, i) => {
+      const id = ['convert','recipes','starters','swaps'][i];
+      const active = s.tab === id;
+      return Object.assign({}, t, { iconStyle: { display:'flex' },
+        icon: null, pillStyle: t.pillStyle,
+        // draw the icon via a background image free approach: inline svg through dangerous html is not available,
+        // so we colour a masked span using a data URI of the path
+        iconStyle2: null });
+    });
+    // build icon spans using data URIs so the template stays declarative
+    const svgUri = (d, color) => 'url("data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"/></svg>') + '")';
+    v.tabs = v.tabs.map((t, i) => {
+      const id = ['convert','recipes','starters','swaps'][i];
+      const active = s.tab === id;
+      return Object.assign({}, t, { iconStyle: { display:'block', width:20, height:20,
+        backgroundImage: svgUri(ICON_D[id], active ? C.primary : C.faint), backgroundSize:'20px 20px', backgroundRepeat:'no-repeat' } });
+    });
+    v.modeChips = v.modeChips.map((c, i) => Object.assign({}, c, { iconStyle: { display:'block', width:17, height:17, flex:'none',
+      backgroundImage: svgUri(ICON_D[MODES[i].id], s.mode === MODES[i].id ? C.bg : C.soft), backgroundSize:'17px 17px', backgroundRepeat:'no-repeat' } }));
+    v.trayItems = v.trayItems.map((c, i) => Object.assign({}, c, { iconStyle: { display:'block', width:26, height:26, marginBottom:6,
+      backgroundImage: svgUri(ICON_D[MODES[i].id], s.mode === MODES[i].id ? C.primary : C.soft), backgroundSize:'26px 26px', backgroundRepeat:'no-repeat' } }));
+    return v;
+  }
+
+  toggleRow(key, label, desc, on, last) {
+    const C = this.C, ff = this.state.ff;
+    const map = { reduced:'reduced', sound:'sound', haptics:'haptics', ff:'ff', reminders:'reminders', weeklyTip:'weeklyTip' };
+    return {
+      label, desc: desc || '',
+      onPress: () => this.setState({ [map[key]]: !this.state[map[key]] }),
+      rowStyle: { width:'100%', border:0, background:'transparent', minHeight: ff ? 68 : 58, padding:'10px 14px', display:'flex',
+        alignItems:'center', justifyContent:'space-between', gap:12, cursor:'pointer', borderBottom: last ? 'none' : '1px solid ' + C.border },
+      descStyle: { font:'400 12px/1.4 "Nunito Sans"', color:C.faint, display: desc ? 'block' : 'none' },
+      trackStyle: { width:51, height:31, flex:'none', borderRadius:999, background: on ? C.primary : C.border, position:'relative', display:'block',
+        transition: this.state.reduced ? 'none' : 'background 160ms ease' },
+      knobStyle: { position:'absolute', top:2, left: on ? 22 : 2, width:27, height:27, borderRadius:999, background:'#fff',
+        boxShadow:'0 1px 3px rgba(0,0,0,.2)', display:'block', transition: this.state.reduced ? 'none' : 'left 160ms ease' }
+    };
+  }
+}
+</script>
+</body>
+</html>

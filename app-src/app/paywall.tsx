@@ -1,76 +1,60 @@
-// Doughmate Pro paywall. Lists what Pro unlocks, buys via RevenueCat, and
-// restores. On web (or an unconfigured build) buying is unavailable and says so.
+// Doughmate Pro, a tall sheet. Sam celebrating, the six perks as bordered cards
+// with a plum check, then buy and restore. Buying needs a native build with a
+// configured key; on web it is unavailable and the button stays disabled.
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { ModalHeader } from '@/components/ModalHeader';
+import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { usePro } from '@/state/pro';
 import { spacing, typography } from '@/theme';
+import { BottomSheet } from '@/ui/BottomSheet';
+import { Button } from '@/ui/Button';
+import { useToast } from '@/ui/Toast';
 
-export default function PaywallScreen() {
+export default function PaywallSheet() {
   const { t } = useTranslation();
-  const { palette, bg } = useAppTheme();
+  const { palette } = useAppTheme();
   const { isPro, available, purchase, restore } = usePro();
-
+  const { show } = useToast();
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
 
   const features = t('paywall.features', { returnObjects: true }) as string[];
 
   const onBuy = async () => {
     setBusy(true);
-    setMessage(null);
     const outcome = await purchase();
     setBusy(false);
     if (outcome.ok) {
-      setMessage(t('toasts.pro_unlocked'));
+      show({ message: t('toasts.pro_unlocked'), variant: 'confirmation' });
+      router.back();
     } else if (!outcome.cancelled) {
-      setMessage(t('errors.iap_failed_body'));
+      show({ message: t('errors.iap_failed_body') });
     }
   };
 
   const onRestore = async () => {
     setBusy(true);
-    setMessage(null);
     const restored = await restore();
     setBusy(false);
-    setMessage(restored ? t('toasts.restore_success') : t('errors.restore_empty'));
+    show({
+      message: restored ? t('toasts.restore_success') : t('errors.restore_empty'),
+      variant: restored ? 'confirmation' : 'neutral',
+    });
+    if (restored) {
+      router.back();
+    }
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bg.primary }]} edges={['top']}>
-      <ModalHeader title={t('paywall.title')} />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[typography.body.lg, styles.center, { color: palette.chocSoft }]}>
-          {t('paywall.tagline')}
-        </Text>
-
-        <Card style={styles.features}>
-          {features.map((feature) => (
-            <View key={feature} style={styles.featureRow}>
-              <Text style={[typography.body.lg, { color: palette.crust }]}>✓</Text>
-              <Text style={[typography.body.lg, styles.featureText, { color: palette.choc }]}>
-                {feature}
-              </Text>
-            </View>
-          ))}
-        </Card>
-
-        {message ? (
-          <Text style={[typography.body.md, styles.center, { color: palette.leaf }]}>
-            {message}
-          </Text>
-        ) : null}
-
-        {isPro ? (
-          <Text style={[typography.heading, styles.center, { color: palette.crust }]}>
-            {t('toasts.pro_unlocked')}
-          </Text>
+    <BottomSheet
+      size="tall"
+      onClose={() => router.back()}
+      footer={
+        isPro ? (
+          <Button label={t('paywall.close')} onPress={() => router.back()} variant="secondary" />
         ) : (
           <View style={styles.actions}>
             <Button
@@ -81,23 +65,62 @@ export default function PaywallScreen() {
             />
             <Button
               label={t('paywall.restore')}
-              variant="ghost"
               onPress={onRestore}
+              variant="quiet"
               disabled={busy || !available}
             />
           </View>
-        )}
+        )
+      }
+    >
+      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+        <View style={styles.hero}>
+          <Sam size={132} state="celebrate" />
+          <Text style={[typography.display.lg, styles.center, { color: palette.textInk }]}>
+            {t('paywall.title')}
+          </Text>
+          <Text style={[typography.body.lg, styles.center, { color: palette.textSoft }]}>
+            {t('paywall.tagline')}
+          </Text>
+        </View>
+
+        {features.map((feature) => (
+          <View
+            key={feature}
+            style={[
+              styles.perk,
+              { backgroundColor: palette.bgSurface, borderColor: palette.border },
+            ]}
+          >
+            <Text style={[typography.heading, { color: palette.pro }]}>✓</Text>
+            <Text style={[typography.body.lg, styles.perkText, { color: palette.textInk }]}>
+              {feature}
+            </Text>
+          </View>
+        ))}
+
+        {isPro ? (
+          <Text style={[typography.heading, styles.center, { color: palette.pro }]}>
+            {t('toasts.pro_unlocked')}
+          </Text>
+        ) : null}
       </ScrollView>
-    </SafeAreaView>
+    </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: spacing.lg, paddingBottom: spacing['3xl'], gap: spacing.lg },
+  body: { padding: spacing.xl, gap: spacing.sm, paddingBottom: spacing.lg },
+  hero: { alignItems: 'center', gap: spacing.xs, marginBottom: spacing.sm },
   center: { textAlign: 'center' },
-  features: { gap: spacing.md },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  featureText: { flexShrink: 1 },
+  perk: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: spacing.md,
+  },
+  perkText: { flexShrink: 1 },
   actions: { gap: spacing.sm },
 });

@@ -20,26 +20,43 @@
     }
   },
   "onboarding": {
-    "screen1": {
-      "greeting": "Hi. I'm Sam. Let's make the math easy.",
-      "cta": "Get Started",
-      "skip": "Skip"
+    "next": "Next",
+    "skip": "Skip",
+    "welcome": {
+      "title": "Hi. I'm Sam.",
+      "body": "Your baking buddy. Let's make the math easy.",
+      "cta": "Get started"
     },
-    "screen2": {
-      "features": "Convert cups to grams, scale any recipe, and I'll keep you company.",
-      "cta": "Next",
-      "skip": "Skip"
+    "convert": {
+      "title": "Convert anything",
+      "body": "Cups to grams, pan sizes, oven temps, yeast. Tap a chip and get the number.",
+      "example_from": "1 cup flour",
+      "example_to": "120 g"
     },
-    "screen3": {
-      "prompt": "Want reminders when your starter needs feeding?",
+    "recipes": {
+      "title": "Your recipe box",
+      "body": "Save a recipe, scale it by servings, and cook it step by step."
+    },
+    "starters": {
+      "title": "Mind your starter",
+      "body": "Track each starter and get a nudge when it's time to feed."
+    },
+    "swaps": {
+      "title": "Swap in a pinch",
+      "body": "Out of an ingredient? Find a substitution in a tap."
+    },
+    "reminders": {
+      "title": "Want a nudge?",
+      "body": "I'll remind you at feeding time and send one baking tip a week.",
       "yes": "Sure",
-      "no": "Maybe Later"
+      "no": "Maybe later"
     }
   },
   "tabs": {
     "convert": "Convert",
     "recipes": "Recipes",
     "starters": "Starters",
+    "swaps": "Swaps",
     "settings": "Settings"
   },
   "converter": {
@@ -55,7 +72,28 @@
     "button_more_tools": "More tools",
     "button_convert": "Convert",
     "picker_search_placeholder": "Search ingredients",
-    "result_placeholder": "Pick an ingredient and an amount"
+    "result_placeholder": "Pick an ingredient and an amount",
+    "save_this": "Save this",
+    "tray_title": "Pick a converter",
+    "result_equals": "That is",
+    "pick_ingredient": "Ingredient",
+    "modes": {
+      "ingredient": "Ingredient",
+      "pan": "Pan",
+      "oven": "Oven",
+      "yeast": "Yeast",
+      "egg": "Egg",
+      "butter": "Butter",
+      "all": "All six"
+    },
+    "modes_hint": {
+      "ingredient": "cups, grams, ml",
+      "pan": "scale between pans",
+      "oven": "F, C, gas mark",
+      "yeast": "active dry, instant, fresh",
+      "egg": "match egg sizes",
+      "butter": "sticks, cups, grams"
+    }
   },
   "units": {
     "cup": "cup",
@@ -91,7 +129,8 @@
     "title": "Substitutions",
     "search_placeholder": "Search substitutions",
     "swap_for": "Swap for",
-    "empty": "Nothing matches. Try another ingredient."
+    "empty": "Nothing matches. Try another ingredient.",
+    "pro_teaser": "More swaps and full baker's math with Pro."
   },
   "scaler": {
     "title": "Scale a recipe",
@@ -150,12 +189,61 @@
     "detail_ingredients": "Ingredients",
     "detail_notes": "Notes",
     "new_name_placeholder": "Name your recipe",
-    "new_add_ingredient": "Add ingredient",
     "new_title": "New recipe",
     "new_ingredients_label": "Ingredients",
-    "new_ingredients_placeholder": "One ingredient on each line.\n\n2 eggs\n1 cup flour\n180 g sugar",
     "button_save": "Save",
-    "line_count": "{{count}} ingredients"
+    "line_count": "{{count}} ingredients",
+    "new_recipe": "New recipe",
+    "empty_body_full": "Save a conversion or write one from scratch.",
+    "start_baking": "Start baking",
+    "delete_recipe": "Delete recipe",
+    "ingredients_heading": "Ingredients",
+    "method_heading": "Method",
+    "notes_heading": "Notes",
+    "scale_heading": "Scale",
+    "servings": "Servings",
+    "serves": "Serves",
+    "reset": "Reset",
+    "edit": "Edit",
+    "now_at": "Now at {{factor}}x",
+    "meta_ingredients_one": "{{count}} ingredient",
+    "meta_ingredients_other": "{{count}} ingredients",
+    "meta_steps_one": "{{count}} step",
+    "meta_steps_other": "{{count}} steps",
+    "tag_all": "All",
+    "bakers_pct": "Baker's percentages",
+    "bakers_locked": "See baker's percentages with Pro",
+    "cook_step": "Step {{current}} of {{total}}",
+    "cook_next": "Next step",
+    "cook_back": "Back a step",
+    "cook_done": "All done",
+    "cook_finished": "Nice work. That looks lovely.",
+    "new_name_label": "Name",
+    "new_yield_label": "Yield",
+    "new_method_label": "Method",
+    "new_tags_label": "Tags",
+    "new_save": "Save recipe",
+    "new_yield_placeholder": "1 loaf",
+    "bakers_empty": "Add flour weights in grams to see percentages.",
+    "bakers_of_flour": "of flour weight",
+    "tag_sourdough": "Sourdough",
+    "tag_bread": "Bread",
+    "tag_sweet": "Sweet",
+    "tag_quick": "Quick",
+    "tag_everyday": "Everyday",
+    "edit_title": "Edit recipe",
+    "add_ingredient": "Add ingredient",
+    "add_section": "Add section",
+    "add_step": "Add step",
+    "ingredient_item_placeholder": "Ingredient",
+    "ingredient_amount_placeholder": "Amt",
+    "unit_none": "no unit",
+    "unit_label": "Unit",
+    "step_text_placeholder": "Describe this step",
+    "step_time_placeholder": "Time (optional)",
+    "step_time_label": "Time",
+    "save_changes": "Save changes",
+    "section_heading_placeholder": "Add a heading"
   },
   "starters": {
     "title": "Starters",
@@ -186,7 +274,34 @@
       "waiting": "Time to feed {{name}}. She's been waiting {{hours}} hours.",
       "peak": "Your starter's close to peak. Want to bake today?",
       "long_absence": "Been a few days. Your starter would love a visit."
-    }
+    },
+    "countdown_fresh": "Fresh",
+    "hydration_badge": "{{value}}%",
+    "waiting": "She has been waiting {{hours}}h.",
+    "interval_value": "{{hours}}h",
+    "button_delete": "Delete starter",
+    "add_title": "Add a starter",
+    "new_notes_placeholder": "Anything you want to remember.",
+    "toast_deleted": "{{name}} removed.",
+    "new_hydration_label": "Hydration",
+    "new_ratio_label": "Feed ratio",
+    "new_interval_label": "Feed every",
+    "new_notes_label": "Notes",
+    "new_name_field": "Name",
+    "heatmap_label": "Feeding, last 28 days",
+    "heatmap_less": "skipped",
+    "heatmap_more": "fed more",
+    "detail_stats": "Stats",
+    "detail_total_feeds": "total feeds",
+    "detail_every": "every",
+    "detail_details": "Details",
+    "detail_hydration": "Hydration",
+    "detail_ratio": "Feed ratio",
+    "detail_notes": "Notes",
+    "edit": "Edit",
+    "edit_title": "Edit starter",
+    "save_changes": "Save changes",
+    "toast_updated": "{{name}} updated."
   },
   "settings": {
     "title": "Settings",
@@ -225,7 +340,11 @@
     "terms": "Terms",
     "ingredient_sources": "Ingredient sources",
     "version": "Version",
-    "credits": "Credits"
+    "credits": "Credits",
+    "reduced_motion_desc": "A calm version of every animation.",
+    "pro_unlocked_row": "Doughmate Pro unlocked",
+    "show_tips_again": "Show tips again",
+    "tips_reset_toast": "Tips are back."
   },
   "paywall": {
     "title": "Doughmate Pro",
@@ -300,5 +419,123 @@
     "yesterday": "Yesterday",
     "today": "Today",
     "tomorrow": "Tomorrow"
+  },
+  "common": {
+    "close": "Close"
+  },
+  "tips": {
+    "editor_sections": "Sections group ingredients, like Dough and Filling. Tap Add section to make one; ingredients live inside.",
+    "convert_modes": "Tap a chip up top to switch what you convert: cups, pans, ovens, yeast, eggs, butter.",
+    "starters_feed": "Feed a starter to reset its timer. Turn on reminders and I'll nudge you at feeding time.",
+    "recipe_scale": "Change the servings and every amount rescales. Tap Reset to go back to the original."
+  },
+  "starters_mood": {
+    "new_name": "New",
+    "new_sub": "Just born. Feed when you like.",
+    "full_name": "Full",
+    "full_sub": "Fed and settling in.",
+    "peak_name": "At peak",
+    "peak_sub": "Bubbly and active, a great time to bake.",
+    "peckish_name": "Peckish",
+    "peckish_sub": "Slowing down, feed soon.",
+    "hungry_name": "Hungry",
+    "hungry_sub": "Feed me. It is time.",
+    "sleepy_name": "Sleepy",
+    "sleepy_sub": "Resting. A feed will wake it up."
+  },
+  "bakes": {
+    "seg_recipes": "Recipes",
+    "seg_bakes": "Bakes",
+    "empty_title": "No bakes yet.",
+    "empty_body": "Log a bake to start your baking book.",
+    "log_a_bake": "Log a bake",
+    "log_this_bake": "Log this bake",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "days_ago": "{{count}} days ago",
+    "new_title": "Log a bake",
+    "edit_title": "This bake",
+    "save": "Save bake",
+    "save_changes": "Save changes",
+    "delete": "Delete bake",
+    "field_name": "What did you bake?",
+    "name_placeholder": "Name this bake",
+    "link_recipe": "Link a recipe",
+    "field_when": "When",
+    "field_rating": "How did it turn out?",
+    "field_crumb": "Crumb",
+    "field_starter": "Starter used",
+    "pick_none": "None",
+    "field_notes": "Notes",
+    "notes_placeholder": "How did it go?",
+    "toast_saved": "Logged to your bakes.",
+    "toast_updated": "Bake updated.",
+    "toast_deleted": "Bake removed.",
+    "tags": {
+      "open_crumb": "open crumb",
+      "tight_crumb": "tight crumb",
+      "good_ear": "good ear",
+      "big_spring": "big spring",
+      "dark_crust": "dark crust",
+      "pale_crust": "pale crust",
+      "gummy": "gummy",
+      "dense": "dense",
+      "flat": "flat",
+      "sour": "sour",
+      "airy": "airy",
+      "golden": "golden"
+    }
+  },
+  "bakePlan": {
+    "notif_title": "Time to {{step}}",
+    "notif_body": "{{recipe}} is on schedule",
+    "ready_to_enjoy": "Ready to enjoy",
+    "checkpoint": "checkpoint",
+    "next_up": "Next up",
+    "ready_at": "Ready {{when}}",
+    "cancel": "Cancel",
+    "done": "All done",
+    "title": "Plan a bake",
+    "ready_by": "Ready by",
+    "your_schedule": "Your schedule",
+    "start_baking": "Start baking",
+    "arm": "Arm this plan",
+    "arm_hint": "Reminds you at each step start. Cancel anytime.",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "am": "AM",
+    "pm": "PM",
+    "not_enough_time": "Not enough time",
+    "not_enough_body": "This bake needs {{total}}. To be ready by {{target}} you would have started at {{start}}, which has passed.",
+    "earliest": "Earliest you can be ready is {{when}}.",
+    "use_earliest": "Use earliest time",
+    "empty": "This recipe has no steps to schedule.",
+    "section": "Bake plan",
+    "pill_next": "{{step}} next",
+    "pill_starts": "starts {{when}}"
+  },
+  "timers": {
+    "title": "Timers",
+    "running": "Running",
+    "custom": "Custom timer",
+    "label_optional": "Label (optional)",
+    "label_placeholder": "Name this timer",
+    "how_long": "How long?",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "start": "Start timer",
+    "done": "Done",
+    "pause": "Pause timer",
+    "resume": "Resume timer",
+    "cancel": "Cancel timer",
+    "dismiss": "Dismiss",
+    "empty_title": "No timers running.",
+    "empty_body": "Start one from a recipe step or set a custom timer.",
+    "start_step_timer": "Start {{time}} timer",
+    "step_n": "step {{n}}",
+    "notification_body": "{{label}} is done.",
+    "timer_started": "Timer started, {{time}}",
+    "step_time_left": "{{time}} left",
+    "view_running_timer": "Timer running, tap to view"
   }
 }

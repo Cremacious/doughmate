@@ -15,12 +15,16 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@expo-google-fonts/gabarito": "^0.4.2",
+    "@expo-google-fonts/nunito-sans": "^0.4.2",
+    "@expo-google-fonts/space-grotesk": "^0.4.1",
     "@expo/metro-runtime": "~57.0.9",
     "@expo/vector-icons": "^15.1.1",
     "@sentry/react-native": "~7.11.0",
     "expo": "~57.0.12",
     "expo-audio": "~57.0.3",
     "expo-constants": "~57.0.10",
+    "expo-font": "~57.0.1",
     "expo-haptics": "~57.0.1",
     "expo-linking": "~57.0.5",
     "expo-notifications": "~57.0.10",

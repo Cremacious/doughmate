@@ -1,33 +1,63 @@
-// Root layout. Sets up i18n, settings, gesture handling, safe areas, status bar.
+// Root layout. Sets up fonts, i18n, settings, gesture handling, safe areas, status bar.
 import '@/i18n';
 
+import { Gabarito_600SemiBold } from '@expo-google-fonts/gabarito';
+import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
+import { SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { BakePlanSync } from '@/components/BakePlanSync';
 import { ReminderSync } from '@/components/ReminderSync';
+import { TimerSync } from '@/components/TimerSync';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { initAds } from '@/lib/ads';
+import { BakePlanProvider } from '@/state/bakePlan';
+import { BakesProvider } from '@/state/bakes';
 import { ProProvider } from '@/state/pro';
 import { RecipesProvider } from '@/state/recipes';
 import { SamMoodProvider } from '@/state/samMood';
 import { SettingsProvider } from '@/state/settings';
 import { StartersProvider } from '@/state/starters';
+import { TimersProvider } from '@/state/timers';
+import { ToastProvider } from '@/ui/Toast';
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Gabarito_600SemiBold,
+    NunitoSans_400Regular,
+    NunitoSans_700Bold,
+    SpaceGrotesk_500Medium,
+    SpaceGrotesk_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <SettingsProvider>
           <ProProvider>
             <RecipesProvider>
-              <StartersProvider>
-                <SamMoodProvider>
-                  <ThemedApp />
-                </SamMoodProvider>
-              </StartersProvider>
+              <BakesProvider>
+                <TimersProvider>
+                  <BakePlanProvider>
+                    <StartersProvider>
+                      <SamMoodProvider>
+                        <ToastProvider>
+                          <ThemedApp />
+                        </ToastProvider>
+                      </SamMoodProvider>
+                    </StartersProvider>
+                  </BakePlanProvider>
+                </TimersProvider>
+              </BakesProvider>
             </RecipesProvider>
           </ProProvider>
         </SettingsProvider>
@@ -37,7 +67,7 @@ export default function RootLayout() {
 }
 
 function ThemedApp() {
-  const { bg, isDark } = useAppTheme();
+  const { palette, isDark } = useAppTheme();
 
   useEffect(() => {
     initAds();
@@ -48,22 +78,93 @@ function ThemedApp() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: bg.primary },
+          contentStyle: { backgroundColor: palette.bgCanvas },
         }}
       >
-        <Stack.Screen name="scaler" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="recipe-new" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="starter-new" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="more-tools" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="pan" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="oven" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="yeast" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="egg" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="butter" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="substitutions" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="settings"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="paywall"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="recipe-new"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="recipe/[id]"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="recipe/[id]/cook"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="bake-new"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="starter-new"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="starter/[id]"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="timers"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name="bake-plan"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
       </Stack>
       <ReminderSync />
+      <TimerSync />
+      <BakePlanSync />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </>
   );

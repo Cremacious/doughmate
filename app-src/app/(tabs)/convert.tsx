@@ -1,233 +1,532 @@
-// The main converter. Amount + ingredient + from/to units, with a big result.
-// All math comes from src/lib/convert. All copy from t(). All colours from theme.
-import { router } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
+// Convert: one shape shifting calculator holding all six converters. The result
+// sits up top; the mode swaps the input card in place below it. No back buttons.
+import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AdBanner } from '@/components/AdBanner';
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { IngredientPicker } from '@/components/IngredientPicker';
-import { PopIn } from '@/components/PopIn';
-import { UnitField } from '@/components/UnitField';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { showInterstitialIfReady } from '@/lib/ads';
-import { convert, formatQuantity, getIngredient, type Ingredient, type Unit } from '@/lib/convert';
-import { storage } from '@/lib/storage';
-import { scaleType } from '@/lib/typeScale';
-import { usePro } from '@/state/pro';
-import { useRecipes } from '@/state/recipes';
-import { useSamMood } from '@/state/samMood';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import {
+  convert,
+  formatQuantity,
+  getIngredient,
+  type Ingredient,
+  round,
+  searchIngredients,
+  type Unit,
+} from '@/lib/convert';
+import { type ButterUnit, convertButter } from '@/lib/butter';
+import { convertEggs, type EggId, getEggSize, listEggSizes } from '@/lib/egg';
+import { cToF, fToC, nearestGasMark } from '@/lib/oven';
+import { bakeTimeHint, getPan, listPans, type Pan, panScaleFactor } from '@/lib/pan';
+import { convertYeast, getYeastType, listYeastTypes, type YeastId } from '@/lib/yeast';
 import { useSettings } from '@/state/settings';
 import { spacing, typography } from '@/theme';
+import { Card } from '@/ui/Card';
+import { Chip } from '@/ui/Chip';
+import { Input } from '@/ui/Input';
+import { ModeChip } from '@/ui/ModeChip';
+import { OptionSheet, type Option } from '@/ui/OptionSheet';
+import { PickerField } from '@/ui/PickerField';
+import { ResultDisplay } from '@/ui/ResultDisplay';
+import { ScreenHeader } from '@/ui/ScreenHeader';
+import { Stepper } from '@/ui/Stepper';
+import { Tip } from '@/ui/Tip';
 
-const CONVERSION_COUNT_KEY = 'doughmate.conversionCount';
+type Mode = 'ingredient' | 'pan' | 'oven' | 'yeast' | 'egg' | 'butter';
+const MODES: Mode[] = ['ingredient', 'pan', 'oven', 'yeast', 'egg', 'butter'];
+const MODE_ICON = {
+  ingredient: 'convert',
+  pan: 'pan',
+  oven: 'oven',
+  yeast: 'yeast',
+  egg: 'egg',
+  butter: 'butter',
+} as const;
+
+const INGREDIENT_FROM: Unit[] = ['cup', 'tbsp', 'tsp', 'ml', 'g', 'oz', 'lb'];
+const INGREDIENT_TO: Unit[] = ['g', 'oz', 'lb', 'cup', 'tbsp', 'tsp', 'ml'];
+const BUTTER_UNITS: ButterUnit[] = ['stick', 'cup', 'tbsp', 'tsp', 'g', 'oz'];
 
 const DEFAULT_INGREDIENT: Ingredient = getIngredient('all_purpose_flour')!;
 
+interface Result {
+  label: string;
+  value: string | null;
+  unit?: string;
+  note?: string;
+  valid: boolean;
+  emptyText: string;
+}
+
 export default function ConvertScreen() {
   const { t } = useTranslation();
-  const { palette, bg, fontScale } = useAppTheme();
+  const { palette } = useAppTheme();
+  const reduced = useReducedMotion();
   const { settings } = useSettings();
-  const { addRecipe } = useRecipes();
-  const { isPro } = usePro();
-  const { celebrate } = useSamMood();
-  const [savedMsg, setSavedMsg] = useState(false);
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [mode, setMode] = useState<Mode>('ingredient');
+  const [sheet, setSheet] = useState<'modes' | 'ingredient' | 'panFrom' | 'panTo' | null>(null);
+
+  // Per mode inputs.
   const [ingredient, setIngredient] = useState<Ingredient>(DEFAULT_INGREDIENT);
-  const [amountText, setAmountText] = useState('1');
-  const [fromUnit, setFromUnit] = useState<Unit>(settings.units === 'metric' ? 'ml' : 'cup');
-  const [toUnit, setToUnit] = useState<Unit>('g');
+  const [amount, setAmount] = useState('1');
+  const [iFrom, setIFrom] = useState<Unit>('cup');
+  const [iTo, setITo] = useState<Unit>('g');
+  const [fromPan, setFromPan] = useState<Pan>(getPan('round_9')!);
+  const [toPan, setToPan] = useState<Pan>(getPan('round_8')!);
+  const [temp, setTemp] = useState('350');
+  const [ovenUnit, setOvenUnit] = useState<'f' | 'c'>('f');
+  const [yAmount, setYAmount] = useState('1');
+  const [yFrom, setYFrom] = useState<YeastId>('active_dry');
+  const [yTo, setYTo] = useState<YeastId>('instant');
+  const [eggCount, setEggCount] = useState(3);
+  const [eFrom, setEFrom] = useState<EggId>('large');
+  const [eTo, setETo] = useState<EggId>('medium');
+  const [bAmount, setBAmount] = useState('1');
+  const [bFrom, setBFrom] = useState<ButterUnit>('stick');
+  const [bTo, setBTo] = useState<ButterUnit>('tbsp');
 
-  const amount = Number(amountText);
-  const amountValid = amountText.trim() !== '' && Number.isFinite(amount);
-
-  const result = useMemo(() => {
-    if (!amountValid) {
-      return null;
-    }
-    return convert({
-      amount,
-      from: fromUnit,
-      to: toUnit,
+  const result = useMemo<Result>(
+    () => computeResult(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      mode,
       ingredient,
-      flourStandard: settings.flourStandard,
-    });
-  }, [amount, amountValid, fromUnit, toUnit, ingredient, settings.flourStandard]);
+      amount,
+      iFrom,
+      iTo,
+      fromPan,
+      toPan,
+      temp,
+      ovenUnit,
+      yAmount,
+      yFrom,
+      yTo,
+      eggCount,
+      eFrom,
+      eTo,
+      bAmount,
+      bFrom,
+      bTo,
+      settings.flourStandard,
+    ]
+  );
 
-  const onSave = () => {
-    if (result === null) {
-      return;
-    }
-    addRecipe({
-      name: ingredient.name,
-      lines: [`${amountText} ${t(`units.${fromUnit}`)} ${ingredient.name}`],
-    });
-    celebrate();
-    setSavedMsg(true);
-    if (saveTimer.current) {
-      clearTimeout(saveTimer.current);
-    }
-    saveTimer.current = setTimeout(() => setSavedMsg(false), 2500);
+  function num(text: string): number | null {
+    const v = Number(text.trim());
+    return text.trim() !== '' && Number.isFinite(v) ? v : null;
+  }
 
-    // Free bakers see an interstitial after every fifth saved conversion.
-    const count = Number(storage.getItem(CONVERSION_COUNT_KEY) ?? '0') + 1;
-    storage.setItem(CONVERSION_COUNT_KEY, String(count));
-    if (!isPro && count % 5 === 0) {
-      showInterstitialIfReady();
+  function computeResult(): Result {
+    const emptyText = t('converter.result_placeholder');
+    const invalidText = t('errors.invalid_input');
+
+    if (mode === 'ingredient') {
+      const a = num(amount);
+      const value =
+        a === null
+          ? null
+          : formatQuantity(
+              convert({
+                amount: a,
+                from: iFrom,
+                to: iTo,
+                ingredient,
+                flourStandard: settings.flourStandard,
+              })
+            );
+      return {
+        label: t('converter.result_equals'),
+        value,
+        unit: value === null ? undefined : t(`units.${iTo}` as 'units.g'),
+        note: ingredient.name,
+        valid: a !== null,
+        emptyText: amount.trim() === '' ? emptyText : invalidText,
+      };
     }
-  };
+    if (mode === 'pan') {
+      const factor = panScaleFactor(fromPan.area_sqin, toPan.area_sqin);
+      const hint = bakeTimeHint(fromPan.area_sqin, toPan.area_sqin);
+      return {
+        label: t('pan.scale_label'),
+        value: factor === null ? null : formatQuantity(factor),
+        unit: 'x',
+        note: t(`pan.bake_${hint}` as 'pan.bake_same'),
+        valid: factor !== null,
+        emptyText,
+      };
+    }
+    if (mode === 'oven') {
+      const v = num(temp);
+      if (v === null) {
+        return {
+          label: t('oven.reads_label'),
+          value: null,
+          valid: false,
+          emptyText: temp.trim() === '' ? emptyText : invalidText,
+        };
+      }
+      const f = ovenUnit === 'f' ? v : cToF(v);
+      const c = ovenUnit === 'c' ? v : fToC(v);
+      const other = ovenUnit === 'f' ? round(c) : round(f);
+      return {
+        label: t('oven.reads_label'),
+        value: String(other),
+        unit: t(ovenUnit === 'f' ? 'oven.unit_c' : 'oven.unit_f'),
+        note: `${t('oven.gas_mark')} ${nearestGasMark(f)}`,
+        valid: true,
+        emptyText,
+      };
+    }
+    if (mode === 'yeast') {
+      const a = num(yAmount);
+      const value = a === null ? null : formatQuantity(convertYeast(a, yFrom, yTo));
+      return {
+        label: t('yeast.to_label'),
+        value,
+        unit: value === null ? undefined : t('units.tsp'),
+        note: getYeastType(yTo)?.name,
+        valid: a !== null,
+        emptyText: yAmount.trim() === '' ? emptyText : invalidText,
+      };
+    }
+    if (mode === 'egg') {
+      const value = formatQuantity(convertEggs(eggCount, eFrom, eTo));
+      return {
+        label: t('egg.to_label'),
+        value,
+        unit: t('egg.result_suffix'),
+        note: getEggSize(eTo)?.name,
+        valid: true,
+        emptyText,
+      };
+    }
+    // butter
+    const a = num(bAmount);
+    const value = a === null ? null : formatQuantity(convertButter(a, bFrom, bTo));
+    return {
+      label: t('converter.result_equals'),
+      value,
+      unit: value === null ? undefined : t(`units.${bTo}` as 'units.g'),
+      note: t('butter.title'),
+      valid: a !== null,
+      emptyText: bAmount.trim() === '' ? emptyText : invalidText,
+    };
+  }
+
+  const unitRow = <T extends string>(options: T[], value: T, onChange: (v: T) => void) => (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.chipRow}
+    >
+      {options.map((u) => (
+        <Chip
+          key={u}
+          label={t(`units.${u}` as 'units.g')}
+          selected={value === u}
+          onPress={() => onChange(u)}
+        />
+      ))}
+    </ScrollView>
+  );
+
+  const typeRow = <T extends string>(
+    options: { id: T; name: string }[],
+    value: T,
+    onChange: (v: T) => void
+  ) => (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.chipRow}
+    >
+      {options.map((o) => (
+        <Chip key={o.id} label={o.name} selected={value === o.id} onPress={() => onChange(o.id)} />
+      ))}
+    </ScrollView>
+  );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bg.primary }]} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={[typography.heading, styles.greeting, { color: palette.chocSoft }]}>
-          {t('converter.sam_greeting_default')}
-        </Text>
+    <View style={[styles.root, { backgroundColor: palette.bgCanvas }]}>
+      <SafeAreaView edges={['top']} style={styles.flex}>
+        <View style={styles.gutter}>
+          <ScreenHeader title={t('tabs.convert')} />
+        </View>
 
-        <Card>
-          <Text style={[typography.caption, { color: palette.chocSoft }]}>
-            {t('converter.label_ingredient')}
-          </Text>
-          <View style={styles.gapSm}>
-            <IngredientPicker value={ingredient} onChange={setIngredient} />
-          </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.modeRow}
+          style={styles.modeScroll}
+        >
+          {MODES.map((m) => (
+            <ModeChip
+              key={m}
+              iconName={MODE_ICON[m]}
+              label={t(`converter.modes.${m}` as 'converter.modes.ingredient')}
+              selected={mode === m}
+              onPress={() => setMode(m)}
+            />
+          ))}
+          <ModeChip
+            iconName="search"
+            label={t('converter.modes.all')}
+            selected={false}
+            outlined
+            onPress={() => setSheet('modes')}
+          />
+        </ScrollView>
 
-          <View style={styles.amountRow}>
-            <View style={styles.amountField}>
-              <Text style={[typography.caption, { color: palette.chocSoft }]}>
-                {t('converter.label_amount')}
-              </Text>
-              <TextInput
-                value={amountText}
-                onChangeText={setAmountText}
-                keyboardType="decimal-pad"
-                inputMode="decimal"
-                selectTextOnFocus
-                style={[
-                  typography.body.lg,
-                  scaleType(typography.body.lg, fontScale),
-                  styles.amountInput,
-                  { backgroundColor: bg.subtle, color: palette.choc },
-                ]}
-              />
-            </View>
-            <View>
-              <Text style={[typography.caption, { color: palette.chocSoft }]}>
-                {t('converter.label_from_unit')}
-              </Text>
-              <UnitField value={fromUnit} onChange={setFromUnit} />
-            </View>
-          </View>
+        <View style={styles.body}>
+          <Tip id="convert.modes" text={t('tips.convert_modes')} />
+          <Card style={styles.resultCard}>
+            <ResultDisplay
+              label={result.label}
+              value={result.value}
+              unit={result.unit}
+              note={result.note}
+              emptyText={result.emptyText}
+            />
+          </Card>
 
-          <Text style={[typography.body.md, styles.equals, { color: palette.chocSoft }]}>
-            {t('converter.label_equals')}
-          </Text>
+          <Animated.View
+            key={mode}
+            entering={
+              reduced ? FadeIn.duration(120) : FadeInDown.springify().stiffness(130).damping(20)
+            }
+            style={styles.flex}
+          >
+            <Card style={styles.inputCard}>
+              {mode === 'ingredient' ? (
+                <>
+                  <PickerField
+                    label={t('converter.pick_ingredient')}
+                    value={ingredient.name}
+                    onPress={() => setSheet('ingredient')}
+                  />
+                  <Input
+                    label={t('converter.label_amount')}
+                    value={amount}
+                    onChangeText={setAmount}
+                    numeric
+                  />
+                  <Labeled label={t('converter.label_from_unit')}>
+                    {unitRow(INGREDIENT_FROM, iFrom, setIFrom)}
+                  </Labeled>
+                  <Labeled label={t('converter.label_to_unit')}>
+                    {unitRow(INGREDIENT_TO, iTo, setITo)}
+                  </Labeled>
+                </>
+              ) : null}
 
-          <View style={styles.resultBlock}>
-            {result === null ? (
-              <Text style={[typography.body.lg, styles.placeholder, { color: palette.chocSoft }]}>
-                {t('converter.result_placeholder')}
-              </Text>
-            ) : (
-              <PopIn trigger={result}>
-                <Text
-                  style={[
-                    typography.number.hero,
-                    scaleType(typography.number.hero, fontScale),
-                    { color: palette.crust },
-                  ]}
-                >
-                  {formatQuantity(result)}
-                </Text>
-              </PopIn>
-            )}
-            <View style={styles.toRow}>
-              <Text style={[typography.caption, { color: palette.chocSoft }]}>
-                {t('converter.label_to_unit')}
-              </Text>
-              <UnitField value={toUnit} onChange={setToUnit} />
-            </View>
-          </View>
-        </Card>
+              {mode === 'pan' ? (
+                <>
+                  <PickerField
+                    label={t('pan.from_label')}
+                    value={fromPan.name}
+                    onPress={() => setSheet('panFrom')}
+                  />
+                  <PickerField
+                    label={t('pan.to_label')}
+                    value={toPan.name}
+                    onPress={() => setSheet('panTo')}
+                  />
+                </>
+              ) : null}
 
-        {savedMsg ? (
-          <Text style={[typography.body.md, styles.savedMsg, { color: palette.leaf }]}>
-            {t('recipes.toast_saved')}
-          </Text>
-        ) : null}
+              {mode === 'oven' ? (
+                <>
+                  <Input
+                    label={t('oven.amount_label')}
+                    value={temp}
+                    onChangeText={setTemp}
+                    numeric
+                  />
+                  <Labeled label={t('oven.amount_label')}>
+                    {unitRow2(
+                      [
+                        { id: 'f' as const, label: t('oven.unit_f') },
+                        { id: 'c' as const, label: t('oven.unit_c') },
+                      ],
+                      ovenUnit,
+                      setOvenUnit
+                    )}
+                  </Labeled>
+                </>
+              ) : null}
 
-        <Button
-          label={t('converter.button_save')}
-          onPress={onSave}
-          disabled={result === null}
-          haptic="pop"
+              {mode === 'yeast' ? (
+                <>
+                  <Input
+                    label={t('yeast.amount_label')}
+                    value={yAmount}
+                    onChangeText={setYAmount}
+                    numeric
+                  />
+                  <Labeled label={t('yeast.from_label')}>
+                    {typeRow(listYeastTypes(), yFrom, setYFrom)}
+                  </Labeled>
+                  <Labeled label={t('yeast.to_label')}>
+                    {typeRow(listYeastTypes(), yTo, setYTo)}
+                  </Labeled>
+                </>
+              ) : null}
+
+              {mode === 'egg' ? (
+                <>
+                  <Labeled label={t('egg.count_label')}>
+                    <Stepper value={eggCount} onChange={setEggCount} min={1} />
+                  </Labeled>
+                  <Labeled label={t('egg.from_label')}>
+                    {typeRow(
+                      listEggSizes().map((s) => ({ id: s.id, name: s.name })),
+                      eFrom,
+                      setEFrom
+                    )}
+                  </Labeled>
+                  <Labeled label={t('egg.to_label')}>
+                    {typeRow(
+                      listEggSizes().map((s) => ({ id: s.id, name: s.name })),
+                      eTo,
+                      setETo
+                    )}
+                  </Labeled>
+                </>
+              ) : null}
+
+              {mode === 'butter' ? (
+                <>
+                  <Input
+                    label={t('butter.amount_label')}
+                    value={bAmount}
+                    onChangeText={setBAmount}
+                    numeric
+                  />
+                  <Labeled label={t('butter.from_label')}>
+                    {unitRow(BUTTER_UNITS, bFrom, setBFrom)}
+                  </Labeled>
+                  <Labeled label={t('butter.to_label')}>
+                    {unitRow(BUTTER_UNITS, bTo, setBTo)}
+                  </Labeled>
+                </>
+              ) : null}
+            </Card>
+          </Animated.View>
+        </View>
+      </SafeAreaView>
+
+      {sheet === 'modes' ? (
+        <OptionSheet
+          title={t('converter.tray_title')}
+          selectedId={mode}
+          onClose={() => setSheet(null)}
+          onSelect={(id) => setMode(id as Mode)}
+          options={MODES.map((m) => ({
+            id: m,
+            label: t(`converter.modes.${m}` as 'converter.modes.ingredient'),
+            hint: t(`converter.modes_hint.${m}` as 'converter.modes_hint.ingredient'),
+          }))}
         />
-        <Button
-          label={t('converter.button_more_tools')}
-          variant="secondary"
-          onPress={() => router.push('/more-tools')}
-        />
+      ) : null}
 
-        <AdBanner />
-      </ScrollView>
-    </SafeAreaView>
+      {sheet === 'ingredient' ? (
+        <OptionSheet
+          title={t('converter.pick_ingredient')}
+          searchable
+          searchPlaceholder={t('converter.picker_search_placeholder')}
+          selectedId={ingredient.id}
+          onClose={() => setSheet(null)}
+          onSelect={(id) => {
+            const found = getIngredient(id);
+            if (found) {
+              setIngredient(found);
+            }
+          }}
+          options={ingredientOptions()}
+        />
+      ) : null}
+
+      {sheet === 'panFrom' || sheet === 'panTo' ? (
+        <OptionSheet
+          title={sheet === 'panFrom' ? t('pan.from_label') : t('pan.to_label')}
+          selectedId={sheet === 'panFrom' ? fromPan.id : toPan.id}
+          onClose={() => setSheet(null)}
+          onSelect={(id) => {
+            const pan = getPan(id);
+            if (pan) {
+              if (sheet === 'panFrom') {
+                setFromPan(pan);
+              } else {
+                setToPan(pan);
+              }
+            }
+          }}
+          options={listPans().map((p) => ({ id: p.id, label: p.name }))}
+        />
+      ) : null}
+    </View>
   );
 }
 
+function ingredientOptions(): Option[] {
+  return searchIngredients('').map((i) => ({
+    id: i.id,
+    label: i.name,
+    hint: `${i.per_cup_g} g per cup`,
+  }));
+}
+
+function Labeled({ label, children }: { label: string; children: ReactNode }) {
+  const { palette } = useAppTheme();
+  return (
+    <View style={styles.labeled}>
+      <Text style={[typography.label, { color: palette.textSoft }]}>{label}</Text>
+      {children}
+    </View>
+  );
+}
+
+function unitRow2<T extends string>(
+  options: { id: T; label: string }[],
+  value: T,
+  onChange: (v: T) => void
+) {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.chipRow}
+    >
+      {options.map((o) => (
+        <Chip key={o.id} label={o.label} selected={value === o.id} onPress={() => onChange(o.id)} />
+      ))}
+    </ScrollView>
+  );
+}
+
+const TAB_BAR_CLEARANCE = 100;
+
 const styles = StyleSheet.create({
-  container: {
+  root: { flex: 1 },
+  flex: { flex: 1 },
+  gutter: { paddingHorizontal: spacing.xl },
+  modeScroll: { flexGrow: 0 },
+  modeRow: { gap: spacing.sm, paddingVertical: spacing.xs, paddingHorizontal: spacing.xl },
+  body: {
     flex: 1,
-  },
-  content: {
-    padding: spacing.lg,
-    paddingBottom: spacing['3xl'] * 2,
-    gap: spacing.lg,
-  },
-  greeting: {
-    textAlign: 'center',
-    marginTop: spacing.sm,
-  },
-  gapSm: {
-    marginTop: spacing.xs,
-  },
-  amountRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.sm,
+    paddingBottom: TAB_BAR_CLEARANCE,
     gap: spacing.md,
-    marginTop: spacing.lg,
   },
-  amountField: {
-    flex: 1,
-  },
-  amountInput: {
-    marginTop: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: 12,
-  },
-  equals: {
-    textAlign: 'center',
-    marginTop: spacing.lg,
-  },
-  resultBlock: {
-    alignItems: 'center',
-    marginTop: spacing.sm,
-    gap: spacing.sm,
-  },
-  placeholder: {
-    textAlign: 'center',
-    paddingVertical: spacing.md,
-  },
-  toRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  savedMsg: {
-    textAlign: 'center',
-  },
+  inputCard: { flex: 1, gap: spacing.lg },
+  labeled: { gap: spacing.xs },
+  chipRow: { gap: spacing.sm, paddingRight: spacing.xl },
+  resultCard: { alignItems: 'center', paddingVertical: spacing.lg },
 });

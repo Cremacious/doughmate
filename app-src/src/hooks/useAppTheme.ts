@@ -4,20 +4,18 @@
 import { useColorScheme } from 'react-native';
 
 import { useSettings } from '@/state/settings';
-import { colors, type ThemeMode } from '@/theme';
+import { fontScale as fontScaleTokens, palettes, type ThemeMode, touchTarget } from '@/theme';
 
-/** Extra text scaling for floured fingers mode. */
-const FLOURED_FINGERS_SCALE = 1.3;
+export type AppPalette = typeof palettes.light | typeof palettes.dark;
 
 export interface AppTheme {
   mode: ThemeMode;
   isDark: boolean;
-  /** Palette for the active mode (crust, choc, jam, and friends). */
-  palette: typeof colors.light | typeof colors.dark;
-  /** Background layers (primary screen bg, elevated cards, subtle fills). */
-  bg: typeof colors.bg.light | typeof colors.bg.dark;
-  /** Multiplier for font sizes, larger when floured fingers mode is on. */
+  palette: AppPalette;
+  /** Font size multiplier, 1.25 in floured fingers mode. */
   fontScale: number;
+  /** Minimum touch target, larger in floured fingers mode. */
+  touchTarget: number;
 }
 
 export function useAppTheme(): AppTheme {
@@ -30,8 +28,8 @@ export function useAppTheme(): AppTheme {
   return {
     mode,
     isDark: mode === 'dark',
-    palette: colors[mode],
-    bg: colors.bg[mode],
-    fontScale: settings.flouredFingers ? FLOURED_FINGERS_SCALE : 1,
+    palette: palettes[mode],
+    fontScale: settings.flouredFingers ? fontScaleTokens.flouredFingers : fontScaleTokens.normal,
+    touchTarget: settings.flouredFingers ? touchTarget.flouredFingers : touchTarget.normal,
   };
 }

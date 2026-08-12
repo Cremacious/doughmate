@@ -1,8 +1,31 @@
+// Onboarding step 2 of 6: Convert. One clean example instead of crammed cards.
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { OnboardingPage } from '@/components/OnboardingPage';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import { useSettings } from '@/state/settings';
+import { radius, spacing, typography } from '@/theme';
+import { IconBadge } from '@/ui/IconBadge';
+import { OnboardingScaffold } from '@/ui/OnboardingScaffold';
+
+function ExampleChip() {
+  const { t } = useTranslation();
+  const { palette } = useAppTheme();
+  return (
+    <View
+      style={[styles.chip, { backgroundColor: palette.bgSurface, borderColor: palette.border }]}
+    >
+      <Text style={[typography.body.lg, { color: palette.textInk }]}>
+        {t('onboarding.convert.example_from')}
+      </Text>
+      <Text style={[typography.body.lg, { color: palette.textFaint }]}>→</Text>
+      <Text style={[typography.numeric.sm, { color: palette.primary }]}>
+        {t('onboarding.convert.example_to')}
+      </Text>
+    </View>
+  );
+}
 
 export default function Features() {
   const { t } = useTranslation();
@@ -14,13 +37,30 @@ export default function Features() {
   };
 
   return (
-    <OnboardingPage
-      title={t('tabs.convert')}
-      body={t('onboarding.screen2.features')}
-      primaryLabel={t('onboarding.screen2.cta')}
-      onPrimary={() => router.push('/onboarding/notifications')}
-      secondaryLabel={t('onboarding.screen2.skip')}
+    <OnboardingScaffold
+      step={2}
+      total={6}
+      hero={<IconBadge name="convert" tint="primary" />}
+      title={t('onboarding.convert.title')}
+      body={t('onboarding.convert.body')}
+      primaryLabel={t('onboarding.next')}
+      onPrimary={() => router.push('/onboarding/recipes')}
+      secondaryLabel={t('onboarding.skip')}
       onSecondary={skip}
-    />
+    >
+      <ExampleChip />
+    </OnboardingScaffold>
   );
 }
+
+const styles = StyleSheet.create({
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
+});
