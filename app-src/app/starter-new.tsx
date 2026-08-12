@@ -1,6 +1,6 @@
 // Add a starter, a tall sheet. Name, hydration, feed ratio, feed interval and
 // notes. The interval steps in 6 hour jumps. Footer adds the starter.
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -21,21 +21,30 @@ const RATIOS = ['1:1:1', '1:2:2', '1:5:5'];
 export default function NewStarterSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
-  const { starters, addStarter } = useStarters();
+  const { starters, addStarter, updateStarter, getStarter } = useStarters();
   const { show } = useToast();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const existing = id ? getStarter(id) : undefined;
 
-  const [name, setName] = useState('');
-  const [hydration, setHydration] = useState(100);
-  const [ratio, setRatio] = useState('1:2:2');
-  const [intervalHours, setIntervalHours] = useState(24);
-  const [notes, setNotes] = useState('');
+  const [name, setName] = useState(existing?.name ?? '');
+  const [hydration, setHydration] = useState(existing?.hydration ?? 100);
+  const [ratio, setRatio] = useState(existing?.ratio ?? '1:2:2');
+  const [intervalHours, setIntervalHours] = useState(existing?.intervalHours ?? 24);
+  const [notes, setNotes] = useState(existing?.notes ?? '');
 
   const save = () => {
     const fallback = t('starters.new_name_placeholder_next', { number: starters.length + 1 });
     const finalName = name.trim() || fallback;
-    addStarter({ name: finalName, intervalHours, hydration, ratio, notes: notes.trim() });
-    router.back();
-    show({ message: t('starters.toast_added', { name: finalName }), variant: 'confirmation' });
+    const input = { name: finalName, intervalHours, hydration, ratio, notes: notes.trim() };
+    if (existing) {
+      updateStarter(existing.id, input);
+      router.back();
+      show({ message: t('starters.toast_updated', { name: finalName }), variant: 'confirmation' });
+    } else {
+      addStarter(input);
+      router.back();
+      show({ message: t('starters.toast_added', { name: finalName }), variant: 'confirmation' });
+    }
   };
 
   return (
@@ -44,10 +53,16 @@ export default function NewStarterSheet() {
       onClose={() => router.back()}
       header={
         <Text style={[typography.display.md, styles.title, { color: palette.textInk }]}>
-          {t('starters.add_title')}
+          {existing ? t('starters.edit_title') : t('starters.add_title')}
         </Text>
       }
-      footer={<Button label={t('starters.button_save')} onPress={save} haptic="pop" />}
+      footer={
+        <Button
+          label={existing ? t('starters.save_changes') : t('starters.button_save')}
+          onPress={save}
+          haptic="pop"
+        />
+      }
     >
       <ScrollView
         contentContainerStyle={styles.body}

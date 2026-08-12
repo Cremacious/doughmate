@@ -84,6 +84,7 @@ export default function StartersScreen() {
           now={now}
           onFeed={() => feed(starter.id, starter.name)}
           onDelete={() => remove(starter.id)}
+          onOpen={() => router.push(`/starter/${starter.id}`)}
         />
       ))}
     </Screen>

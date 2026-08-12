@@ -299,7 +299,10 @@
     "detail_ratio": "Feed ratio",
     "detail_notes": "Notes",
     "fed_ago": "fed {{hours}}h ago",
-    "edit": "Edit"
+    "edit": "Edit",
+    "edit_title": "Edit starter",
+    "save_changes": "Save changes",
+    "toast_updated": "{{name}} updated."
   },
   "settings": {
     "title": "Settings",

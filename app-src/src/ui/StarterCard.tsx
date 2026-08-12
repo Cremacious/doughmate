@@ -7,6 +7,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { triggerHaptic } from '@/lib/haptics';
 import { feedStatus } from '@/lib/starter';
+import { starterMood } from '@/lib/starterMood';
 import type { Starter } from '@/state/starters';
 import { radius, spacing, typography } from '@/theme';
 import { Button } from './Button';
@@ -18,12 +19,14 @@ export interface StarterCardProps {
   now: number;
   onFeed: () => void;
   onDelete: () => void;
+  onOpen: () => void;
 }
 
-export function StarterCard({ starter, now, onFeed, onDelete }: StarterCardProps) {
+export function StarterCard({ starter, now, onFeed, onDelete, onOpen }: StarterCardProps) {
   const { t } = useTranslation();
   const { palette } = useAppTheme();
   const status = feedStatus(starter, now);
+  const mood = starterMood(starter, now);
 
   const countdown = status.fresh
     ? t('starters.countdown_fresh')
@@ -52,17 +55,22 @@ export function StarterCard({ starter, now, onFeed, onDelete }: StarterCardProps
       ]}
     >
       <View style={styles.top}>
-        <ProgressRing progress={status.fresh ? 0 : status.progress} due={status.due} />
-        <View style={styles.headText}>
-          <Text style={[typography.display.md, { color: palette.textInk }]}>{starter.name}</Text>
-          {starter.hydration ? (
-            <View style={[styles.badge, { backgroundColor: palette.proofTealWash }]}>
-              <Text style={[typography.label, { color: palette.proofTealText }]}>
-                {t('starters.hydration_badge', { value: starter.hydration })}
-              </Text>
-            </View>
-          ) : null}
-        </View>
+        <Pressable accessibilityRole="button" onPress={onOpen} style={styles.openArea}>
+          <ProgressRing progress={status.fresh ? 0 : status.progress} due={status.due} />
+          <View style={styles.headText}>
+            <Text style={[typography.display.md, { color: palette.textInk }]}>{starter.name}</Text>
+            <Text style={[typography.label, { color: palette.proofTeal }]}>
+              {t(`starters_mood.${mood}_name` as 'starters_mood.new_name')}
+            </Text>
+            {starter.hydration ? (
+              <View style={[styles.badge, { backgroundColor: palette.proofTealWash }]}>
+                <Text style={[typography.label, { color: palette.proofTealText }]}>
+                  {t('starters.hydration_badge', { value: starter.hydration })}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        </Pressable>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('starters.button_delete')}
@@ -94,6 +102,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   top: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  openArea: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   headText: { flex: 1, gap: spacing['2xs'], alignItems: 'flex-start' },
   badge: { borderRadius: 999, paddingHorizontal: spacing.sm, paddingVertical: 4 },
   delete: {
