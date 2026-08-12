@@ -3,7 +3,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatQuantity } from '@/lib/convert';
@@ -114,7 +114,7 @@ export default function RecipeDetailSheet() {
         </View>
       }
     >
-      <View style={styles.body}>
+      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <Tip id="recipe.scale" text={t('tips.recipe_scale')} />
         <Text style={[typography.body.sm, { color: palette.textSoft }]}>
           {metaParts.join('  ·  ')}
@@ -276,7 +276,7 @@ export default function RecipeDetailSheet() {
           variant="destructive"
           haptic="tap"
         />
-      </View>
+      </ScrollView>
     </BottomSheet>
   );
 }
