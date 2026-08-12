@@ -2,7 +2,7 @@
 // control. Recipes keeps its tag filter, RecipeCard list, and New recipe button.
 // Bakes shows a chronological list of BakeCards (or a Sam empty state) and a Log
 // a bake button.
-import { router, type Href } from 'expo-router';
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -40,7 +40,7 @@ export default function RecipesScreen() {
   );
 
   const newRecipe = () => router.push('/recipe-new');
-  const logABake = () => router.push('/bake-new' as Href);
+  const logABake = () => router.push('/bake-new');
 
   const footer =
     segment === 'recipes' ? (
@@ -116,7 +116,7 @@ export default function RecipesScreen() {
             key={b.id}
             bake={b}
             now={now}
-            onPress={() => router.push(`/bake-new?id=${b.id}` as Href)}
+            onPress={() => router.push(`/bake-new?id=${b.id}`)}
           />
         ))
       )}

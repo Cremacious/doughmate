@@ -114,6 +114,14 @@ function ThemedApp() {
           }}
         />
         <Stack.Screen
+          name="bake-new"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
           name="starter-new"
           options={{
             presentation: 'transparentModal',
