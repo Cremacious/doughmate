@@ -53,24 +53,34 @@ export default function CookModeSheet() {
         </Text>
       }
       footer={
-        <View style={styles.footerRow}>
-          {index > 0 ? (
+        <View style={styles.footerCol}>
+          <View style={styles.footerRow}>
+            {index > 0 ? (
+              <View style={styles.footerItem}>
+                <Button
+                  label={t('recipes.cook_back')}
+                  onPress={() => setIndex((i) => Math.max(0, i - 1))}
+                  variant="quiet"
+                  haptic="tap"
+                />
+              </View>
+            ) : null}
             <View style={styles.footerItem}>
               <Button
-                label={t('recipes.cook_back')}
-                onPress={() => setIndex((i) => Math.max(0, i - 1))}
-                variant="quiet"
-                haptic="tap"
+                label={last ? t('recipes.cook_done') : t('recipes.cook_next')}
+                onPress={() => (last ? finish() : setIndex((i) => i + 1))}
+                haptic="pop"
               />
             </View>
-          ) : null}
-          <View style={styles.footerItem}>
-            <Button
-              label={last ? t('recipes.cook_done') : t('recipes.cook_next')}
-              onPress={() => (last ? finish() : setIndex((i) => i + 1))}
-              haptic="pop"
-            />
           </View>
+          {last ? (
+            <Button
+              label={t('bakes.log_this_bake')}
+              onPress={() => router.push(`/bake-new?recipeId=${recipe.id}`)}
+              variant="quiet"
+              haptic="tap"
+            />
+          ) : null}
         </View>
       }
     >
@@ -105,6 +115,7 @@ const styles = StyleSheet.create({
   body: { padding: spacing.xl, gap: spacing.lg, flex: 1, justifyContent: 'center' },
   dots: { flexDirection: 'row', gap: spacing.xs, alignItems: 'center' },
   dot: { height: 8, borderRadius: 999 },
+  footerCol: { gap: spacing.sm },
   footerRow: { flexDirection: 'row', gap: spacing.sm },
   footerItem: { flex: 1 },
 });

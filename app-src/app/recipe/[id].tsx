@@ -88,11 +88,19 @@ export default function RecipeDetailSheet() {
         </View>
       }
       footer={
-        <Button
-          label={t('recipes.start_baking')}
-          onPress={() => router.push(`/recipe/${recipe.id}/cook`)}
-          haptic="pop"
-        />
+        <View style={styles.footerCol}>
+          <Button
+            label={t('recipes.start_baking')}
+            onPress={() => router.push(`/recipe/${recipe.id}/cook`)}
+            haptic="pop"
+          />
+          <Button
+            label={t('bakes.log_a_bake')}
+            onPress={() => router.push(`/bake-new?recipeId=${recipe.id}`)}
+            variant="quiet"
+            haptic="tap"
+          />
+        </View>
       }
     >
       <View style={styles.body}>
@@ -251,6 +259,7 @@ export default function RecipeDetailSheet() {
 }
 
 const styles = StyleSheet.create({
+  footerCol: { gap: spacing.sm },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',

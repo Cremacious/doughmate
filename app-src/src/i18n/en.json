@@ -449,6 +449,7 @@
     "empty_title": "No bakes yet.",
     "empty_body": "Log a bake to start your baking book.",
     "log_a_bake": "Log a bake",
+    "log_this_bake": "Log this bake",
     "today": "Today",
     "yesterday": "Yesterday",
     "days_ago": "{{count}} days ago",
