@@ -414,5 +414,19 @@
     "convert_modes": "Tap a chip up top to switch what you convert: cups, pans, ovens, yeast, eggs, butter.",
     "starters_feed": "Feed a starter to reset its timer. Turn on reminders and I'll nudge you at feeding time.",
     "recipe_scale": "Change the servings and every amount rescales. Tap Reset to go back to the original."
+  },
+  "starters_mood": {
+    "new_name": "New",
+    "new_sub": "Just born. Feed when you like.",
+    "full_name": "Full",
+    "full_sub": "Fed and settling in.",
+    "peak_name": "At peak",
+    "peak_sub": "Bubbly and active, a great time to bake.",
+    "peckish_name": "Peckish",
+    "peckish_sub": "Slowing down, feed soon.",
+    "hungry_name": "Hungry",
+    "hungry_sub": "Feed me. It is time.",
+    "sleepy_name": "Sleepy",
+    "sleepy_sub": "Resting. A feed will wake it up."
   }
 }
