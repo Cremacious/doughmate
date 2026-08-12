@@ -115,7 +115,9 @@ export default function StarterDetailSheet() {
         </Text>
         <Card style={styles.statRow}>
           <View style={styles.stat}>
-            <Text style={[typography.numeric.lg, { color: palette.textInk }]}>{feeds.length}</Text>
+            <Text style={[typography.numeric.lg, { color: palette.textInk }]}>
+              {starter.feedCount}
+            </Text>
             <Text style={[typography.body.sm, { color: palette.textSoft }]}>
               {t('starters.detail_total_feeds')}
             </Text>
