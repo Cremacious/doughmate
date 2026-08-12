@@ -1,12 +1,12 @@
-// Onboarding step 1 of 6: Sam says hello.
+// Onboarding step 4 of 6: Starters.
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Sam } from '@/components/Sam';
 import { useSettings } from '@/state/settings';
+import { IconBadge } from '@/ui/IconBadge';
 import { OnboardingScaffold } from '@/ui/OnboardingScaffold';
 
-export default function Welcome() {
+export default function OnboardingStarters() {
   const { t } = useTranslation();
   const { update } = useSettings();
 
@@ -17,13 +17,13 @@ export default function Welcome() {
 
   return (
     <OnboardingScaffold
-      step={1}
+      step={4}
       total={6}
-      hero={<Sam size={150} state="idle" />}
-      title={t('onboarding.welcome.title')}
-      body={t('onboarding.welcome.body')}
-      primaryLabel={t('onboarding.welcome.cta')}
-      onPrimary={() => router.push('/onboarding/features')}
+      hero={<IconBadge name="starters" tint="teal" />}
+      title={t('onboarding.starters.title')}
+      body={t('onboarding.starters.body')}
+      primaryLabel={t('onboarding.next')}
+      onPrimary={() => router.push('/onboarding/swaps')}
       secondaryLabel={t('onboarding.skip')}
       onSecondary={skip}
     />

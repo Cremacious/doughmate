@@ -1,12 +1,12 @@
-// Onboarding step 1 of 6: Sam says hello.
+// Onboarding step 3 of 6: the Recipe Box.
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Sam } from '@/components/Sam';
 import { useSettings } from '@/state/settings';
+import { IconBadge } from '@/ui/IconBadge';
 import { OnboardingScaffold } from '@/ui/OnboardingScaffold';
 
-export default function Welcome() {
+export default function OnboardingRecipes() {
   const { t } = useTranslation();
   const { update } = useSettings();
 
@@ -17,13 +17,13 @@ export default function Welcome() {
 
   return (
     <OnboardingScaffold
-      step={1}
+      step={3}
       total={6}
-      hero={<Sam size={150} state="idle" />}
-      title={t('onboarding.welcome.title')}
-      body={t('onboarding.welcome.body')}
-      primaryLabel={t('onboarding.welcome.cta')}
-      onPrimary={() => router.push('/onboarding/features')}
+      hero={<IconBadge name="recipes" tint="primary" />}
+      title={t('onboarding.recipes.title')}
+      body={t('onboarding.recipes.body')}
+      primaryLabel={t('onboarding.next')}
+      onPrimary={() => router.push('/onboarding/starters')}
       secondaryLabel={t('onboarding.skip')}
       onSecondary={skip}
     />

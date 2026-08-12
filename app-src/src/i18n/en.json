@@ -20,31 +20,36 @@
     }
   },
   "onboarding": {
-    "screen1": {
-      "greeting": "Hi. I'm Sam. Let's make the math easy.",
-      "cta": "Get started",
-      "skip": "Skip",
+    "next": "Next",
+    "skip": "Skip",
+    "welcome": {
       "title": "Hi. I'm Sam.",
-      "body": "Let's make the math easy."
+      "body": "Your baking buddy. Let's make the math easy.",
+      "cta": "Get started"
     },
-    "screen2": {
-      "features": "Convert cups to grams, scale any recipe, and I'll keep you company.",
-      "cta": "Next",
-      "skip": "Skip",
-      "title": "I do the fiddly math.",
-      "sample1_value": "120 g",
-      "sample1_label": "cups to grams",
-      "sample2_value": "6h 20m",
-      "sample2_label": "proof time",
-      "sample3_value": "1.8x",
-      "sample3_label": "pan scale"
+    "convert": {
+      "title": "Convert anything",
+      "body": "Cups to grams, pan sizes, oven temps, yeast. Tap a chip and get the number.",
+      "example_from": "1 cup flour",
+      "example_to": "120 g"
     },
-    "screen3": {
-      "prompt": "Want reminders when your starter needs feeding?",
+    "recipes": {
+      "title": "Your recipe box",
+      "body": "Save a recipe, scale it by servings, and cook it step by step."
+    },
+    "starters": {
+      "title": "Mind your starter",
+      "body": "Track each starter and get a nudge when it's time to feed."
+    },
+    "swaps": {
+      "title": "Swap in a pinch",
+      "body": "Out of an ingredient? Find a substitution in a tap."
+    },
+    "reminders": {
+      "title": "Want a nudge?",
+      "body": "I'll remind you at feeding time and send one baking tip a week.",
       "yes": "Sure",
-      "no": "Maybe later",
-      "title": "Want a nudge at feeding time?",
-      "body": "I'll remind you when a starter needs feeding, and send one baking tip a week."
+      "no": "Maybe later"
     }
   },
   "tabs": {

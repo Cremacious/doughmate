@@ -39,10 +39,14 @@ export function OnboardingScaffold({
     <SafeAreaView style={[styles.container, { backgroundColor: palette.bgCanvas }]}>
       <View style={styles.content}>
         <View style={styles.hero}>{hero}</View>
-        <Text style={[typography.display.lg, styles.center, { color: palette.textInk }]}>
-          {title}
-        </Text>
-        <Text style={[typography.body.lg, styles.center, { color: palette.textSoft }]}>{body}</Text>
+        <View style={styles.textGroup}>
+          <Text style={[typography.display.lg, styles.center, { color: palette.textInk }]}>
+            {title}
+          </Text>
+          <Text style={[typography.body.lg, styles.center, { color: palette.textSoft }]}>
+            {body}
+          </Text>
+        </View>
         {children ? <View style={styles.middle}>{children}</View> : null}
       </View>
 
@@ -75,11 +79,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
-    gap: spacing.md,
   },
-  hero: { marginBottom: spacing.md },
+  hero: { marginBottom: spacing['2xl'] },
+  textGroup: { gap: spacing.sm, alignItems: 'center', maxWidth: 320 },
   center: { textAlign: 'center' },
-  middle: { alignSelf: 'stretch', marginTop: spacing.lg },
+  middle: { alignItems: 'center', marginTop: spacing['2xl'] },
   footer: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl, gap: spacing.sm },
   dots: {
     flexDirection: 'row',

@@ -1,4 +1,4 @@
-// Onboarding step 2: three sample results to show what Sam handles.
+// Onboarding step 2 of 6: Convert. One clean example instead of crammed cards.
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
@@ -6,16 +6,23 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useSettings } from '@/state/settings';
 import { radius, spacing, typography } from '@/theme';
+import { IconBadge } from '@/ui/IconBadge';
 import { OnboardingScaffold } from '@/ui/OnboardingScaffold';
 
-function SampleCard({ value, label }: { value: string; label: string }) {
+function ExampleChip() {
+  const { t } = useTranslation();
   const { palette } = useAppTheme();
   return (
     <View
-      style={[styles.card, { backgroundColor: palette.bgSurface, borderColor: palette.border }]}
+      style={[styles.chip, { backgroundColor: palette.bgSurface, borderColor: palette.border }]}
     >
-      <Text style={[typography.numeric.lg, { color: palette.primary }]}>{value}</Text>
-      <Text style={[typography.body.sm, { color: palette.textSoft }]}>{label}</Text>
+      <Text style={[typography.body.lg, { color: palette.textInk }]}>
+        {t('onboarding.convert.example_from')}
+      </Text>
+      <Text style={[typography.body.lg, { color: palette.textFaint }]}>→</Text>
+      <Text style={[typography.numeric.sm, { color: palette.primary }]}>
+        {t('onboarding.convert.example_to')}
+      </Text>
     </View>
   );
 }
@@ -32,41 +39,28 @@ export default function Features() {
   return (
     <OnboardingScaffold
       step={2}
-      total={3}
-      hero={<View />}
-      title={t('onboarding.screen2.title')}
-      body={t('onboarding.screen2.features')}
-      primaryLabel={t('onboarding.screen2.cta')}
-      onPrimary={() => router.push('/onboarding/notifications')}
-      secondaryLabel={t('onboarding.screen2.skip')}
+      total={6}
+      hero={<IconBadge name="convert" tint="primary" />}
+      title={t('onboarding.convert.title')}
+      body={t('onboarding.convert.body')}
+      primaryLabel={t('onboarding.next')}
+      onPrimary={() => router.push('/onboarding/recipes')}
+      secondaryLabel={t('onboarding.skip')}
       onSecondary={skip}
     >
-      <View style={styles.row}>
-        <SampleCard
-          value={t('onboarding.screen2.sample1_value')}
-          label={t('onboarding.screen2.sample1_label')}
-        />
-        <SampleCard
-          value={t('onboarding.screen2.sample2_value')}
-          label={t('onboarding.screen2.sample2_label')}
-        />
-        <SampleCard
-          value={t('onboarding.screen2.sample3_value')}
-          label={t('onboarding.screen2.sample3_label')}
-        />
-      </View>
+      <ExampleChip />
     </OnboardingScaffold>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: spacing.sm },
-  card: {
-    flex: 1,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    padding: spacing.md,
-    gap: spacing['2xs'],
+  chip: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
 });
