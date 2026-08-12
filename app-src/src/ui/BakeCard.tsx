@@ -41,11 +41,13 @@ export function BakeCard({ bake, now, onPress }: BakeCardProps) {
           ))}
         </View>
       ) : null}
-      {bake.recipeId || bake.starterName ? (
+      {bake.recipeName || bake.starterName ? (
         <View style={styles.links}>
-          {bake.recipeId ? (
+          {bake.recipeName ? (
             <View style={[styles.linkChip, { backgroundColor: palette.primaryWash }]}>
-              <Text style={[typography.label, { color: palette.primaryText }]}>{bake.name}</Text>
+              <Text style={[typography.label, { color: palette.primaryText }]}>
+                {bake.recipeName}
+              </Text>
             </View>
           ) : null}
           {bake.starterName ? (

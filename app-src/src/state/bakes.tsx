@@ -8,6 +8,7 @@ export interface Bake {
   id: string;
   name: string;
   recipeId?: string;
+  recipeName?: string;
   starterId?: string;
   starterName?: string;
   rating: number;
@@ -20,6 +21,7 @@ export interface Bake {
 export interface BakeInput {
   name: string;
   recipeId?: string;
+  recipeName?: string;
   starterId?: string;
   starterName?: string;
   rating: number;
@@ -70,6 +72,7 @@ export function BakesProvider({ children }: { children: ReactNode }) {
       id,
       name: input.name,
       recipeId: input.recipeId,
+      recipeName: input.recipeName,
       starterId: input.starterId,
       starterName: input.starterName,
       rating: input.rating,
