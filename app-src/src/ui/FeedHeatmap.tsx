@@ -27,18 +27,22 @@ export function FeedHeatmap({ feeds, now, days = 28 }: FeedHeatmapProps) {
 
   const cell = (count: number, ring: boolean, key: number) => {
     const op = levelOpacity(count);
+    // The outer cell owns exactly 1/7 of the row width so seven fit per row; the
+    // inner square owns the visual gap via padding, avoiding the width plus gap
+    // overflow that would wrap the seventh cell.
     return (
-      <View
-        key={key}
-        style={[
-          styles.cell,
-          {
-            backgroundColor: op === 0 ? palette.bgSunken : palette.proofTeal,
-            opacity: op === 0 ? 1 : op,
-          },
-          ring ? { borderWidth: 2, borderColor: palette.primary } : null,
-        ]}
-      />
+      <View key={key} style={styles.cellOuter}>
+        <View
+          style={[
+            styles.cellInner,
+            {
+              backgroundColor: op === 0 ? palette.bgSunken : palette.proofTeal,
+              opacity: op === 0 ? 1 : op,
+            },
+            ring ? { borderWidth: 2, borderColor: palette.primary } : null,
+          ]}
+        />
+      </View>
     );
   };
 
@@ -71,8 +75,9 @@ export function FeedHeatmap({ feeds, now, days = 28 }: FeedHeatmapProps) {
 
 const styles = StyleSheet.create({
   wrap: { gap: spacing.sm },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  cell: { width: `${100 / 7}%`, aspectRatio: 1, borderRadius: 6, flexGrow: 0 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap' },
+  cellOuter: { width: `${100 / 7}%`, aspectRatio: 1, padding: 3 },
+  cellInner: { flex: 1, borderRadius: 6 },
   legend: { flexDirection: 'row', alignItems: 'center', gap: 4, justifyContent: 'flex-end' },
   legendCell: { width: 12, height: 12, borderRadius: 3 },
 });
