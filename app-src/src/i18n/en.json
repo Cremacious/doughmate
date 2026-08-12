@@ -533,6 +533,9 @@
     "empty_body": "Start one from a recipe step or set a custom timer.",
     "start_step_timer": "Start {{time}} timer",
     "step_n": "step {{n}}",
-    "notification_body": "{{label}} is done."
+    "notification_body": "{{label}} is done.",
+    "timer_started": "Timer started, {{time}}",
+    "step_time_left": "{{time}} left",
+    "view_running_timer": "Timer running, tap to view"
   }
 }

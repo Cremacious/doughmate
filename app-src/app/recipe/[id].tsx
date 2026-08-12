@@ -11,11 +11,11 @@ import { bakersPercentages, groupBySection } from '@/lib/recipe';
 import { parseDuration } from '@/lib/timer';
 import { usePro } from '@/state/pro';
 import { type RecipeIngredient, useRecipes } from '@/state/recipes';
-import { useTimers } from '@/state/timers';
 import { radius, spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
+import { StepTimerControl } from '@/ui/StepTimerControl';
 import { Stepper } from '@/ui/Stepper';
 import { Tip } from '@/ui/Tip';
 import { useToast } from '@/ui/Toast';
@@ -33,7 +33,6 @@ export default function RecipeDetailSheet() {
   const { getRecipe, removeRecipe, restoreRecipe } = useRecipes();
   const { isPro } = usePro();
   const { show } = useToast();
-  const { startTimer } = useTimers();
 
   const recipe = getRecipe(id);
   const baseServings = recipe && recipe.servings > 0 ? recipe.servings : 1;
@@ -243,23 +242,13 @@ export default function RecipeDetailSheet() {
                         </View>
                       ) : null}
                       {step.time && stepDurationMs !== null ? (
-                        <Pressable
-                          accessibilityRole="button"
-                          accessibilityLabel={t('timers.start_step_timer', { time: step.time })}
-                          onPress={() =>
-                            startTimer({
-                              label: step.text.trim().slice(0, 40),
-                              stepLabel: t('timers.step_n', { n: i + 1 }),
-                              recipeId: recipe.id,
-                              durationMs: stepDurationMs,
-                            })
-                          }
-                          style={styles.startTimerBtn}
-                        >
-                          <Text style={[typography.label, { color: palette.proofTeal }]}>
-                            ▶ {t('timers.start_step_timer', { time: step.time })}
-                          </Text>
-                        </Pressable>
+                        <StepTimerControl
+                          recipeId={recipe.id}
+                          stepIndex={i}
+                          stepText={step.text}
+                          time={step.time}
+                          durationMs={stepDurationMs}
+                        />
                       ) : null}
                     </View>
                   </View>
@@ -359,10 +348,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
-    marginTop: spacing['2xs'],
-  },
-  startTimerBtn: {
-    alignSelf: 'flex-start',
     marginTop: spacing['2xs'],
   },
 });
