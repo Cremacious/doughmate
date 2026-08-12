@@ -118,6 +118,14 @@ function ThemedApp() {
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />
+        <Stack.Screen
+          name="starter/[id]"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
       </Stack>
       <ReminderSync />
       <StatusBar style={isDark ? 'light' : 'dark'} />
