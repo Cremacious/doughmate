@@ -112,3 +112,67 @@ export async function cancelAllFeedReminders(): Promise<void> {
     await cancelFeedReminder(starterId);
   }
 }
+
+// Live fermentation timer completion notifications. Tracked under a separate
+// map key so they never collide with the feed reminder ids above.
+const TIMER_MAP_KEY = 'doughmate.notif.timers.v1';
+
+function loadTimerMap(): IdMap {
+  try {
+    return JSON.parse(storage.getItem(TIMER_MAP_KEY) ?? '{}') as IdMap;
+  } catch {
+    return {};
+  }
+}
+
+function saveTimerMap(map: IdMap): void {
+  storage.setItem(TIMER_MAP_KEY, JSON.stringify(map));
+}
+
+export async function cancelTimerNotification(id: string): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  const map = loadTimerMap();
+  const notificationId = map[id];
+  if (notificationId) {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+    delete map[id];
+    saveTimerMap(map);
+  }
+}
+
+export async function scheduleTimerNotification(
+  id: string,
+  title: string,
+  body: string,
+  fireAt: number
+): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  await cancelTimerNotification(id);
+  // Nothing to schedule if the fire time is already past.
+  if (fireAt <= Date.now()) {
+    return;
+  }
+  const notificationId = await Notifications.scheduleNotificationAsync({
+    content: { title, body },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: new Date(fireAt),
+    },
+  });
+  const map = loadTimerMap();
+  map[id] = notificationId;
+  saveTimerMap(map);
+}
+
+export async function cancelAllTimerNotifications(): Promise<void> {
+  if (!isNative) {
+    return;
+  }
+  for (const id of Object.keys(loadTimerMap())) {
+    await cancelTimerNotification(id);
+  }
+}

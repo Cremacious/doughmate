@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ReminderSync } from '@/components/ReminderSync';
+import { TimerSync } from '@/components/TimerSync';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { initAds } from '@/lib/ads';
 import { BakesProvider } from '@/state/bakes';
@@ -142,6 +143,7 @@ function ThemedApp() {
         />
       </Stack>
       <ReminderSync />
+      <TimerSync />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </>
   );
