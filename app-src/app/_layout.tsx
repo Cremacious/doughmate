@@ -14,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ReminderSync } from '@/components/ReminderSync';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { initAds } from '@/lib/ads';
+import { BakesProvider } from '@/state/bakes';
 import { ProProvider } from '@/state/pro';
 import { RecipesProvider } from '@/state/recipes';
 import { SamMoodProvider } from '@/state/samMood';
@@ -40,13 +41,15 @@ export default function RootLayout() {
         <SettingsProvider>
           <ProProvider>
             <RecipesProvider>
-              <StartersProvider>
-                <SamMoodProvider>
-                  <ToastProvider>
-                    <ThemedApp />
-                  </ToastProvider>
-                </SamMoodProvider>
-              </StartersProvider>
+              <BakesProvider>
+                <StartersProvider>
+                  <SamMoodProvider>
+                    <ToastProvider>
+                      <ThemedApp />
+                    </ToastProvider>
+                  </SamMoodProvider>
+                </StartersProvider>
+              </BakesProvider>
             </RecipesProvider>
           </ProProvider>
         </SettingsProvider>
