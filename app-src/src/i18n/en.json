@@ -487,6 +487,20 @@
     }
   },
   "timers": {
+    "title": "Timers",
+    "running": "Running",
+    "custom": "Custom timer",
+    "label_optional": "Label (optional)",
+    "label_placeholder": "Name this timer",
+    "how_long": "How long?",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "start": "Start timer",
+    "done": "Done",
+    "dismiss": "Dismiss",
+    "empty_title": "No timers running.",
+    "empty_body": "Start one from a recipe step or set a custom timer.",
+    "start_step_timer": "Start {{time}} timer",
     "notification_body": "{{label}} is done."
   }
 }
