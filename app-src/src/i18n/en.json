@@ -501,8 +501,6 @@
     "start_baking": "Start baking",
     "arm": "Arm this plan",
     "arm_hint": "Reminds you at each step start. Cancel anytime.",
-    "today": "Today",
-    "tomorrow": "Tomorrow",
     "hours": "Hours",
     "minutes": "Minutes",
     "am": "AM",

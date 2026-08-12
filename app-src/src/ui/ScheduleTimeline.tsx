@@ -25,15 +25,12 @@ export function ScheduleTimeline({
   const { t } = useTranslation();
   const { palette } = useAppTheme();
 
-  const rowCount = steps.length + 1;
-
   return (
     <View>
       {steps.map((step, i) => {
         const isNext = nextIndex != null && i === nextIndex;
         const isCurrent = currentIndex != null && i === currentIndex;
         const emphasize = isNext || isCurrent;
-        const isLast = i === rowCount - 1;
 
         return (
           <View
@@ -56,7 +53,7 @@ export function ScheduleTimeline({
                     : { backgroundColor: palette.proofTeal },
                 ]}
               />
-              {!isLast ? <View style={[styles.line, { backgroundColor: palette.border }]} /> : null}
+              <View style={[styles.line, { backgroundColor: palette.border }]} />
             </View>
 
             <Text
