@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { feedStatus } from '@/lib/starter';
@@ -91,7 +91,7 @@ export default function StarterDetailSheet() {
       }
       footer={<Button label={t('starters.button_feed_now')} onPress={feed} haptic="success" />}
     >
-      <View style={styles.body}>
+      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <View style={styles.hero}>
           <StarterSam mood={mood} size={150} />
           <Text style={[typography.heading, { color: palette.proofTeal }]}>
@@ -153,7 +153,7 @@ export default function StarterDetailSheet() {
           variant="destructive"
           haptic="tap"
         />
-      </View>
+      </ScrollView>
     </BottomSheet>
   );
 }

@@ -3,7 +3,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { parseDuration } from '@/lib/timer';
@@ -87,7 +87,7 @@ export default function CookModeSheet() {
         </View>
       }
     >
-      <View style={styles.body}>
+      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <View style={styles.dots}>
           {steps.map((_, i) => (
             <View
@@ -117,14 +117,14 @@ export default function CookModeSheet() {
             durationMs={stepDurationMs}
           />
         ) : null}
-      </View>
+      </ScrollView>
     </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
   counter: { marginTop: spacing.xs, textAlign: 'center', paddingHorizontal: spacing.xl },
-  body: { padding: spacing.xl, gap: spacing.lg, flex: 1, justifyContent: 'center' },
+  body: { padding: spacing.xl, gap: spacing.lg, flexGrow: 1, justifyContent: 'center' },
   dots: { flexDirection: 'row', gap: spacing.xs, alignItems: 'center' },
   dot: { height: 8, borderRadius: 999 },
   footerCol: { gap: spacing.sm },
