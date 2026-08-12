@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { BakePlanSync } from '@/components/BakePlanSync';
 import { ReminderSync } from '@/components/ReminderSync';
 import { TimerSync } from '@/components/TimerSync';
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -155,6 +156,7 @@ function ThemedApp() {
       </Stack>
       <ReminderSync />
       <TimerSync />
+      <BakePlanSync />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </>
   );

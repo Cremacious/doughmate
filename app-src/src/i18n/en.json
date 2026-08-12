@@ -486,6 +486,10 @@
       "golden": "golden"
     }
   },
+  "bakePlan": {
+    "notif_title": "Time to {{step}}",
+    "notif_body": "{{recipe}} is on schedule"
+  },
   "timers": {
     "title": "Timers",
     "running": "Running",
