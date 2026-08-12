@@ -21,6 +21,7 @@ module.exports = {
     'src/lib/substitutions.ts',
     'src/lib/sam.ts',
     'src/lib/starter.ts',
+    'src/lib/starterMood.ts',
   ],
   coverageThreshold: {
     global: { branches: 100, functions: 100, lines: 100, statements: 100 },
