@@ -442,5 +442,29 @@
     "hungry_sub": "Feed me. It is time.",
     "sleepy_name": "Sleepy",
     "sleepy_sub": "Resting. A feed will wake it up."
+  },
+  "bakes": {
+    "seg_recipes": "Recipes",
+    "seg_bakes": "Bakes",
+    "empty_title": "No bakes yet.",
+    "empty_body": "Log a bake to start your baking book.",
+    "log_a_bake": "Log a bake",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "days_ago": "{{count}} days ago",
+    "tags": {
+      "open_crumb": "open crumb",
+      "tight_crumb": "tight crumb",
+      "good_ear": "good ear",
+      "big_spring": "big spring",
+      "dark_crust": "dark crust",
+      "pale_crust": "pale crust",
+      "gummy": "gummy",
+      "dense": "dense",
+      "flat": "flat",
+      "sour": "sour",
+      "airy": "airy",
+      "golden": "golden"
+    }
   }
 }
