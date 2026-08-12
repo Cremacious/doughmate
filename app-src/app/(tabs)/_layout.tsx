@@ -3,10 +3,19 @@
 import { Tabs } from 'expo-router';
 
 import { AppTabBar } from '@/ui/TabBar';
+import { TimerPill } from '@/ui/TimerPill';
 
 export default function TabsLayout() {
   return (
-    <Tabs tabBar={(props) => <AppTabBar {...props} />} screenOptions={{ headerShown: false }}>
+    <Tabs
+      tabBar={(props) => (
+        <>
+          <TimerPill />
+          <AppTabBar {...props} />
+        </>
+      )}
+      screenOptions={{ headerShown: false }}
+    >
       <Tabs.Screen name="convert" />
       <Tabs.Screen name="recipes" />
       <Tabs.Screen name="starters" />
