@@ -98,6 +98,10 @@ export default function TimersSheet() {
             {formatRemaining(durationMs)}
           </Text>
 
+          <Text style={[typography.label, { color: palette.textSoft }]}>
+            {t('timers.how_long')}
+          </Text>
+
           <View style={styles.stepperRow}>
             <View style={styles.stepperCol}>
               <Text style={[typography.label, { color: palette.textFaint }]}>

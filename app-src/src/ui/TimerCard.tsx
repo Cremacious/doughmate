@@ -48,12 +48,36 @@ export function TimerCard({ timer, now, onPauseResume, onCancel }: TimerCardProp
       ]
     : timer.status === 'running'
       ? [
-          { key: 'pause', glyph: '⏸', onPress: onPauseResume, tone: 'teal' },
-          { key: 'cancel', glyph: '✕', onPress: onCancel, tone: 'quiet' },
+          {
+            key: 'pause',
+            glyph: '⏸',
+            onPress: onPauseResume,
+            tone: 'teal',
+            accessibilityLabel: t('timers.pause'),
+          },
+          {
+            key: 'cancel',
+            glyph: '✕',
+            onPress: onCancel,
+            tone: 'quiet',
+            accessibilityLabel: t('timers.cancel'),
+          },
         ]
       : [
-          { key: 'resume', glyph: '▶', onPress: onPauseResume, tone: 'teal' },
-          { key: 'cancel', glyph: '✕', onPress: onCancel, tone: 'quiet' },
+          {
+            key: 'resume',
+            glyph: '▶',
+            onPress: onPauseResume,
+            tone: 'teal',
+            accessibilityLabel: t('timers.resume'),
+          },
+          {
+            key: 'cancel',
+            glyph: '✕',
+            onPress: onCancel,
+            tone: 'quiet',
+            accessibilityLabel: t('timers.cancel'),
+          },
         ];
 
   return (
