@@ -1,0 +1,13 @@
+/* Web only. Expo applies this on web and ignores it on native. */
+
+/* iOS Safari sizes html/body height:100% against the large viewport (the area
+   behind the address/tool bars), which over-sizes the app so the in-app scroll
+   areas think everything fits and never scroll. Pin the root chain to the
+   dynamic viewport height so it matches what is actually visible. 100vh is the
+   fallback for browsers without dvh (where it already equals the visible area). */
+html,
+body,
+#root {
+  height: 100vh !important;
+  height: 100dvh !important;
+}
