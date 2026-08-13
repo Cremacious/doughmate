@@ -1,5 +1,7 @@
-// Metro config with SVG support so `import Sam from './sam.svg'` returns a component.
-// Sam is our placeholder mascot until the Fiverr Lottie files arrive.
+// Metro config that lets .svg files import as React components via
+// react-native-svg-transformer. Nothing imports a .svg today (Sam is drawn
+// inline with react-native-svg), but the transform stays ready for future SVG
+// assets.
 const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
