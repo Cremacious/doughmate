@@ -25,6 +25,7 @@ module.exports = {
     'src/lib/bake.ts',
     'src/lib/timer.ts',
     'src/lib/schedule.ts',
+    'src/lib/samEmotion.ts',
   ],
   coverageThreshold: {
     global: { branches: 100, functions: 100, lines: 100, statements: 100 },

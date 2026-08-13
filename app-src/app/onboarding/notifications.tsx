@@ -20,7 +20,7 @@ export default function Notifications() {
     <OnboardingScaffold
       step={6}
       total={6}
-      hero={<Sam size={150} state="idle" />}
+      hero={<Sam size={150} emotion="idle" />}
       title={t('onboarding.reminders.title')}
       body={t('onboarding.reminders.body')}
       primaryLabel={t('onboarding.reminders.yes')}

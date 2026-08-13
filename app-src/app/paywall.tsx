@@ -75,7 +75,7 @@ export default function PaywallSheet() {
     >
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <View style={styles.hero}>
-          <Sam size={132} state="celebrate" />
+          <Sam size={132} emotion="excited" />
           <Text style={[typography.display.lg, styles.center, { color: palette.textInk }]}>
             {t('paywall.title')}
           </Text>
