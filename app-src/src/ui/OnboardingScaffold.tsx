@@ -17,8 +17,9 @@ export interface OnboardingScaffoldProps {
   children?: ReactNode;
   primaryLabel: string;
   onPrimary: () => void;
-  secondaryLabel: string;
-  onSecondary: () => void;
+  /** Optional quiet exit; omitted on the final step. */
+  secondaryLabel?: string;
+  onSecondary?: () => void;
 }
 
 export function OnboardingScaffold({
@@ -66,7 +67,9 @@ export function OnboardingScaffold({
           ))}
         </View>
         <Button label={primaryLabel} onPress={onPrimary} haptic="pop" />
-        <Button label={secondaryLabel} onPress={onSecondary} variant="quiet" />
+        {secondaryLabel && onSecondary ? (
+          <Button label={secondaryLabel} onPress={onSecondary} variant="quiet" />
+        ) : null}
       </View>
     </SafeAreaView>
   );

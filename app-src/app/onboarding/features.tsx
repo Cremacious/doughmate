@@ -39,7 +39,7 @@ export default function Features() {
   return (
     <OnboardingScaffold
       step={2}
-      total={6}
+      total={5}
       hero={<IconBadge name="convert" tint="primary" />}
       title={t('onboarding.convert.title')}
       body={t('onboarding.convert.body')}

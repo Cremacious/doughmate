@@ -283,7 +283,11 @@ export default function ConvertScreen() {
           />
         </ScrollView>
 
-        <View style={styles.body}>
+        <ScrollView
+          contentContainerStyle={styles.body}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <Tip id="convert.modes" text={t('tips.convert_modes')} />
           <Card style={styles.resultCard}>
             <ResultDisplay
@@ -300,7 +304,6 @@ export default function ConvertScreen() {
             entering={
               reduced ? FadeIn.duration(120) : FadeInDown.springify().stiffness(130).damping(20)
             }
-            style={styles.flex}
           >
             <Card style={styles.inputCard}>
               {mode === 'ingredient' ? (
@@ -418,7 +421,7 @@ export default function ConvertScreen() {
               ) : null}
             </Card>
           </Animated.View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
 
       {sheet === 'modes' ? (
@@ -519,13 +522,13 @@ const styles = StyleSheet.create({
   modeScroll: { flexGrow: 0 },
   modeRow: { gap: spacing.sm, paddingVertical: spacing.xs, paddingHorizontal: spacing.xl },
   body: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.sm,
     paddingBottom: TAB_BAR_CLEARANCE,
     gap: spacing.md,
   },
-  inputCard: { flex: 1, gap: spacing.lg },
+  inputCard: { gap: spacing.lg },
   labeled: { gap: spacing.xs },
   chipRow: { gap: spacing.sm, paddingRight: spacing.xl },
   resultCard: { alignItems: 'center', paddingVertical: spacing.lg },
