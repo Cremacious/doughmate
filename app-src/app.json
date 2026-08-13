@@ -9,9 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cremacious.doughmate"
     },
     "android": {
+      "package": "com.cremacious.doughmate",
       "adaptiveIcon": {
         "backgroundColor": "#FBF5EA",
         "foregroundImage": "./assets/android-icon-foreground.png",
