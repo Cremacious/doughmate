@@ -57,7 +57,7 @@ export function TimerPill() {
           triggerHaptic('tap');
           router.push('/timers');
         }}
-        style={[styles.wrap, { bottom: insets.bottom + 90 }]}
+        style={[styles.wrap, { top: insets.top + spacing.xs }]}
       >
         <View style={[styles.pill, shadow.md, { backgroundColor: palette.proofTealWash }]}>
           <View style={[styles.dot, { backgroundColor: palette.proofTeal }]} />
@@ -98,7 +98,7 @@ export function TimerPill() {
   );
 
   return (
-    <View style={[styles.wrap, { bottom: insets.bottom + 90 }]}>
+    <View style={[styles.wrap, { top: insets.top + spacing.xs }]}>
       <View style={[styles.pill, shadow.md, { backgroundColor: palette.proofTealWash }]}>
         <Pressable
           accessibilityRole="button"

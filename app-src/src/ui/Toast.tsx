@@ -1,12 +1,15 @@
-// Proof Toast. One at a time, above the tab bar. Neutral (dark) or confirmation
-// (primary wash). Optional action (Undo). Auto dismisses after 4.2s.
+// Proof Toast. One at a time, dropping in from the top so it never blocks the
+// bottom actions; it stacks below the timers pill when one is showing. Neutral
+// (dark) or confirmation (primary wash). Optional action (Undo). Auto dismisses
+// after 4.2s.
 import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { TIMER_BANNER_SPACE, useTimerBannerVisible } from '@/hooks/useTimerBannerVisible';
 import { radius, spacing, typography } from '@/theme';
 
 export interface ToastOptions {
@@ -65,18 +68,20 @@ function ToastView({ toast, onDismiss }: { toast: ActiveToast; onDismiss: () => 
   const { palette } = useAppTheme();
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
+  const bannerVisible = useTimerBannerVisible();
   const confirmation = toast.variant === 'confirmation';
 
   const bg = confirmation ? palette.primaryWash : palette.toastBg;
   const fg = confirmation ? palette.textInk : palette.toastText;
   const actionColor = confirmation ? palette.primaryText : palette.accentButter;
+  const top = insets.top + spacing.xs + (bannerVisible ? TIMER_BANNER_SPACE : 0);
 
   return (
     <Animated.View
       pointerEvents="box-none"
-      entering={reduced ? FadeIn.duration(120) : SlideInDown.springify().stiffness(210).damping(18)}
-      exiting={reduced ? FadeOut.duration(120) : SlideOutDown.duration(200)}
-      style={[styles.wrap, { bottom: insets.bottom + 96 }]}
+      entering={reduced ? FadeIn.duration(120) : SlideInUp.springify().stiffness(210).damping(18)}
+      exiting={reduced ? FadeOut.duration(120) : SlideOutUp.duration(200)}
+      style={[styles.wrap, { top }]}
     >
       <View style={[styles.toast, { backgroundColor: bg }]}>
         <Text style={[typography.body.md, styles.message, { color: fg }]} numberOfLines={2}>
