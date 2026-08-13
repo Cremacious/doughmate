@@ -106,7 +106,7 @@ export default function CookModeSheet() {
         <Text style={[typography.numeric.hero, { color: palette.textFaint }]}>{index + 1}</Text>
         <Text style={[typography.display.md, { color: palette.textInk }]}>{step.text}</Text>
         {step.time ? (
-          <Text style={[typography.heading, { color: palette.proofTeal }]}>
+          <Text style={[typography.display.lg, { color: palette.proofTeal }]}>
             {formatStepTime(step.time)}
           </Text>
         ) : null}
@@ -117,6 +117,7 @@ export default function CookModeSheet() {
             stepText={step.text}
             time={step.time}
             durationMs={stepDurationMs}
+            size="large"
           />
         ) : null}
       </ScrollView>
