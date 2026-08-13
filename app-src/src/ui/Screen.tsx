@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { TIMER_BANNER_SPACE, useTimerBannerVisible } from '@/hooks/useTimerBannerVisible';
 import { spacing } from '@/theme';
 import { ScreenHeader } from './ScreenHeader';
 
@@ -19,11 +20,12 @@ export interface ScreenProps {
 
 export function Screen({ title, children, footer }: ScreenProps) {
   const { palette } = useAppTheme();
+  const bannerVisible = useTimerBannerVisible();
 
   return (
     <View style={[styles.container, { backgroundColor: palette.bgCanvas }]}>
       <SafeAreaView edges={['top']} style={styles.flex}>
-        <View style={styles.gutter}>
+        <View style={[styles.gutter, bannerVisible && { paddingTop: TIMER_BANNER_SPACE }]}>
           <ScreenHeader title={title} />
         </View>
         <ScrollView
