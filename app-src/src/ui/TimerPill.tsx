@@ -1,8 +1,9 @@
 // Floating active timers pill. Mounted at the root, so it floats above every
-// screen (tabs and full screen sheets alike) whenever a timer is running or a
-// bake plan is armed, showing the soonest to finish timer and a +N count for
-// the rest. Tapping it opens the Timers sheet. Hidden on the Timers and Plan a
-// bake sheets, where it would be redundant and could overlap their actions.
+// screen whenever a timer is running or a bake plan is armed. The body shows the
+// soonest to finish timer (plus a +N when there are more) and opens the Timers
+// sheet; inline controls pause, resume, and stop that timer without leaving the
+// screen. Hidden on the Timers and Plan a bake sheets, and in cook mode, where
+// the timer is already shown in context.
 import { router, usePathname } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -23,11 +24,11 @@ export function TimerPill() {
   const { palette } = useAppTheme();
   const insets = useSafeAreaInsets();
   const now = useNow();
-  const { timers } = useTimers();
+  const { timers, pauseTimer, resumeTimer, cancelTimer } = useTimers();
   const { plan } = useBakePlan();
   const pathname = usePathname();
 
-  if (pathname === '/timers' || pathname === '/bake-plan') {
+  if (pathname === '/timers' || pathname === '/bake-plan' || pathname.endsWith('/cook')) {
     return null;
   }
 
@@ -76,38 +77,60 @@ export function TimerPill() {
   const primary = timers[0]!;
   const extra = timers.length - 1;
   const done = isTimerDone(primary, now);
+  const paused = primary.status === 'paused';
   const remaining = timerRemainingMs(primary, now);
   const progress = primary.durationMs > 0 ? 1 - remaining / primary.durationMs : 1;
   const timeColor = done ? palette.primary : palette.proofTealText;
   const timeText = done ? t('timers.done') : formatRemaining(remaining);
+  const label = extra > 0 ? `${primary.label} +${extra}` : primary.label;
 
-  return (
+  const control = (glyph: string, onPress: () => void, a11y: string, danger?: boolean) => (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${primary.label} ${timeText}`}
-      onPress={() => {
-        triggerHaptic('tap');
-        router.push('/timers');
-      }}
-      style={[styles.wrap, { bottom: insets.bottom + 90 }]}
+      accessibilityLabel={a11y}
+      onPress={onPress}
+      style={[styles.ctrl, { backgroundColor: palette.bgSurface }]}
     >
-      <View style={[styles.pill, shadow.md, { backgroundColor: palette.proofTealWash }]}>
-        <ProgressRing progress={done ? 1 : progress} due={done} size={28} />
-        <View style={styles.body}>
-          <Text style={[typography.title, { color: palette.textInk }]} numberOfLines={1}>
-            {primary.label}
-          </Text>
-          <Text style={[typography.numeric.sm, { color: timeColor }]}>{timeText}</Text>
-        </View>
-        {extra > 0 ? (
-          <View style={[styles.badge, { backgroundColor: palette.proofTeal }]}>
-            <Text style={[typography.label, styles.badgeText, { color: palette.bgSurface }]}>
-              +{extra}
-            </Text>
-          </View>
-        ) : null}
-      </View>
+      <Text style={[typography.title, { color: danger ? palette.danger : palette.proofTealText }]}>
+        {glyph}
+      </Text>
     </Pressable>
+  );
+
+  return (
+    <View style={[styles.wrap, { bottom: insets.bottom + 90 }]}>
+      <View style={[styles.pill, shadow.md, { backgroundColor: palette.proofTealWash }]}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${label} ${timeText}`}
+          onPress={() => {
+            triggerHaptic('tap');
+            router.push('/timers');
+          }}
+          style={styles.tapArea}
+        >
+          <ProgressRing progress={done ? 1 : progress} due={done} size={28} />
+          <View style={styles.body}>
+            <Text style={[typography.title, { color: palette.textInk }]} numberOfLines={1}>
+              {label}
+            </Text>
+            <Text style={[typography.numeric.sm, { color: timeColor }]}>{timeText}</Text>
+          </View>
+        </Pressable>
+        {done ? (
+          control('✕', () => cancelTimer(primary.id), t('timers.dismiss'), true)
+        ) : (
+          <>
+            {control(
+              paused ? '▶' : '❚❚',
+              () => (paused ? resumeTimer(primary.id) : pauseTimer(primary.id)),
+              t(paused ? 'timers.resume' : 'timers.pause')
+            )}
+            {control('✕', () => cancelTimer(primary.id), t('timers.cancel'), true)}
+          </>
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -116,11 +139,12 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xs,
     borderRadius: radius.pill,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
   },
+  tapArea: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   body: { flex: 1, gap: 1 },
   dot: {
     width: 10,
@@ -128,15 +152,13 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     marginHorizontal: 9,
   },
-  badge: {
-    minWidth: 24,
-    height: 24,
+  ctrl: {
+    width: 38,
+    height: 38,
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing['2xs'],
   },
-  badgeText: { letterSpacing: 0 },
 });
 
 export default TimerPill;
