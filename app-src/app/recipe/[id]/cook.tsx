@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { parseDuration } from '@/lib/timer';
+import { formatStepTime, parseDuration } from '@/lib/timer';
 import { useRecipes } from '@/state/recipes';
 import { spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
@@ -106,7 +106,9 @@ export default function CookModeSheet() {
         <Text style={[typography.numeric.hero, { color: palette.textFaint }]}>{index + 1}</Text>
         <Text style={[typography.display.md, { color: palette.textInk }]}>{step.text}</Text>
         {step.time ? (
-          <Text style={[typography.heading, { color: palette.proofTeal }]}>{step.time}</Text>
+          <Text style={[typography.heading, { color: palette.proofTeal }]}>
+            {formatStepTime(step.time)}
+          </Text>
         ) : null}
         {step.time && stepDurationMs !== null ? (
           <StepTimerControl

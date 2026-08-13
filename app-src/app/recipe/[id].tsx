@@ -8,7 +8,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatQuantity } from '@/lib/convert';
 import { bakersPercentages, groupBySection } from '@/lib/recipe';
-import { parseDuration } from '@/lib/timer';
+import { formatStepTime, parseDuration } from '@/lib/timer';
 import { usePro } from '@/state/pro';
 import { type RecipeIngredient, useRecipes } from '@/state/recipes';
 import { radius, spacing, typography } from '@/theme';
@@ -237,7 +237,7 @@ export default function RecipeDetailSheet() {
                       {step.time ? (
                         <View style={[styles.timePill, { backgroundColor: palette.proofTealWash }]}>
                           <Text style={[typography.body.sm, { color: palette.proofTealText }]}>
-                            ⏱ {step.time}
+                            ⏱ {formatStepTime(step.time)}
                           </Text>
                         </View>
                       ) : null}

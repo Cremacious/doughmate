@@ -3,7 +3,8 @@
 const MIN_MS = 60_000;
 const HOUR_MS = 3_600_000;
 
-/** Parse "30 min", "4 hr", "1 hr 20 min", "1h", "90m" to ms. Null if none found. */
+/** Parse "30 min", "4 hr", "1 hr 20 min", "1h", "90m", or a lone number as
+ *  minutes ("20" -> 20 min) to ms. Null if nothing parses. */
 export function parseDuration(text: string): number | null {
   const lower = text.toLowerCase();
   let ms = 0;
@@ -18,7 +19,21 @@ export function parseDuration(text: string): number | null {
     ms += Number(mins[1]) * MIN_MS;
     found = true;
   }
-  return found ? Math.round(ms) : null;
+  if (found) {
+    return Math.round(ms);
+  }
+  // A lone number with no unit reads as minutes, the way a baker would jot "20".
+  const bare = /^\s*(\d+(?:\.\d+)?)\s*$/.exec(lower);
+  if (bare) {
+    return Math.round(Number(bare[1]) * MIN_MS);
+  }
+  return null;
+}
+
+/** Display a step time, adding "min" to a lone number so "20" reads as "20 min". */
+export function formatStepTime(time: string): string {
+  const trimmed = time.trim();
+  return /^\d+(?:\.\d+)?$/.test(trimmed) ? `${trimmed} min` : trimmed;
 }
 
 export interface TimerLike {

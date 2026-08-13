@@ -1,4 +1,10 @@
-import { formatRemaining, isTimerDone, parseDuration, timerRemainingMs } from './timer';
+import {
+  formatRemaining,
+  formatStepTime,
+  isTimerDone,
+  parseDuration,
+  timerRemainingMs,
+} from './timer';
 
 const MIN = 60_000;
 const HOUR = 3_600_000;
@@ -18,9 +24,28 @@ describe('parseDuration', () => {
     expect(parseDuration('1 hr 20 min')).toBe(HOUR + 20 * MIN);
     expect(parseDuration('1h 30m')).toBe(HOUR + 30 * MIN);
   });
+  it('reads a lone number as minutes', () => {
+    expect(parseDuration('20')).toBe(20 * MIN);
+    expect(parseDuration('  5  ')).toBe(5 * MIN);
+    expect(parseDuration('1.5')).toBe(1.5 * MIN);
+  });
   it('returns null when nothing parses', () => {
     expect(parseDuration('until puffy')).toBeNull();
+    expect(parseDuration('240c')).toBeNull();
     expect(parseDuration('')).toBeNull();
+  });
+});
+
+describe('formatStepTime', () => {
+  it('adds min to a lone number', () => {
+    expect(formatStepTime('20')).toBe('20 min');
+    expect(formatStepTime('1.5')).toBe('1.5 min');
+    expect(formatStepTime('  45  ')).toBe('45 min');
+  });
+  it('leaves text with a unit untouched (trimmed)', () => {
+    expect(formatStepTime('30 min')).toBe('30 min');
+    expect(formatStepTime('4 hr')).toBe('4 hr');
+    expect(formatStepTime('  until puffy ')).toBe('until puffy');
   });
 });
 

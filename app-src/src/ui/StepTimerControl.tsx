@@ -8,7 +8,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useNow } from '@/hooks/useNow';
-import { formatRemaining, isTimerDone, timerRemainingMs } from '@/lib/timer';
+import { formatRemaining, formatStepTime, isTimerDone, timerRemainingMs } from '@/lib/timer';
 import { useTimers } from '@/state/timers';
 import { spacing, typography } from '@/theme';
 import { useToast } from '@/ui/Toast';
@@ -35,13 +35,14 @@ export function StepTimerControl({
   const now = useNow();
 
   const stepLabel = t('timers.step_n', { n: stepIndex + 1 });
+  const timeLabel = formatStepTime(time);
   const running = timers.find((tm) => tm.recipeId === recipeId && tm.stepLabel === stepLabel);
 
   if (!running) {
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={t('timers.start_step_timer', { time })}
+        accessibilityLabel={t('timers.start_step_timer', { time: timeLabel })}
         onPress={() => {
           startTimer({
             label: stepText.trim().slice(0, 40),
@@ -49,12 +50,15 @@ export function StepTimerControl({
             recipeId,
             durationMs,
           });
-          show({ message: t('timers.timer_started', { time }), variant: 'confirmation' });
+          show({
+            message: t('timers.timer_started', { time: timeLabel }),
+            variant: 'confirmation',
+          });
         }}
         style={styles.startTimerBtn}
       >
         <Text style={[typography.label, { color: palette.proofTeal }]}>
-          ▶ {t('timers.start_step_timer', { time })}
+          ▶ {t('timers.start_step_timer', { time: timeLabel })}
         </Text>
       </Pressable>
     );
