@@ -5,3 +5,6 @@ declare module '*.svg' {
   const content: React.FC<SvgProps>;
   export default content;
 }
+
+// Global CSS is a web-only side-effect import (ignored on native by Expo).
+declare module '*.css';

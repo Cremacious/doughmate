@@ -1,5 +1,6 @@
 // Root layout. Sets up fonts, i18n, settings, gesture handling, safe areas, status bar.
 import '@/i18n';
+import '@/global.css';
 
 import { Gabarito_600SemiBold } from '@expo-google-fonts/gabarito';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
