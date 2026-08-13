@@ -18,7 +18,7 @@ export default function OnboardingRecipes() {
   return (
     <OnboardingScaffold
       step={3}
-      total={6}
+      total={5}
       hero={<IconBadge name="recipes" tint="primary" />}
       title={t('onboarding.recipes.title')}
       body={t('onboarding.recipes.body')}

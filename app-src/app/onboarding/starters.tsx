@@ -18,7 +18,7 @@ export default function OnboardingStarters() {
   return (
     <OnboardingScaffold
       step={4}
-      total={6}
+      total={5}
       hero={<IconBadge name="starters" tint="teal" />}
       title={t('onboarding.starters.title')}
       body={t('onboarding.starters.body')}

@@ -50,7 +50,8 @@
       "body": "I'll remind you at feeding time and send one baking tip a week.",
       "yes": "Sure",
       "no": "Maybe later"
-    }
+    },
+    "start": "Start baking"
   },
   "tabs": {
     "convert": "Convert",

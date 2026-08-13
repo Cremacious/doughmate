@@ -26,7 +26,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
-  theme: 'auto',
+  theme: 'light',
   reducedMotion: false,
   haptics: true,
   soundEffects: false,
