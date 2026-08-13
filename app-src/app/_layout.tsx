@@ -14,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BakePlanSync } from '@/components/BakePlanSync';
 import { ReminderSync } from '@/components/ReminderSync';
 import { TimerSync } from '@/components/TimerSync';
+import { TimerPill } from '@/ui/TimerPill';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { initAds } from '@/lib/ads';
 import { BakePlanProvider } from '@/state/bakePlan';
@@ -162,6 +163,7 @@ function ThemedApp() {
           }}
         />
       </Stack>
+      <TimerPill />
       <ReminderSync />
       <TimerSync />
       <BakePlanSync />

@@ -1,7 +1,9 @@
-// Floating active timers pill. Sits above the tab bar on every tab whenever a
-// timer is running, showing the soonest to finish timer and a +N count for the
-// rest. Tapping it opens the Timers sheet.
-import { router } from 'expo-router';
+// Floating active timers pill. Mounted at the root, so it floats above every
+// screen (tabs and full screen sheets alike) whenever a timer is running or a
+// bake plan is armed, showing the soonest to finish timer and a +N count for
+// the rest. Tapping it opens the Timers sheet. Hidden on the Timers and Plan a
+// bake sheets, where it would be redundant and could overlap their actions.
+import { router, usePathname } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +25,11 @@ export function TimerPill() {
   const now = useNow();
   const { timers } = useTimers();
   const { plan } = useBakePlan();
+  const pathname = usePathname();
+
+  if (pathname === '/timers' || pathname === '/bake-plan') {
+    return null;
+  }
 
   if (timers.length === 0) {
     const progress = plan ? planProgress(plan.steps, plan.finishAt, now) : null;
