@@ -10,6 +10,8 @@ import {
   round,
   searchIngredients,
   toGrams,
+  toKitchenFraction,
+  usesFractionUnit,
 } from './convert';
 
 describe('unit predicates', () => {
@@ -230,5 +232,74 @@ describe('formatQuantity', () => {
 
   it('shows zero cleanly', () => {
     expect(formatQuantity(0)).toBe('0');
+  });
+
+  it('renders a fraction for volume units when asked', () => {
+    expect(formatQuantity(1.5, { format: 'fraction', unit: 'cup' })).toBe('1 1/2');
+    expect(formatQuantity(0.371, { format: 'fraction', unit: 'tbsp' })).toBe('3/8');
+    expect(formatQuantity(0.25, { format: 'fraction', unit: 'tsp' })).toBe('1/4');
+  });
+
+  it('stays decimal for non volume units even in fraction mode', () => {
+    expect(formatQuantity(1.5, { format: 'fraction', unit: 'g' })).toBe('1.5');
+    expect(formatQuantity(1.5, { format: 'fraction', unit: 'ml' })).toBe('1.5');
+    expect(formatQuantity(1.5, { format: 'fraction' })).toBe('1.5');
+  });
+
+  it('stays decimal for volume units in decimal mode', () => {
+    expect(formatQuantity(1.5, { format: 'decimal', unit: 'cup' })).toBe('1.5');
+  });
+});
+
+describe('usesFractionUnit', () => {
+  it('is true for cup, tbsp, tsp and their common spellings', () => {
+    for (const u of ['cup', 'cups', 'Tbsp', 'tablespoon', 'tablespoons', 'tsp', 'Teaspoons']) {
+      expect(usesFractionUnit(u)).toBe(true);
+    }
+  });
+
+  it('is false for weight units, ml, and unknown or missing units', () => {
+    for (const u of ['g', 'oz', 'lb', 'ml', 'x', 'stick', '']) {
+      expect(usesFractionUnit(u)).toBe(false);
+    }
+    expect(usesFractionUnit(undefined)).toBe(false);
+  });
+});
+
+describe('toKitchenFraction', () => {
+  it('renders bare whole numbers', () => {
+    expect(toKitchenFraction(0)).toBe('0');
+    expect(toKitchenFraction(2)).toBe('2');
+  });
+
+  it('snaps the fractional part to the nearest kitchen fraction', () => {
+    expect(toKitchenFraction(0.125)).toBe('1/8');
+    expect(toKitchenFraction(0.25)).toBe('1/4');
+    expect(toKitchenFraction(0.333)).toBe('1/3');
+    expect(toKitchenFraction(0.375)).toBe('3/8');
+    expect(toKitchenFraction(0.5)).toBe('1/2');
+    expect(toKitchenFraction(0.625)).toBe('5/8');
+    expect(toKitchenFraction(0.667)).toBe('2/3');
+    expect(toKitchenFraction(0.75)).toBe('3/4');
+    expect(toKitchenFraction(0.875)).toBe('7/8');
+  });
+
+  it('renders mixed numbers', () => {
+    expect(toKitchenFraction(1.52)).toBe('1 1/2');
+    expect(toKitchenFraction(2.34)).toBe('2 1/3');
+  });
+
+  it('carries up when the fraction snaps to a whole', () => {
+    expect(toKitchenFraction(0.95)).toBe('1');
+    expect(toKitchenFraction(1.98)).toBe('2');
+  });
+
+  it('floors tiny positive amounts to the smallest fraction instead of zero', () => {
+    expect(toKitchenFraction(0.02)).toBe('1/8');
+  });
+
+  it('handles negative values', () => {
+    expect(toKitchenFraction(-1.5)).toBe('-1 1/2');
+    expect(toKitchenFraction(-0.5)).toBe('-1/2');
   });
 });

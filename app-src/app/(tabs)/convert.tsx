@@ -112,6 +112,7 @@ export default function ConvertScreen() {
       bFrom,
       bTo,
       settings.flourStandard,
+      settings.numberFormat,
     ]
   );
 
@@ -136,7 +137,8 @@ export default function ConvertScreen() {
                 to: iTo,
                 ingredient,
                 flourStandard: settings.flourStandard,
-              })
+              }),
+              { format: settings.numberFormat, unit: iTo }
             );
       return {
         label: t('converter.result_equals'),
@@ -183,7 +185,13 @@ export default function ConvertScreen() {
     }
     if (mode === 'yeast') {
       const a = num(yAmount);
-      const value = a === null ? null : formatQuantity(convertYeast(a, yFrom, yTo));
+      const value =
+        a === null
+          ? null
+          : formatQuantity(convertYeast(a, yFrom, yTo), {
+              format: settings.numberFormat,
+              unit: 'tsp',
+            });
       return {
         label: t('yeast.to_label'),
         value,
@@ -206,7 +214,13 @@ export default function ConvertScreen() {
     }
     // butter
     const a = num(bAmount);
-    const value = a === null ? null : formatQuantity(convertButter(a, bFrom, bTo));
+    const value =
+      a === null
+        ? null
+        : formatQuantity(convertButter(a, bFrom, bTo), {
+            format: settings.numberFormat,
+            unit: bTo,
+          });
     return {
       label: t('converter.result_equals'),
       value,

@@ -8,6 +8,7 @@ import { storage } from '@/lib/storage';
 export type ThemePref = 'auto' | 'light' | 'dark';
 export type UnitsPref = 'metric' | 'imperial';
 export type FlourStandardPref = 120 | 125;
+export type NumberFormatPref = 'fraction' | 'decimal';
 
 export interface Settings {
   theme: ThemePref;
@@ -16,6 +17,7 @@ export interface Settings {
   soundEffects: boolean;
   units: UnitsPref;
   flourStandard: FlourStandardPref;
+  numberFormat: NumberFormatPref;
   flouredFingers: boolean;
   starterReminders: boolean;
   weeklyTip: boolean;
@@ -32,6 +34,7 @@ export const DEFAULT_SETTINGS: Settings = {
   soundEffects: false,
   units: 'imperial',
   flourStandard: 120,
+  numberFormat: 'fraction',
   flouredFingers: false,
   starterReminders: true,
   weeklyTip: true,
