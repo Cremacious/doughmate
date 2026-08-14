@@ -10,6 +10,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { usePro } from '@/state/pro';
 import {
   type FlourStandardPref,
+  type NumberFormatPref,
   type ThemePref,
   type UnitsPref,
   useSettings,
@@ -24,6 +25,7 @@ import { Toggle } from '@/ui/Toggle';
 const THEMES: ThemePref[] = ['light', 'dark', 'auto'];
 const UNITS: UnitsPref[] = ['metric', 'imperial'];
 const FLOURS: FlourStandardPref[] = [120, 125];
+const NUMBER_FORMATS: NumberFormatPref[] = ['fraction', 'decimal'];
 
 function ToggleRow({
   label,
@@ -154,6 +156,13 @@ export default function SettingsSheet() {
           value={settings.flourStandard}
           render={(f) => t(`settings.flour_${f}` as 'settings.flour_120')}
           onChange={(f) => update('flourStandard', f)}
+        />
+        <SegmentRow
+          label={t('settings.number_format')}
+          options={NUMBER_FORMATS}
+          value={settings.numberFormat}
+          render={(n) => t(`settings.number_format_${n}` as 'settings.number_format_fraction')}
+          onChange={(n) => update('numberFormat', n)}
         />
         <Card>
           <ToggleRow

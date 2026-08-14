@@ -6,11 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { formatQuantity } from '@/lib/convert';
+import { formatQuantity, type NumberFormat } from '@/lib/convert';
 import { bakersPercentages, groupBySection } from '@/lib/recipe';
 import { formatStepTime, parseDuration } from '@/lib/timer';
 import { usePro } from '@/state/pro';
 import { type RecipeIngredient, useRecipes } from '@/state/recipes';
+import { useSettings } from '@/state/settings';
 import { radius, spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
@@ -20,9 +21,12 @@ import { Stepper } from '@/ui/Stepper';
 import { Tip } from '@/ui/Tip';
 import { useToast } from '@/ui/Toast';
 
-function ingAmountText(ingredient: RecipeIngredient, factor: number): string {
+function ingAmountText(ingredient: RecipeIngredient, factor: number, format: NumberFormat): string {
   if (typeof ingredient.amount !== 'number') return ingredient.unit;
-  const scaled = formatQuantity(ingredient.amount * factor);
+  const scaled = formatQuantity(ingredient.amount * factor, {
+    format,
+    unit: ingredient.unit,
+  });
   return ingredient.unit ? `${scaled} ${ingredient.unit}` : scaled;
 }
 
@@ -33,6 +37,7 @@ export default function RecipeDetailSheet() {
   const { getRecipe, removeRecipe, restoreRecipe } = useRecipes();
   const { isPro } = usePro();
   const { show } = useToast();
+  const { settings } = useSettings();
 
   const recipe = getRecipe(id);
   const baseServings = recipe && recipe.servings > 0 ? recipe.servings : 1;
@@ -172,7 +177,7 @@ export default function RecipeDetailSheet() {
                     <Text
                       style={[typography.numeric.sm, styles.ingAmt, { color: palette.primary }]}
                     >
-                      {ingAmountText(ing, factor)}
+                      {ingAmountText(ing, factor, settings.numberFormat)}
                     </Text>
                     <Text style={[typography.body.lg, styles.ingItem, { color: palette.textInk }]}>
                       {ing.item}
