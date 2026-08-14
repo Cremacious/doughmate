@@ -17,6 +17,13 @@ import {
   searchIngredients,
   type Unit,
 } from '@/lib/convert';
+import {
+  combineAmount,
+  FRACTION_CHOICES,
+  isFractionInputUnit,
+  splitAmount,
+  WHOLE_MAX,
+} from '@/lib/amountInput';
 import { type ButterUnit, convertButter } from '@/lib/butter';
 import { convertEggs, type EggId, getEggSize, listEggSizes } from '@/lib/egg';
 import { cToF, fToC, nearestGasMark } from '@/lib/oven';
@@ -31,6 +38,7 @@ import { ModeChip } from '@/ui/ModeChip';
 import { OptionSheet, type Option } from '@/ui/OptionSheet';
 import { PickerField } from '@/ui/PickerField';
 import { ResultDisplay } from '@/ui/ResultDisplay';
+import { AmountField } from '@/ui/AmountField';
 import { ScreenHeader } from '@/ui/ScreenHeader';
 import { Stepper } from '@/ui/Stepper';
 import { Tip } from '@/ui/Tip';
@@ -68,7 +76,9 @@ export default function ConvertScreen() {
   const { settings } = useSettings();
 
   const [mode, setMode] = useState<Mode>('ingredient');
-  const [sheet, setSheet] = useState<'modes' | 'ingredient' | 'panFrom' | 'panTo' | null>(null);
+  const [sheet, setSheet] = useState<
+    'modes' | 'ingredient' | 'panFrom' | 'panTo' | 'amountWhole' | 'amountFraction' | null
+  >(null);
 
   // Per mode inputs.
   const [ingredient, setIngredient] = useState<Ingredient>(DEFAULT_INGREDIENT);
@@ -266,6 +276,26 @@ export default function ConvertScreen() {
     </ScrollView>
   );
 
+  // Fraction entry only makes sense in Fractions mode, and only for scooped
+  // units (yeast is always in teaspoons, so it always qualifies).
+  const asFraction = settings.numberFormat === 'fraction';
+  const ingredientFraction = asFraction && isFractionInputUnit(iFrom);
+  const butterFraction = asFraction && isFractionInputUnit(bFrom);
+  const yeastFraction = asFraction;
+
+  // The amount the whole/fraction sheets edit, bound to the active mode.
+  const amountBinding =
+    mode === 'yeast'
+      ? { value: yAmount, set: setYAmount }
+      : mode === 'butter'
+        ? { value: bAmount, set: setBAmount }
+        : { value: amount, set: setAmount };
+  const activeSplit = splitAmount(Number(amountBinding.value));
+  const setWhole = (w: number) =>
+    amountBinding.set(String(combineAmount(w, activeSplit.fractionId)));
+  const setFraction = (id: string) =>
+    amountBinding.set(String(combineAmount(activeSplit.whole, id)));
+
   return (
     <View style={[styles.root, { backgroundColor: palette.bgCanvas }]}>
       <SafeAreaView edges={['top']} style={styles.flex}>
@@ -327,11 +357,15 @@ export default function ConvertScreen() {
                     value={ingredient.name}
                     onPress={() => setSheet('ingredient')}
                   />
-                  <Input
+                  <AmountField
                     label={t('converter.label_amount')}
+                    wholeLabel={t('converter.amount_whole')}
+                    fractionLabel={t('converter.amount_fraction')}
                     value={amount}
                     onChangeText={setAmount}
-                    numeric
+                    fraction={ingredientFraction}
+                    onOpenWhole={() => setSheet('amountWhole')}
+                    onOpenFraction={() => setSheet('amountFraction')}
                   />
                   <Labeled label={t('converter.label_from_unit')}>
                     {unitRow(INGREDIENT_FROM, iFrom, setIFrom)}
@@ -380,11 +414,15 @@ export default function ConvertScreen() {
 
               {mode === 'yeast' ? (
                 <>
-                  <Input
+                  <AmountField
                     label={t('yeast.amount_label')}
+                    wholeLabel={t('converter.amount_whole')}
+                    fractionLabel={t('converter.amount_fraction')}
                     value={yAmount}
                     onChangeText={setYAmount}
-                    numeric
+                    fraction={yeastFraction}
+                    onOpenWhole={() => setSheet('amountWhole')}
+                    onOpenFraction={() => setSheet('amountFraction')}
                   />
                   <Labeled label={t('yeast.from_label')}>
                     {typeRow(listYeastTypes(), yFrom, setYFrom)}
@@ -419,11 +457,15 @@ export default function ConvertScreen() {
 
               {mode === 'butter' ? (
                 <>
-                  <Input
+                  <AmountField
                     label={t('butter.amount_label')}
+                    wholeLabel={t('converter.amount_whole')}
+                    fractionLabel={t('converter.amount_fraction')}
                     value={bAmount}
                     onChangeText={setBAmount}
-                    numeric
+                    fraction={butterFraction}
+                    onOpenWhole={() => setSheet('amountWhole')}
+                    onOpenFraction={() => setSheet('amountFraction')}
                   />
                   <Labeled label={t('butter.from_label')}>
                     {unitRow(BUTTER_UNITS, bFrom, setBFrom)}
@@ -485,6 +527,29 @@ export default function ConvertScreen() {
             }
           }}
           options={listPans().map((p) => ({ id: p.id, label: p.name }))}
+        />
+      ) : null}
+
+      {sheet === 'amountWhole' ? (
+        <OptionSheet
+          title={t('converter.pick_whole')}
+          selectedId={String(activeSplit.whole)}
+          onClose={() => setSheet(null)}
+          onSelect={(id) => setWhole(Number(id))}
+          options={Array.from({ length: WHOLE_MAX + 1 }, (_, i) => ({
+            id: String(i),
+            label: String(i),
+          }))}
+        />
+      ) : null}
+
+      {sheet === 'amountFraction' ? (
+        <OptionSheet
+          title={t('converter.pick_fraction')}
+          selectedId={activeSplit.fractionId}
+          onClose={() => setSheet(null)}
+          onSelect={setFraction}
+          options={FRACTION_CHOICES.map((c) => ({ id: c.id, label: c.label }))}
         />
       ) : null}
     </View>

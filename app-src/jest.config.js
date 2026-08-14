@@ -12,6 +12,7 @@ module.exports = {
   // tested here, so coverage is scoped to the tested logic modules only.
   collectCoverageFrom: [
     'src/lib/convert.ts',
+    'src/lib/amountInput.ts',
     'src/lib/recipe.ts',
     'src/lib/pan.ts',
     'src/lib/oven.ts',
