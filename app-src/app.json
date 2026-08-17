@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cremacious.doughmate"
+      "bundleIdentifier": "com.cremacious.doughmate",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.cremacious.doughmate",
@@ -40,6 +43,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a4c355a4-af59-4bd0-b834-3863a2575782"
+      }
+    },
+    "owner": "chrismackall"
   }
 }

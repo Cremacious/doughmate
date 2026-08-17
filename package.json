@@ -1,0 +1,17 @@
+{
+  "name": "doughmate-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Convenience scripts that forward to the Expo app in app-src/",
+  "scripts": {
+    "setup": "cd app-src && pnpm install",
+    "dev": "cd app-src && npm run dev --",
+    "start": "cd app-src && npm run start --",
+    "web": "cd app-src && npm run web --",
+    "ios": "cd app-src && npm run ios --",
+    "android": "cd app-src && npm run android --",
+    "test": "cd app-src && npm run test --",
+    "typecheck": "cd app-src && npm run typecheck --",
+    "lint": "cd app-src && npm run lint --"
+  }
+}

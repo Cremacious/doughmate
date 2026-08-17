@@ -1,3 +1,7 @@
 
 # visual brainstorming mockups
 .superpowers/
+
+# root forwarder package.json has no deps, but npm may still create these
+node_modules/
+package-lock.json
