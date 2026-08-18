@@ -1,5 +1,13 @@
-// Ads: web / default stub. No ads on web; every call is a no-op. Native devices
-// use ads.native.ts (Google Mobile Ads) instead.
+// Ads: web / default stub. No ads on web, so there is nothing to consent to and
+// nothing ever becomes ready. Native devices use ads.native.ts instead.
 export const ADS_AVAILABLE = false;
 
-export function initAds(): void {}
+export async function initAds(): Promise<void> {}
+
+export function getAdsReady(): boolean {
+  return false;
+}
+
+export function subscribeAdsReady(): () => void {
+  return () => {};
+}
