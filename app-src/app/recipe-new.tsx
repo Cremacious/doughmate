@@ -255,35 +255,44 @@ export default function RecipeEditorSheet() {
               const named = section.name.trim() !== '';
               const ingredientCards = section.ingredients.map((ing, i) => (
                 <Card key={i}>
-                  <View style={styles.ingredientRow}>
-                    <View style={styles.amountField}>
-                      <Input
-                        value={ing.amount}
-                        onChangeText={(text) => updateIngredient(s, i, { amount: text })}
-                        placeholder={t('recipes.ingredient_amount_placeholder')}
-                        numeric
-                      />
-                    </View>
-                    <View style={styles.unitField}>
-                      <UnitPickerField
-                        value={ing.unit ? t(`units.${ing.unit}` as 'units.g') : ''}
-                        placeholder={t('recipes.unit_none')}
-                        onPress={() => setUnitPicker({ s, i })}
-                      />
-                    </View>
-                    <View style={styles.itemField}>
-                      <Input
-                        value={ing.item}
-                        onChangeText={(text) => updateIngredient(s, i, { item: text })}
-                        placeholder={t('recipes.ingredient_item_placeholder')}
-                      />
-                    </View>
-                    <IconButton
-                      iconName="delete"
-                      variant="quiet"
-                      accessibilityLabel={t('recipes.button_delete')}
-                      onPress={() => removeIngredient(s, i)}
+                  {/*
+                    Two rows, not four columns. Sharing one row left the amount and the
+                    unit about 60px each, so their own labels truncated to "A..." and
+                    "no...". The ingredient is the wide field and takes the top row; the
+                    amount and unit split the one below, where they have room to read.
+                  */}
+                  <View style={styles.ingredientCard}>
+                    <Input
+                      value={ing.item}
+                      onChangeText={(text) => updateIngredient(s, i, { item: text })}
+                      label={t('recipes.ingredient_item_placeholder')}
+                      placeholder={t('recipes.ingredient_item_placeholder')}
                     />
+                    <View style={styles.ingredientRow}>
+                      <View style={styles.amountField}>
+                        <Input
+                          value={ing.amount}
+                          onChangeText={(text) => updateIngredient(s, i, { amount: text })}
+                          label={t('recipes.ingredient_amount_label')}
+                          placeholder={t('recipes.ingredient_amount_placeholder')}
+                          numeric
+                        />
+                      </View>
+                      <View style={styles.unitField}>
+                        <UnitPickerField
+                          value={ing.unit ? t(`units.${ing.unit}` as 'units.g') : ''}
+                          label={t('recipes.unit_label')}
+                          placeholder={t('recipes.unit_none')}
+                          onPress={() => setUnitPicker({ s, i })}
+                        />
+                      </View>
+                      <IconButton
+                        iconName="delete"
+                        variant="quiet"
+                        accessibilityLabel={t('recipes.button_delete')}
+                        onPress={() => removeIngredient(s, i)}
+                      />
+                    </View>
                   </View>
                 </Card>
               ));
@@ -488,10 +497,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing.md,
   },
-  ingredientRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  amountField: { width: 64 },
-  unitField: { width: 62 },
-  itemField: { flex: 1 },
+  ingredientCard: { gap: spacing.md },
+  // flex-end so the delete button sits on the field baseline, below the labels.
+  ingredientRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm },
+  amountField: { flex: 1 },
+  unitField: { flex: 1.15 },
   dashedButton: {
     borderWidth: stroke.soft,
     borderStyle: 'dashed',

@@ -251,6 +251,7 @@
     "add_step": "Add step",
     "ingredient_item_placeholder": "Ingredient",
     "ingredient_amount_placeholder": "Amt",
+    "ingredient_amount_label": "Amount",
     "unit_none": "no unit",
     "unit_label": "Unit",
     "step_text_placeholder": "Describe this step",
