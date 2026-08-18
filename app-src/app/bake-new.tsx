@@ -9,12 +9,14 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { daysAgo } from '@/lib/bake';
 import { triggerHaptic } from '@/lib/haptics';
+import { scaleType } from '@/lib/typeScale';
 import { type Bake, type BakeInput, useBakes } from '@/state/bakes';
 import { useRecipes } from '@/state/recipes';
 import { useStarters } from '@/state/starters';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
+import { Card } from '@/ui/Card';
 import { Chip } from '@/ui/Chip';
 import { Input } from '@/ui/Input';
 import { OptionSheet } from '@/ui/OptionSheet';
@@ -41,7 +43,7 @@ const DAY_MS = 86_400_000;
 
 export default function BakeEditorSheet() {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
   const { addBake, updateBake, getBake, removeBake, restoreBake } = useBakes();
   const { recipes, getRecipe } = useRecipes();
   const { starters } = useStarters();
@@ -125,7 +127,14 @@ export default function BakeEditorSheet() {
       size="tall"
       onClose={() => router.back()}
       header={
-        <Text style={[typography.display.md, styles.title, { color: palette.textInk }]}>
+        <Text
+          style={[
+            typography.display.md,
+            scaleType(typography.display.md, fontScale),
+            styles.title,
+            { color: palette.textInk },
+          ]}
+        >
           {existing ? t('bakes.edit_title') : t('bakes.new_title')}
         </Text>
       }
@@ -142,63 +151,51 @@ export default function BakeEditorSheet() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Input
-          label={t('bakes.field_name')}
-          value={name}
-          onChangeText={setName}
-          placeholder={t('bakes.name_placeholder')}
-        />
+        <Card>
+          <Input
+            label={t('bakes.field_name')}
+            value={name}
+            onChangeText={setName}
+            placeholder={t('bakes.name_placeholder')}
+          />
+          <PickerField
+            label={t('bakes.link_recipe')}
+            value={recipeName ?? ''}
+            onPress={() => setPicker('recipe')}
+          />
+        </Card>
 
-        <PickerField
-          label={t('bakes.link_recipe')}
-          value={recipeName ?? ''}
-          onPress={() => setPicker('recipe')}
-        />
-
-        <View style={styles.field}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>
-            {t('bakes.field_when')}
-          </Text>
-          <View style={styles.dayRow}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => {
-                triggerHaptic('select');
-                setBakedAt((prev) => prev - DAY_MS);
-              }}
-              style={[styles.dayCircle, { backgroundColor: palette.bgSunken }]}
-            >
-              <Text style={[typography.heading, { color: palette.textSoft }]}>{'−'}</Text>
-            </Pressable>
-            <Text style={[typography.title, styles.dayLabel, { color: palette.textInk }]}>
-              {dayLabel}
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              disabled={bakedAt >= now}
-              onPress={() => {
-                triggerHaptic('select');
-                setBakedAt((prev) => Math.min(prev + DAY_MS, now));
-              }}
-              style={[
-                styles.dayCircle,
-                { backgroundColor: palette.bgSunken, opacity: bakedAt >= now ? 0.35 : 1 },
-              ]}
-            >
-              <Text style={[typography.heading, { color: palette.textSoft }]}>{'+'}</Text>
-            </Pressable>
-          </View>
-        </View>
-
-        <View style={styles.field}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>
+        {/* The rating is the sheet's one hero: it is the whole point of logging. */}
+        <Card tier="hero" heroColor={palette.accentButter} style={styles.ratingCard}>
+          <Text
+            style={[
+              typography.label,
+              scaleType(typography.label, fontScale),
+              { color: palette.onButterSoft },
+            ]}
+          >
             {t('bakes.field_rating')}
           </Text>
-          <StarRating value={rating} onChange={setRating} size={28} />
-        </View>
+          <StarRating value={rating} onChange={setRating} size={30} color={palette.onButter} />
+          <Text
+            style={[
+              typography.subheading,
+              scaleType(typography.subheading, fontScale),
+              { color: palette.onButter },
+            ]}
+          >
+            {t(`bakes.rating_${rating}` as 'bakes.rating_4')}
+          </Text>
+        </Card>
 
-        <View style={styles.field}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>
+        <Card>
+          <Text
+            style={[
+              typography.label,
+              scaleType(typography.label, fontScale),
+              { color: palette.textFaint },
+            ]}
+          >
             {t('bakes.field_crumb')}
           </Text>
           <View style={styles.chips}>
@@ -211,16 +208,86 @@ export default function BakeEditorSheet() {
               />
             ))}
           </View>
-        </View>
+        </Card>
 
-        <PickerField
-          label={t('bakes.field_starter')}
-          value={starterName ?? ''}
-          onPress={() => setPicker('starter')}
-        />
+        {/* When and Starter used share a row: two short facts, one line. */}
+        <Card>
+          <View style={styles.splitRow}>
+            <View style={styles.splitCell}>
+              <Text
+                style={[
+                  typography.label,
+                  scaleType(typography.label, fontScale),
+                  { color: palette.textFaint },
+                ]}
+              >
+                {t('bakes.field_when')}
+              </Text>
+              <View style={styles.dayRow}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('bakes.field_when')}
+                  onPress={() => {
+                    triggerHaptic('select');
+                    setBakedAt((prev) => prev - DAY_MS);
+                  }}
+                  style={[
+                    styles.dayCircle,
+                    { backgroundColor: palette.bgCanvas, borderColor: palette.outline },
+                  ]}
+                >
+                  <Text style={[typography.subheading, { color: palette.textInk }]}>{'−'}</Text>
+                </Pressable>
+                <Text
+                  style={[
+                    typography.body.md,
+                    scaleType(typography.body.md, fontScale),
+                    styles.dayLabel,
+                    { color: palette.textInk },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {dayLabel}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('bakes.field_when')}
+                  disabled={bakedAt >= now}
+                  onPress={() => {
+                    triggerHaptic('select');
+                    setBakedAt((prev) => Math.min(prev + DAY_MS, now));
+                  }}
+                  style={[
+                    styles.dayCircle,
+                    {
+                      backgroundColor: palette.bgCanvas,
+                      borderColor: palette.outline,
+                      opacity: bakedAt >= now ? 0.35 : 1,
+                    },
+                  ]}
+                >
+                  <Text style={[typography.subheading, { color: palette.textInk }]}>{'+'}</Text>
+                </Pressable>
+              </View>
+            </View>
+            <View style={styles.splitCell}>
+              <PickerField
+                label={t('bakes.field_starter')}
+                value={starterName ?? ''}
+                onPress={() => setPicker('starter')}
+              />
+            </View>
+          </View>
+        </Card>
 
-        <View style={styles.field}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>
+        <Card>
+          <Text
+            style={[
+              typography.label,
+              scaleType(typography.label, fontScale),
+              { color: palette.textFaint },
+            ]}
+          >
             {t('bakes.field_notes')}
           </Text>
           <TextInput
@@ -232,11 +299,16 @@ export default function BakeEditorSheet() {
             textAlignVertical="top"
             style={[
               typography.body.lg,
+              scaleType(typography.body.lg, fontScale),
               styles.area,
-              { backgroundColor: palette.bgSunken, color: palette.textInk },
+              {
+                backgroundColor: palette.bgCanvas,
+                borderColor: palette.borderField,
+                color: palette.textInk,
+              },
             ]}
           />
-        </View>
+        </Card>
 
         {existing ? (
           <Button
@@ -301,17 +373,25 @@ export default function BakeEditorSheet() {
 
 const styles = StyleSheet.create({
   title: { marginTop: spacing.xs },
-  body: { padding: spacing.xl, gap: spacing.lg, paddingBottom: spacing['3xl'] },
-  field: { gap: spacing.xs },
+  body: { padding: spacing.xl, gap: spacing.md, paddingBottom: spacing['3xl'] },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  dayRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+  ratingCard: { alignItems: 'flex-start', gap: spacing.sm },
+  splitRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start' },
+  splitCell: { flex: 1, gap: spacing.xs },
+  dayRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   dayCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 999,
+    width: 44,
+    height: 44,
+    borderRadius: radius.pill,
+    borderWidth: stroke.ink,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dayLabel: { flex: 1, textAlign: 'center' },
-  area: { borderRadius: radius.lg, padding: spacing.md, height: 100 },
+  area: {
+    borderRadius: radius.lg,
+    borderWidth: stroke.soft,
+    padding: spacing.md,
+    height: 100,
+  },
 });

@@ -1,15 +1,20 @@
-// Proof Button. Variants primary / secondary / quiet / destructive, sizes md / lg.
-// Pill shape, squishes on press (unless reduced motion), fires a named haptic.
-import type { ReactNode } from 'react';
+// Fresh Bake Button. Variants primary / ink / secondary / quiet / destructive, sizes
+// md / lg. Squared off at radius.xl, not a pill, with a 2px ink outline that carries
+// the whole system. Filled variants ride a hard shadow and sit down into it on press.
+//
+// `ink` is the primary action *on* a hero fill, where tomato would put a second hero
+// colour on the screen. It needs a lighter surface under it, so do not use it straight
+// on the dark canvas.
+import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { triggerHaptic, type HapticName } from '@/lib/haptics';
-import { spacing, spring, typography } from '@/theme';
+import { scaleType } from '@/lib/typeScale';
+import { hardShadow, radius, spacing, stroke, typography } from '@/theme';
+import { HardShadow } from './HardShadow';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'quiet' | 'destructive';
+export type ButtonVariant = 'primary' | 'ink' | 'secondary' | 'quiet' | 'destructive';
 export type ButtonSize = 'md' | 'lg';
 
 export interface ButtonProps {
@@ -18,11 +23,19 @@ export interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   icon?: ReactNode;
+  /** Rendered after the label, for a price or a count that belongs to the action. */
+  trailing?: ReactNode;
   disabled?: boolean;
   loading?: boolean;
   haptic?: HapticName;
   fullWidth?: boolean;
 }
+
+/** Heights at fontScale.normal; floured fingers swaps to the taller column. */
+const HEIGHTS = {
+  md: { normal: 54, floured: 64 },
+  lg: { normal: 60, floured: 72 },
+} as const;
 
 export function Button({
   label,
@@ -30,29 +43,35 @@ export function Button({
   variant = 'primary',
   size = 'md',
   icon,
+  trailing,
   disabled = false,
   loading = false,
   haptic = 'tap',
   fullWidth = true,
 }: ButtonProps) {
   const { palette, fontScale } = useAppTheme();
-  const reduced = useReducedMotion();
-  const scale = useSharedValue(1);
-  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const [pressed, setPressed] = useState(false);
 
   const floured = fontScale > 1;
-  const height = size === 'lg' ? (floured ? 64 : 56) : floured ? 56 : 48;
+  const height = floured ? HEIGHTS[size].floured : HEIGHTS[size].normal;
+  const isDisabled = disabled || loading;
 
-  const bg =
-    variant === 'primary'
+  // Disabled outranks the variant: one flat sunken slab, no shadow, no emphasis.
+  const fill = isDisabled
+    ? palette.bgSunken
+    : variant === 'primary'
       ? palette.primary
-      : variant === 'secondary'
-        ? palette.bgSunken
-        : variant === 'destructive'
-          ? palette.dangerWash
-          : 'transparent';
-  const fg =
-    variant === 'primary'
+      : variant === 'ink'
+        ? palette.outline
+        : variant === 'secondary'
+          ? palette.bgSurface
+          : variant === 'destructive'
+            ? palette.dangerWash
+            : 'transparent';
+
+  const fg = isDisabled
+    ? palette.textDisabled
+    : variant === 'primary' || variant === 'ink'
       ? palette.onPrimary
       : variant === 'destructive'
         ? palette.danger
@@ -60,59 +79,70 @@ export function Button({
           ? palette.textSoft
           : palette.textInk;
 
-  const isDisabled = disabled || loading;
+  const borderColor = isDisabled
+    ? palette.border
+    : variant === 'destructive'
+      ? palette.danger
+      : variant === 'quiet'
+        ? palette.border
+        : palette.outline;
 
-  const squish = (to: number) => {
-    if (!reduced) {
-      scale.value = withSpring(to, spring.quick);
-    }
-  };
+  // Ink is its own edge, so it takes no border on top of its fill.
+  const borderWidth =
+    variant === 'ink' && !isDisabled ? 0 : variant === 'quiet' ? stroke.soft : stroke.ink;
+
+  // Primary and ink carry a shadow, and it grows with the button.
+  const filled = variant === 'primary' || variant === 'ink';
+  const shadowOffset =
+    isDisabled || !filled ? hardShadow.none : size === 'lg' ? hardShadow.hero : hardShadow.control;
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
-      onPressIn={() => squish(0.97)}
-      onPressOut={() => squish(1)}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
       onPress={() => {
         triggerHaptic(haptic);
         onPress();
       }}
       style={fullWidth ? styles.full : undefined}
     >
-      <Animated.View
-        style={[
-          styles.button,
-          animStyle,
-          {
-            height,
-            backgroundColor: bg,
-            opacity: isDisabled ? 0.35 : 1,
-            borderWidth: variant === 'quiet' ? 1.5 : 0,
-            borderColor: palette.border,
-          },
-          variant === 'primary' && !isDisabled ? styles.primaryShadow : null,
-        ]}
+      <HardShadow
+        offset={shadowOffset}
+        radius={radius.xl}
+        // Quiet has no fill to press into, so it never dips.
+        pressed={pressed && variant !== 'quiet'}
       >
-        {loading ? (
-          <ActivityIndicator color={fg} />
-        ) : (
-          <View style={styles.content}>
-            {icon}
-            <Text
-              style={{
-                fontFamily: typography.title.fontFamily,
-                fontSize: 16 * fontScale,
-                lineHeight: 20 * fontScale,
-                color: fg,
-              }}
-            >
-              {label}
-            </Text>
-          </View>
-        )}
-      </Animated.View>
+        <View
+          style={[
+            styles.button,
+            {
+              height,
+              backgroundColor: fill,
+              borderColor,
+              borderWidth,
+              borderStyle: variant === 'quiet' ? 'dashed' : 'solid',
+            },
+          ]}
+        >
+          {loading ? (
+            <ActivityIndicator color={fg} />
+          ) : (
+            <View style={styles.content}>
+              {icon}
+              <Text
+                numberOfLines={1}
+                style={[typography.button, scaleType(typography.button, fontScale), { color: fg }]}
+              >
+                {label}
+              </Text>
+              {trailing}
+            </View>
+          )}
+        </View>
+      </HardShadow>
     </Pressable>
   );
 }
@@ -120,19 +150,12 @@ export function Button({
 const styles = StyleSheet.create({
   full: { width: '100%' },
   button: {
-    borderRadius: 999,
-    paddingHorizontal: spacing.xl,
+    borderRadius: radius.xl,
+    paddingHorizontal: spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  content: { flexDirection: 'row', alignItems: 'center', gap: 9 },
-  primaryShadow: {
-    shadowColor: '#F2603C',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    elevation: 4,
-  },
+  content: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 });
 
 export default Button;

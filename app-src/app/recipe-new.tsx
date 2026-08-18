@@ -8,6 +8,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { groupBySection } from '@/lib/recipe';
+import { scaleType } from '@/lib/typeScale';
 import {
   type Recipe,
   type RecipeIngredient,
@@ -15,11 +16,12 @@ import {
   type RecipeStep,
   useRecipes,
 } from '@/state/recipes';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
 import { Chip } from '@/ui/Chip';
+import { IconButton } from '@/ui/IconButton';
 import { Input } from '@/ui/Input';
 import { OptionSheet } from '@/ui/OptionSheet';
 import { Stepper } from '@/ui/Stepper';
@@ -178,7 +180,6 @@ export default function RecipeEditorSheet() {
   };
 
   const floured = fontScale > 1;
-  const deleteButtonSize = floured ? 56 : 48;
   const sectionHeadHeight = floured ? 56 : 48;
   // Sections only box up once there is more than one, or one has been named.
   // A simple single, unnamed group stays bare.
@@ -219,11 +220,13 @@ export default function RecipeEditorSheet() {
         showsVerticalScrollIndicator={false}
       >
         <Tip id="editor.sections" text={t('tips.editor_sections')} />
+        {/* The one field a recipe cannot do without, so it wears the ink edge. */}
         <Input
           label={t('recipes.new_name_label')}
           value={name}
           onChangeText={setName}
           placeholder={t('recipes.new_name_placeholder')}
+          required
         />
 
         <View style={styles.row}>
@@ -251,12 +254,7 @@ export default function RecipeEditorSheet() {
             {sections.map((section, s) => {
               const named = section.name.trim() !== '';
               const ingredientCards = section.ingredients.map((ing, i) => (
-                <Card key={i} style={styles.ingredientCard}>
-                  <Input
-                    value={ing.item}
-                    onChangeText={(text) => updateIngredient(s, i, { item: text })}
-                    placeholder={t('recipes.ingredient_item_placeholder')}
-                  />
+                <Card key={i}>
                   <View style={styles.ingredientRow}>
                     <View style={styles.amountField}>
                       <Input
@@ -273,21 +271,19 @@ export default function RecipeEditorSheet() {
                         onPress={() => setUnitPicker({ s, i })}
                       />
                     </View>
-                    <Pressable
-                      accessibilityRole="button"
+                    <View style={styles.itemField}>
+                      <Input
+                        value={ing.item}
+                        onChangeText={(text) => updateIngredient(s, i, { item: text })}
+                        placeholder={t('recipes.ingredient_item_placeholder')}
+                      />
+                    </View>
+                    <IconButton
+                      iconName="delete"
+                      variant="quiet"
                       accessibilityLabel={t('recipes.button_delete')}
                       onPress={() => removeIngredient(s, i)}
-                      style={[
-                        styles.deleteButton,
-                        {
-                          width: deleteButtonSize,
-                          height: deleteButtonSize,
-                          backgroundColor: palette.bgSunken,
-                        },
-                      ]}
-                    >
-                      <Text style={[typography.heading, { color: palette.textFaint }]}>✕</Text>
-                    </Pressable>
+                    />
                   </View>
                 </Card>
               ));
@@ -295,9 +291,15 @@ export default function RecipeEditorSheet() {
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => addIngredient(s)}
-                  style={styles.addIngredientLink}
+                  style={[styles.dashedButton, { borderColor: palette.border }]}
                 >
-                  <Text style={[typography.title, { color: palette.proofTealText }]}>
+                  <Text
+                    style={[
+                      typography.chip,
+                      scaleType(typography.chip, fontScale),
+                      { color: palette.textSoft },
+                    ]}
+                  >
                     {`+ ${t('recipes.add_ingredient')}`}
                   </Text>
                 </Pressable>
@@ -362,8 +364,25 @@ export default function RecipeEditorSheet() {
             {steps.map((step, i) => (
               <Card key={i} style={styles.stepCard}>
                 <View style={styles.stepHeaderRow}>
-                  <View style={[styles.stepBadge, { backgroundColor: palette.bgSunken }]}>
-                    <Text style={[typography.numeric.sm, { color: palette.textFaint }]}>
+                  <View
+                    style={[
+                      styles.stepBadge,
+                      step.text.trim()
+                        ? {
+                            backgroundColor: palette.accentButter,
+                            borderColor: palette.outline,
+                            borderWidth: stroke.ink,
+                          }
+                        : { backgroundColor: palette.bgSunken, borderWidth: 0 },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        typography.numeric.sm,
+                        scaleType(typography.numeric.sm, fontScale),
+                        { color: step.text.trim() ? palette.onButter : palette.textFaint },
+                      ]}
+                    >
                       {i + 1}
                     </Text>
                   </View>
@@ -386,21 +405,12 @@ export default function RecipeEditorSheet() {
                       placeholder={t('recipes.step_time_placeholder')}
                     />
                   </View>
-                  <Pressable
-                    accessibilityRole="button"
+                  <IconButton
+                    iconName="delete"
+                    variant="quiet"
                     accessibilityLabel={t('recipes.button_delete')}
                     onPress={() => removeStep(i)}
-                    style={[
-                      styles.deleteButton,
-                      {
-                        width: deleteButtonSize,
-                        height: deleteButtonSize,
-                        backgroundColor: palette.bgSunken,
-                      },
-                    ]}
-                  >
-                    <Text style={[typography.heading, { color: palette.textFaint }]}>✕</Text>
-                  </Pressable>
+                  />
                 </View>
               </Card>
             ))}
@@ -427,6 +437,7 @@ export default function RecipeEditorSheet() {
                 <Chip
                   key={key}
                   label={label}
+                  emphasis="butter"
                   selected={tags.includes(label)}
                   onPress={() => toggleTag(label)}
                 />
@@ -462,7 +473,7 @@ const styles = StyleSheet.create({
   sectionLabel: { marginBottom: spacing.sm },
   sectionsWrap: { gap: spacing.lg },
   section: { gap: spacing.sm },
-  sectionBox: { borderRadius: radius.xl, padding: spacing.sm, gap: spacing.sm },
+  sectionBox: { borderRadius: radius['3xl'], padding: spacing.sm, gap: spacing.sm },
   sectionHead: {
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
@@ -477,25 +488,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing.md,
   },
-  ingredientCard: { gap: spacing.sm },
-  ingredientRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  amountField: { width: 96 },
-  unitField: { flex: 1 },
-  deleteButton: { borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
+  ingredientRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  amountField: { width: 64 },
+  unitField: { width: 62 },
+  itemField: { flex: 1 },
   dashedButton: {
-    borderWidth: 1.5,
+    borderWidth: stroke.soft,
     borderStyle: 'dashed',
     borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
   },
   stepsWrap: { gap: spacing.md },
   stepCard: { gap: spacing.sm },
   stepHeaderRow: { flexDirection: 'row', gap: spacing.sm },
   stepBadge: {
-    width: 28,
-    height: 28,
+    width: 30,
+    height: 30,
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',

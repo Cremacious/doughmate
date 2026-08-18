@@ -1,6 +1,10 @@
-// Doughmate Pro, a tall sheet. Sam celebrating, the six perks as bordered cards
-// with a plum check, then buy and restore. Buying needs a native build with a
-// configured key; on web it is unavailable and the button stays disabled.
+// Doughmate Pro, a tall sheet. A plum hero with Sam celebrating, the perks as one
+// divided card, then buy and restore. Buying needs a native build with a configured
+// key; on web it is unavailable and the button stays disabled.
+//
+// Plum is the Pro colour, always and only, so the hero carries it and nothing else on
+// the sheet competes. The price rides beside the label in Space Grotesk, because it is
+// the number the decision turns on.
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,15 +12,19 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { scaleType } from '@/lib/typeScale';
 import { usePro } from '@/state/pro';
-import { spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
+import { Card } from '@/ui/Card';
 import { useToast } from '@/ui/Toast';
+
+const CHECK = 26;
 
 export default function PaywallSheet() {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
   const { isPro, available, purchase, restore } = usePro();
   const { show } = useToast();
   const [busy, setBusy] = useState(false);
@@ -58,10 +66,21 @@ export default function PaywallSheet() {
         ) : (
           <View style={styles.actions}>
             <Button
-              label={t('paywall.cta')}
+              label={t('paywall.cta_label')}
               onPress={onBuy}
               disabled={busy || !available}
               haptic="success"
+              trailing={
+                <Text
+                  style={[
+                    typography.numeric.md,
+                    scaleType(typography.numeric.md, fontScale),
+                    { color: palette.onPrimary },
+                  ]}
+                >
+                  {t('paywall.price')}
+                </Text>
+              }
             />
             <Button
               label={t('paywall.restore')}
@@ -74,33 +93,64 @@ export default function PaywallSheet() {
       }
     >
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
-        <View style={styles.hero}>
-          <Sam size={132} emotion="excited" />
-          <Text style={[typography.display.lg, styles.center, { color: palette.textInk }]}>
-            {t('paywall.title')}
-          </Text>
-          <Text style={[typography.body.lg, styles.center, { color: palette.textSoft }]}>
-            {t('paywall.tagline')}
-          </Text>
-        </View>
-
-        {features.map((feature) => (
-          <View
-            key={feature}
+        <Card tier="hero" heroColor={palette.pro} style={styles.hero}>
+          <Sam size={132} emotion="excited" crust={palette.samCrustPale} />
+          <Text
             style={[
-              styles.perk,
-              { backgroundColor: palette.bgSurface, borderColor: palette.border },
+              typography.display.lg,
+              scaleType(typography.display.lg, fontScale),
+              styles.center,
+              { color: palette.onPro },
             ]}
           >
-            <Text style={[typography.heading, { color: palette.pro }]}>✓</Text>
-            <Text style={[typography.body.lg, styles.perkText, { color: palette.textInk }]}>
-              {feature}
-            </Text>
-          </View>
-        ))}
+            {t('paywall.title')}
+          </Text>
+          <Text
+            style={[
+              typography.label,
+              scaleType(typography.label, fontScale),
+              styles.center,
+              { color: palette.onProSoft },
+            ]}
+          >
+            {t('paywall.tagline')}
+          </Text>
+        </Card>
+
+        <Card style={styles.perks}>
+          {features.map((feature, i) => (
+            <View key={feature}>
+              {i > 0 ? (
+                <View style={[styles.divider, { backgroundColor: palette.divider }]} />
+              ) : null}
+              <View style={styles.perk}>
+                <View style={[styles.check, { borderColor: palette.pro }]}>
+                  <Text style={[typography.body.sm, { color: palette.pro }]}>✓</Text>
+                </View>
+                <Text
+                  style={[
+                    typography.body.lg,
+                    scaleType(typography.body.lg, fontScale),
+                    styles.perkText,
+                    { color: palette.textInk },
+                  ]}
+                >
+                  {feature}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </Card>
 
         {isPro ? (
-          <Text style={[typography.heading, styles.center, { color: palette.pro }]}>
+          <Text
+            style={[
+              typography.subheading,
+              scaleType(typography.subheading, fontScale),
+              styles.center,
+              { color: palette.pro },
+            ]}
+          >
             {t('toasts.pro_unlocked')}
           </Text>
         ) : null}
@@ -110,17 +160,25 @@ export default function PaywallSheet() {
 }
 
 const styles = StyleSheet.create({
-  body: { padding: spacing.xl, gap: spacing.sm, paddingBottom: spacing.lg },
-  hero: { alignItems: 'center', gap: spacing.xs, marginBottom: spacing.sm },
+  body: { padding: spacing.xl, gap: spacing.md, paddingBottom: spacing.lg },
+  hero: { alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.xl },
   center: { textAlign: 'center' },
+  perks: { gap: 0 },
+  divider: { height: stroke.soft },
   perk: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: spacing.md,
+    paddingVertical: spacing.sm,
   },
   perkText: { flexShrink: 1 },
+  check: {
+    width: CHECK,
+    height: CHECK,
+    borderRadius: radius.pill,
+    borderWidth: stroke.soft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   actions: { gap: spacing.sm },
 });

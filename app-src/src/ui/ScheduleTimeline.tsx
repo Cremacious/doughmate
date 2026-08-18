@@ -1,13 +1,17 @@
-// Proof ScheduleTimeline. A vertical rail of scheduled steps for a bake plan:
-// a dot and connecting line, a start time, the step text, and a duration pill
-// (or a checkpoint caption for zero length steps). Ends on a butter colored
-// finish node. Pure presentational, no navigation.
+// Fresh Bake ScheduleTimeline. A vertical rail of scheduled steps for a bake plan:
+// a 14 dot and a 2.5px connector, a start time, the step text, and a duration pill
+// (or a checkpoint caption for zero length steps). Ends on a butter finish node.
+//
+// The next step's row bleeds its teal wash 6px past the card padding, so the row you
+// care about reads as part of the rail rather than as another pill. Pure
+// presentational, no navigation.
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatClock, type ScheduleStep } from '@/lib/schedule';
-import { radius, spacing, typography } from '@/theme';
+import { scaleType } from '@/lib/typeScale';
+import { radius, spacing, stroke, typography } from '@/theme';
 
 export interface ScheduleTimelineProps {
   steps: ScheduleStep[];
@@ -23,7 +27,7 @@ export function ScheduleTimeline({
   nextIndex = null,
 }: ScheduleTimelineProps) {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
 
   return (
     <View>
@@ -37,7 +41,7 @@ export function ScheduleTimeline({
             key={i}
             style={[
               styles.row,
-              emphasize && { backgroundColor: palette.proofTealWash, borderRadius: radius.md },
+              emphasize && [styles.emphasized, { backgroundColor: palette.proofTealWash }],
             ]}
           >
             <View style={styles.rail}>
@@ -47,8 +51,8 @@ export function ScheduleTimeline({
                   step.isCheckpoint
                     ? {
                         backgroundColor: palette.bgSurface,
-                        borderWidth: 2,
-                        borderColor: palette.border,
+                        borderWidth: stroke.ink,
+                        borderColor: palette.proofTeal,
                       }
                     : { backgroundColor: palette.proofTeal },
                 ]}
@@ -59,6 +63,7 @@ export function ScheduleTimeline({
             <Text
               style={[
                 typography.numeric.sm,
+                scaleType(typography.numeric.sm, fontScale),
                 styles.time,
                 { color: step.isCheckpoint ? palette.textFaint : palette.textInk },
               ]}
@@ -67,14 +72,34 @@ export function ScheduleTimeline({
             </Text>
 
             <View style={styles.content}>
-              <Text style={[typography.body.md, { color: palette.textInk }]}>{step.text}</Text>
+              <Text
+                style={[
+                  typography.body.md,
+                  scaleType(typography.body.md, fontScale),
+                  { color: palette.textInk },
+                ]}
+              >
+                {step.text}
+              </Text>
               {step.isCheckpoint ? (
-                <Text style={[typography.label, { color: palette.textFaint }]}>
+                <Text
+                  style={[
+                    typography.labelSm,
+                    scaleType(typography.labelSm, fontScale),
+                    { color: palette.textFaint },
+                  ]}
+                >
                   {t('bakePlan.checkpoint')}
                 </Text>
               ) : (
                 <View style={[styles.pill, { backgroundColor: palette.proofTealWash }]}>
-                  <Text style={[typography.label, { color: palette.proofTealText }]}>
+                  <Text
+                    style={[
+                      typography.labelSm,
+                      scaleType(typography.labelSm, fontScale),
+                      { color: palette.proofTealText },
+                    ]}
+                  >
                     {step.time}
                   </Text>
                 </View>
@@ -89,12 +114,25 @@ export function ScheduleTimeline({
           <View style={[styles.dot, { backgroundColor: palette.accentButter }]} />
         </View>
 
-        <Text style={[typography.numeric.sm, styles.time, { color: palette.textInk }]}>
+        <Text
+          style={[
+            typography.numeric.sm,
+            scaleType(typography.numeric.sm, fontScale),
+            styles.time,
+            { color: palette.textInk },
+          ]}
+        >
           {formatClock(finishAt)}
         </Text>
 
         <View style={styles.content}>
-          <Text style={[typography.title, { color: palette.textInk }]}>
+          <Text
+            style={[
+              typography.subheading,
+              scaleType(typography.subheading, fontScale),
+              { color: palette.textInk },
+            ]}
+          >
             {t('bakePlan.ready_to_enjoy')}
           </Text>
         </View>
@@ -111,22 +149,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing['2xs'],
     gap: spacing.sm,
   },
+  // Bleeds past the card's spacing.lg padding so the next step owns the full width.
+  emphasized: {
+    borderRadius: radius.md,
+    marginHorizontal: -6,
+    paddingHorizontal: 6 + spacing['2xs'],
+  },
   rail: {
-    width: 12,
+    width: 14,
     alignItems: 'center',
   },
   dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 999,
+    width: 14,
+    height: 14,
+    borderRadius: radius.pill,
   },
   line: {
-    width: 2,
+    width: 2.5,
     flex: 1,
     marginTop: spacing['2xs'],
   },
   time: {
-    width: 68,
+    width: 62,
   },
   content: {
     flex: 1,
@@ -134,9 +178,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   pill: {
-    borderRadius: radius.sm,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
+    paddingVertical: 3,
   },
 });
 

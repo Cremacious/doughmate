@@ -1,7 +1,10 @@
-// Proof Toast. One at a time, dropping in from the top so it never blocks the
-// bottom actions; it stacks below the timers pill when one is showing. Neutral
-// (dark) or confirmation (primary wash). Optional action (Undo). Auto dismisses
-// after 4.2s.
+// Fresh Bake Toast. One at a time, dropping in from the top so it never blocks the
+// bottom actions; it stacks below the timers pill when one is showing. Optional action
+// (Undo). Auto dismisses after 4.2s.
+//
+// Fresh Bake has one toast appearance. `variant` is still accepted so callers read the
+// same, but confirmation no longer gets its own fill: a toast is chrome, and chrome
+// does not get to be a second hero.
 import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, SlideInUp, SlideOutUp } from 'react-native-reanimated';
@@ -10,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { TIMER_BANNER_SPACE, useTimerBannerVisible } from '@/hooks/useTimerBannerVisible';
-import { radius, spacing, typography } from '@/theme';
+import { radius, shadow, spacing, typography } from '@/theme';
 
 export interface ToastOptions {
   message: string;
@@ -69,11 +72,6 @@ function ToastView({ toast, onDismiss }: { toast: ActiveToast; onDismiss: () => 
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
   const bannerVisible = useTimerBannerVisible();
-  const confirmation = toast.variant === 'confirmation';
-
-  const bg = confirmation ? palette.primaryWash : palette.toastBg;
-  const fg = confirmation ? palette.textInk : palette.toastText;
-  const actionColor = confirmation ? palette.primaryText : palette.accentButter;
   const top = insets.top + spacing.xs + (bannerVisible ? TIMER_BANNER_SPACE : 0);
 
   return (
@@ -83,8 +81,8 @@ function ToastView({ toast, onDismiss }: { toast: ActiveToast; onDismiss: () => 
       exiting={reduced ? FadeOut.duration(120) : SlideOutUp.duration(200)}
       style={[styles.wrap, { top }]}
     >
-      <View style={[styles.toast, { backgroundColor: bg }]}>
-        <Text style={[typography.body.md, styles.message, { color: fg }]} numberOfLines={2}>
+      <View style={[styles.toast, shadow.md, { backgroundColor: palette.toastBg }]}>
+        <Text style={[styles.message, { color: palette.toastText }]} numberOfLines={2}>
           {toast.message}
         </Text>
         {toast.actionLabel ? (
@@ -95,7 +93,9 @@ function ToastView({ toast, onDismiss }: { toast: ActiveToast; onDismiss: () => 
               onDismiss();
             }}
           >
-            <Text style={[typography.title, { color: actionColor }]}>{toast.actionLabel}</Text>
+            <Text style={[typography.labelSm, { color: palette.toastAction }]}>
+              {toast.actionLabel}
+            </Text>
           </Pressable>
         ) : null}
       </View>
@@ -118,11 +118,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing.md,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     paddingVertical: 13,
     paddingHorizontal: 15,
   },
-  message: { flexShrink: 1 },
+  message: { flexShrink: 1, fontFamily: 'NunitoSans_700Bold', fontSize: 15, lineHeight: 21 },
 });
 
 export default ToastProvider;

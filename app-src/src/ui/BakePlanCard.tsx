@@ -9,7 +9,7 @@ import { useNow } from '@/hooks/useNow';
 import { triggerHaptic } from '@/lib/haptics';
 import { formatClock, formatDayLabel, planProgress } from '@/lib/schedule';
 import type { BakePlan } from '@/state/bakePlan';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 
 export interface BakePlanCardProps {
   plan: BakePlan;
@@ -40,7 +40,7 @@ export function BakePlanCard({ plan, onCancel, onPress }: BakePlanCardProps) {
         styles.card,
         {
           backgroundColor: palette.bgSurface,
-          borderColor: palette.proofTeal,
+          borderColor: palette.outline,
           opacity: pressed ? 0.92 : 1,
         },
       ]}
@@ -101,8 +101,8 @@ export function BakePlanCard({ plan, onCancel, onPress }: BakePlanCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: radius.xl,
-    borderWidth: 1,
+    borderRadius: radius['3xl'],
+    borderWidth: stroke.ink,
     padding: spacing.md,
     gap: spacing.sm,
   },

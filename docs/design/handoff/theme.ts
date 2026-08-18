@@ -86,9 +86,6 @@ export const palettes = {
     cookGhost: '#3D2C22',
     cookDim: '#5A4436',
 
-    /** Ink at 28%, for a track or an inactive dot sitting on a hero fill. */
-    heroDim: 'rgba(36,22,17,0.28)',
-
     // Sam
     samOutline: '#241611',
     samCrust: '#E9B478',
@@ -157,8 +154,6 @@ export const palettes = {
     cookFooter: '#1B120E',
     cookGhost: '#3D2C22',
     cookDim: '#5A4436',
-
-    heroDim: 'rgba(36,22,17,0.28)',
 
     samOutline: '#12100E',
     samCrust: '#E9B478',

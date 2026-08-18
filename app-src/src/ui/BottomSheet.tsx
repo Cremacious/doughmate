@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { sheet as sheetTokens, shadow, spacing, spring } from '@/theme';
+import { sheet as sheetTokens, shadow, spacing, spring, stroke } from '@/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -25,6 +25,10 @@ export interface BottomSheetProps {
   children: ReactNode;
   footer?: ReactNode;
   header?: ReactNode;
+  /** Overrides the panel fill. Cook mode inverts, on both themes. */
+  canvasColor?: string;
+  /** Overrides the sticky footer fill, paired with `canvasColor`. */
+  footerColor?: string;
 }
 
 export function BottomSheet({
@@ -33,6 +37,8 @@ export function BottomSheet({
   children,
   footer,
   header,
+  canvasColor,
+  footerColor,
 }: BottomSheetProps) {
   const { palette } = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -99,7 +105,11 @@ export function BottomSheet({
         style={[
           styles.panel,
           shadow.sheet,
-          { height: sheetH, backgroundColor: palette.bgCanvas },
+          {
+            height: sheetH,
+            backgroundColor: canvasColor ?? palette.bgCanvas,
+            borderTopColor: palette.outline,
+          },
           panelStyle,
         ]}
       >
@@ -117,8 +127,8 @@ export function BottomSheet({
             style={[
               styles.footer,
               {
-                backgroundColor: palette.bgSurface,
-                borderTopColor: palette.border,
+                backgroundColor: footerColor ?? palette.bgSurface,
+                borderTopColor: palette.outline,
                 paddingBottom: insets.bottom + spacing.md,
               },
             ]}
@@ -139,6 +149,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderTopLeftRadius: sheetTokens.radius,
     borderTopRightRadius: sheetTokens.radius,
+    borderTopWidth: stroke.ink,
     overflow: 'hidden',
   },
   dragArea: { paddingTop: 10, paddingBottom: 6, alignItems: 'center' },
@@ -149,9 +160,9 @@ const styles = StyleSheet.create({
   },
   content: { flex: 1 },
   footer: {
-    paddingTop: spacing.sm,
+    paddingTop: spacing.md,
     paddingHorizontal: spacing.lg,
-    borderTopWidth: 1,
+    borderTopWidth: stroke.ink,
   },
 });
 

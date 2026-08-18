@@ -1,30 +1,46 @@
-// Proof StarterCard. A feed countdown from lastFedAt + interval, a progress ring
-// that fills as the interval elapses, and inline Feed now and delete. The border
-// and ring turn primary the moment a feed is due.
+// Fresh Bake StarterCard. Only the first due starter is a hero, and the screen
+// promotes it: tomato fill, Sam tight cropped into a butter circle, a full bar and a
+// solid Feed now. Everything else is a standard card in teal, because a starter that
+// is not hungry is information, not an errand.
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { triggerHaptic } from '@/lib/haptics';
+import { emotionForMood } from '@/lib/samEmotion';
 import { feedStatus } from '@/lib/starter';
 import { starterMood } from '@/lib/starterMood';
+import { scaleType } from '@/lib/typeScale';
 import type { Starter } from '@/state/starters';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { Button } from './Button';
-import { Icon } from './Icon';
-import { ProgressRing } from './ProgressRing';
+import { Card } from './Card';
+import { IconButton } from './IconButton';
+import { ProgressBar } from './ProgressBar';
 
 export interface StarterCardProps {
   starter: Starter;
   now: number;
+  /** The one due starter the screen promotes. At most one per screen. */
+  hero?: boolean;
   onFeed: () => void;
   onDelete: () => void;
   onOpen: () => void;
 }
 
-export function StarterCard({ starter, now, onFeed, onDelete, onOpen }: StarterCardProps) {
+const AVATAR = 56;
+const HERO_COUNTDOWN = 34;
+
+export function StarterCard({
+  starter,
+  now,
+  hero = false,
+  onFeed,
+  onDelete,
+  onOpen,
+}: StarterCardProps) {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
   const status = feedStatus(starter, now);
   const mood = starterMood(starter, now);
 
@@ -42,76 +58,144 @@ export function StarterCard({ starter, now, onFeed, onDelete, onOpen }: StarterC
       ? t('starters.waiting', { hours: status.hoursWaited })
       : t('starters.fed_count', { count: starter.feedCount });
 
-  const countdownColor = status.due ? palette.primary : palette.proofTeal;
+  const moodName = t(`starters_mood.${mood}_name` as 'starters_mood.new_name');
+  const eyebrow = starter.hydration
+    ? `${moodName} · ${t('starters.hydration_badge', { value: starter.hydration })}`
+    : moodName;
+
+  // On a tomato hero everything sits on ink coloured type; off it, the usual ramp.
+  const titleColor = hero ? palette.onPrimary : palette.textInk;
+  const eyebrowColor = hero ? palette.onPrimarySoft : palette.proofTealText;
+  const subColor = hero ? palette.onPrimarySoft : palette.textSoft;
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: palette.bgSurface,
-          borderColor: status.due ? palette.primary : palette.border,
-        },
-      ]}
-    >
+    <Card tier={hero ? 'hero' : 'standard'} heroColor={palette.primary}>
       <View style={styles.top}>
         <Pressable accessibilityRole="button" onPress={onOpen} style={styles.openArea}>
-          <ProgressRing progress={status.fresh ? 0 : status.progress} due={status.due} />
+          <View
+            style={[
+              styles.avatar,
+              {
+                backgroundColor: hero ? palette.accentButter : palette.proofTealWash,
+                borderColor: palette.outline,
+                borderWidth: hero ? stroke.ink : 0,
+              },
+            ]}
+          >
+            <Sam
+              size={AVATAR}
+              tightCrop
+              emotion={emotionForMood(mood)}
+              crust={hero ? palette.samCrustPale : undefined}
+            />
+          </View>
           <View style={styles.headText}>
-            <Text style={[typography.display.md, { color: palette.textInk }]}>{starter.name}</Text>
-            <Text style={[typography.label, { color: palette.proofTeal }]}>
-              {t(`starters_mood.${mood}_name` as 'starters_mood.new_name')}
+            <Text
+              style={[
+                typography.label,
+                scaleType(typography.label, fontScale),
+                { color: eyebrowColor },
+              ]}
+              numberOfLines={1}
+            >
+              {eyebrow}
             </Text>
-            {starter.hydration ? (
-              <View style={[styles.badge, { backgroundColor: palette.proofTealWash }]}>
-                <Text style={[typography.label, { color: palette.proofTealText }]}>
-                  {t('starters.hydration_badge', { value: starter.hydration })}
-                </Text>
-              </View>
-            ) : null}
+            <Text
+              style={[
+                typography.heading,
+                scaleType(typography.heading, fontScale),
+                { color: titleColor },
+              ]}
+              numberOfLines={1}
+            >
+              {starter.name}
+            </Text>
           </View>
         </Pressable>
-        <Pressable
-          accessibilityRole="button"
+        <IconButton
+          iconName="delete"
+          variant="quiet"
           accessibilityLabel={t('starters.button_delete')}
-          onPress={() => {
-            triggerHaptic('tap');
-            onDelete();
-          }}
-          style={[styles.delete, { backgroundColor: palette.bgSunken }]}
-        >
-          <Icon name="delete" size={20} color={palette.textFaint} />
-        </Pressable>
+          onPress={onDelete}
+          color={hero ? palette.onPrimarySoft : palette.textFaint}
+        />
       </View>
 
       <View style={styles.countdownRow}>
-        <Text style={[typography.numeric.lg, { color: countdownColor }]}>{countdown}</Text>
-        <Text style={[typography.body.sm, styles.sub, { color: palette.textSoft }]}>{sub}</Text>
+        <Text
+          style={
+            hero
+              ? [
+                  typography.numeric.lg,
+                  {
+                    fontSize: HERO_COUNTDOWN * fontScale,
+                    lineHeight: Math.round(HERO_COUNTDOWN * 1.15 * fontScale),
+                    color: palette.onPrimary,
+                  },
+                ]
+              : [
+                  typography.numeric.lg,
+                  scaleType(typography.numeric.lg, fontScale),
+                  { color: palette.proofTeal },
+                ]
+          }
+        >
+          {countdown}
+        </Text>
+        {!hero ? (
+          <Text
+            style={[
+              typography.body.sm,
+              scaleType(typography.body.sm, fontScale),
+              styles.sub,
+              { color: subColor },
+            ]}
+          >
+            {sub}
+          </Text>
+        ) : null}
       </View>
 
-      <Button label={t('starters.button_feed_now')} onPress={onFeed} haptic="success" />
-    </View>
+      {hero ? (
+        <Text
+          style={[
+            typography.body.sm,
+            scaleType(typography.body.sm, fontScale),
+            { color: subColor },
+          ]}
+        >
+          {sub}
+        </Text>
+      ) : null}
+
+      <ProgressBar
+        progress={hero ? 1 : status.fresh ? 0 : status.progress}
+        onHero={hero}
+        height={hero ? 10 : 8}
+      />
+
+      <Button
+        label={t('starters.button_feed_now')}
+        onPress={onFeed}
+        haptic="success"
+        variant={hero ? 'secondary' : 'quiet'}
+      />
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
   top: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   openArea: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  headText: { flex: 1, gap: spacing['2xs'], alignItems: 'flex-start' },
-  badge: { borderRadius: 999, paddingHorizontal: spacing.sm, paddingVertical: 4 },
-  delete: {
-    width: 46,
-    height: 46,
-    borderRadius: 999,
+  avatar: {
+    width: AVATAR,
+    height: AVATAR,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
+  headText: { flex: 1, gap: 1 },
   countdownRow: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm },
   sub: { flexShrink: 1 },
 });

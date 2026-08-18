@@ -6,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { triggerHaptic } from '@/lib/haptics';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from './BottomSheet';
 import { Input } from './Input';
 
@@ -96,19 +96,31 @@ export function OptionSheet({
                   onSelect(o.id);
                   onClose();
                 }}
-                style={[styles.row, sel ? { backgroundColor: palette.primaryWash } : null]}
+                style={[
+                  styles.row,
+                  sel
+                    ? { backgroundColor: palette.accentButter, borderColor: palette.outline }
+                    : { borderColor: 'transparent' },
+                ]}
               >
                 <Text
                   style={[
                     typography.body.lg,
                     styles.rowLabel,
-                    { color: sel ? palette.primaryText : palette.textInk },
+                    { color: sel ? palette.onButter : palette.textInk },
                   ]}
                 >
                   {o.label}
                 </Text>
                 {o.hint ? (
-                  <Text style={[typography.body.sm, { color: palette.textFaint }]}>{o.hint}</Text>
+                  <Text
+                    style={[
+                      typography.body.sm,
+                      { color: sel ? palette.onButterBody : palette.textFaint },
+                    ]}
+                  >
+                    {o.hint}
+                  </Text>
                 ) : null}
               </Pressable>
             );
@@ -133,7 +145,7 @@ const styles = StyleSheet.create({
   close: {
     width: 48,
     height: 48,
-    borderRadius: 999,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -145,7 +157,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingVertical: 13,
     paddingHorizontal: spacing.md,
-    borderRadius: radius.md,
+    borderRadius: radius['2xl'],
+    borderWidth: stroke.ink,
   },
   rowLabel: { flexShrink: 1 },
 });

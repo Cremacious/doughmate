@@ -2,7 +2,7 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 
 export interface UnitPickerFieldProps {
   value: string;
@@ -21,8 +21,8 @@ export function UnitPickerField({ value, placeholder, onPress }: UnitPickerField
         styles.field,
         {
           height: floured ? 64 : 56,
-          backgroundColor: palette.bgSurface,
-          borderColor: palette.border,
+          backgroundColor: palette.bgSunken,
+          borderColor: palette.borderField,
         },
       ]}
     >
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderWidth: 1,
+    borderWidth: stroke.soft,
     borderRadius: radius.lg,
     paddingHorizontal: spacing.md,
   },

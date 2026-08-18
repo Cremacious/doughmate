@@ -98,7 +98,9 @@
       "yeast": "active dry, instant, fresh",
       "egg": "match egg sizes",
       "butter": "sticks, cups, grams"
-    }
+    },
+    "context_amount": "{{amount}} {{unit}} {{ingredient}}",
+    "mode_row_label": "What are we converting?"
   },
   "units": {
     "cup": "cup",
@@ -122,13 +124,16 @@
     "count_label": "How many",
     "from_label": "Recipe wants",
     "to_label": "You have",
-    "result_suffix": "eggs"
+    "result_suffix": "eggs",
+    "context_each": "{{size}}, {{grams}} g each"
   },
   "butter": {
     "title": "Butter",
     "amount_label": "Amount",
     "from_label": "From",
-    "to_label": "To"
+    "to_label": "To",
+    "context_one": "{{amount}} stick, {{grams}} g",
+    "context_other": "{{amount}} sticks, {{grams}} g"
   },
   "substitutions": {
     "title": "Substitutions",
@@ -171,7 +176,9 @@
     "bake_time_label": "Bake time",
     "bake_larger": "Bigger pan, thinner batter. Check early and shorten the time a little.",
     "bake_smaller": "Smaller pan, deeper batter. Give it longer, and maybe lower the heat.",
-    "bake_same": "About the same. Just check a few minutes early."
+    "bake_same": "About the same. Just check a few minutes early.",
+    "area": "{{area}} sq in",
+    "scale_unit": "×"
   },
   "oven": {
     "title": "Oven temperature",
@@ -179,7 +186,9 @@
     "unit_f": "Fahrenheit",
     "unit_c": "Celsius",
     "reads_label": "That reads as",
-    "gas_mark": "Gas mark"
+    "gas_mark": "Gas mark",
+    "degrees_c": "°C",
+    "degrees_f": "°F"
   },
   "recipes": {
     "title": "Recipes",
@@ -248,7 +257,14 @@
     "step_time_placeholder": "Time (optional)",
     "step_time_label": "Time",
     "save_changes": "Save changes",
-    "section_heading_placeholder": "Add a heading"
+    "section_heading_placeholder": "Add a heading",
+    "eyebrow_saved": "{{count}} saved",
+    "new_recipe_action": "New recipe",
+    "count_ingredients_one": "ingredient",
+    "count_ingredients_other": "ingredients",
+    "count_steps_one": "step",
+    "count_steps_other": "steps",
+    "cook_swipe_hint": "Swipe down to step out."
   },
   "starters": {
     "title": "Starters",
@@ -306,7 +322,13 @@
     "edit": "Edit",
     "edit_title": "Edit starter",
     "save_changes": "Save changes",
-    "toast_updated": "{{name}} updated."
+    "toast_updated": "{{name}} updated.",
+    "eyebrow_due_one": "One is hungry",
+    "eyebrow_due_other": "{{count}} are hungry",
+    "eyebrow_all_fed": "All fed",
+    "add_starter_action": "Add a starter",
+    "interval_hours_one": "{{count}} hour",
+    "interval_hours_other": "{{count}} hours"
   },
   "settings": {
     "title": "Settings",
@@ -352,7 +374,9 @@
     "reduced_motion_desc": "A calm version of every animation.",
     "pro_unlocked_row": "Doughmate Pro unlocked",
     "show_tips_again": "Show tips again",
-    "tips_reset_toast": "Tips are back."
+    "tips_reset_toast": "Tips are back.",
+    "flour_caption_120": "per cup, US",
+    "flour_caption_125": "per cup, European"
   },
   "paywall": {
     "title": "Doughmate Pro",
@@ -372,7 +396,9 @@
       "sixth_starter": "Want unlimited starters and full baker's math?",
       "eleventh_recipe": "Want to save unlimited recipes?",
       "seasonal_theme": "Get every current and future theme with Pro."
-    }
+    },
+    "cta_label": "Get Pro",
+    "price": "$4.99"
   },
   "empty_states": {
     "favorites_title": "No favorites yet.",
@@ -429,7 +455,11 @@
     "tomorrow": "Tomorrow"
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "pro": "Pro",
+    "open_settings": "Open settings",
+    "more_converters": "More converters",
+    "remove": "Remove"
   },
   "tips": {
     "editor_sections": "Sections group ingredients, like Dough and Filling. Tap Add section to make one; ingredients live inside.",
@@ -492,7 +522,12 @@
       "sour": "sour",
       "airy": "airy",
       "golden": "golden"
-    }
+    },
+    "rating_1": "Not our best.",
+    "rating_2": "It happens. Next one.",
+    "rating_3": "Solid.",
+    "rating_4": "Really good.",
+    "rating_5": "Look at us."
   },
   "bakePlan": {
     "notif_title": "Time to {{step}}",
@@ -544,6 +579,17 @@
     "notification_body": "{{label}} is done.",
     "timer_started": "Timer started, {{time}}",
     "step_time_left": "{{time}} left",
-    "view_running_timer": "Timer running, tap to view"
+    "view_running_timer": "Timer running, tap to view",
+    "eyebrow_running_one": "1 running",
+    "eyebrow_running_other": "{{count}} running",
+    "eyebrow_none": "Nothing running",
+    "left": "left",
+    "started": "Started",
+    "done_at": "Done at"
+  },
+  "swaps": {
+    "eyebrow_free": "{{count}} free swaps",
+    "search_placeholder": "Out of what?",
+    "use_instead": "Use instead"
   }
 }

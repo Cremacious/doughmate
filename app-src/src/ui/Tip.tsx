@@ -10,7 +10,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { triggerHaptic } from '@/lib/haptics';
 import { useSettings } from '@/state/settings';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 
 export interface TipProps {
   /** Stable id remembered once dismissed. */
@@ -36,7 +36,7 @@ export function Tip({ id, text }: TipProps) {
   return (
     <Animated.View
       entering={FadeIn.duration(reduced ? 120 : 220)}
-      style={[styles.card, { backgroundColor: palette.primaryWash }]}
+      style={[styles.card, { backgroundColor: palette.butterWash, borderColor: palette.border }]}
     >
       <Sam size={34} />
       <Text style={[typography.body.md, styles.text, { color: palette.textInk }]}>{text}</Text>
@@ -46,7 +46,7 @@ export function Tip({ id, text }: TipProps) {
         onPress={dismiss}
         style={styles.close}
       >
-        <Text style={[typography.heading, { color: palette.primaryText }]}>✕</Text>
+        <Text style={[typography.subheading, { color: palette.butterText }]}>✕</Text>
       </Pressable>
     </Animated.View>
   );
@@ -57,11 +57,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    borderRadius: radius.lg,
+    borderRadius: radius['2xl'],
+    borderWidth: stroke.soft,
     padding: spacing.md,
   },
   text: { flex: 1 },
-  close: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });
 
 export default Tip;

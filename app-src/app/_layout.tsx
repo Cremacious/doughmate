@@ -2,9 +2,20 @@
 import '@/i18n';
 import '@/global.css';
 
-import { Gabarito_600SemiBold } from '@expo-google-fonts/gabarito';
-import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
-import { SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk';
+import {
+  BricolageGrotesque_700Bold,
+  BricolageGrotesque_800ExtraBold,
+} from '@expo-google-fonts/bricolage-grotesque';
+import {
+  NunitoSans_400Regular,
+  NunitoSans_700Bold,
+  NunitoSans_800ExtraBold,
+} from '@expo-google-fonts/nunito-sans';
+import {
+  SpaceGrotesk_500Medium,
+  SpaceGrotesk_600SemiBold,
+  SpaceGrotesk_700Bold,
+} from '@expo-google-fonts/space-grotesk';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -30,11 +41,14 @@ import { ToastProvider } from '@/ui/Toast';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    Gabarito_600SemiBold,
+    BricolageGrotesque_700Bold,
+    BricolageGrotesque_800ExtraBold,
     NunitoSans_400Regular,
     NunitoSans_700Bold,
+    NunitoSans_800ExtraBold,
     SpaceGrotesk_500Medium,
     SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
   });
 
   if (!fontsLoaded) {
