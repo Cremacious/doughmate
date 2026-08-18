@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { searchSubstitutions } from '@/lib/substitutions';
+import { PRO_SUBSTITUTION_COUNT, searchSubstitutions } from '@/lib/substitutions';
 import { scaleType } from '@/lib/typeScale';
 import { usePro } from '@/state/pro';
 import { radius, spacing, stroke, typography } from '@/theme';
@@ -22,8 +22,10 @@ export default function SwapsScreen() {
   const { palette, fontScale } = useAppTheme();
   const { isPro } = usePro();
   const [query, setQuery] = useState('');
-  const results = useMemo(() => searchSubstitutions(query), [query]);
-  const allCount = useMemo(() => searchSubstitutions('').length, []);
+  // Counts what this baker can actually see, so the eyebrow never advertises
+  // swaps that are still behind the paywall.
+  const results = useMemo(() => searchSubstitutions(query, isPro), [query, isPro]);
+  const allCount = useMemo(() => searchSubstitutions('', isPro).length, [isPro]);
 
   return (
     <Screen
@@ -153,7 +155,7 @@ export default function SwapsScreen() {
               { color: palette.onPro },
             ]}
           >
-            {t('substitutions.pro_teaser')}
+            {t('substitutions.pro_teaser', { count: PRO_SUBSTITUTION_COUNT })}
           </Text>
           <View style={[styles.chevron, { borderColor: palette.onProSoft }]}>
             <Text style={[typography.subheading, { color: palette.onPro }]}>›</Text>

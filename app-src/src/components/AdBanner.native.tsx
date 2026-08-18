@@ -1,7 +1,9 @@
-// Ad banner: native. A test banner, hidden entirely for Pro bakers.
+// Ad banner: native. Hidden entirely for Pro bakers. The unit id comes from
+// adUnits, which prefers a real id from env and falls back to Google's test id.
 import { StyleSheet, View } from 'react-native';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
+import { BANNER_UNIT_ID } from '@/lib/adUnits';
 import { usePro } from '@/state/pro';
 import { spacing } from '@/theme';
 
@@ -13,7 +15,7 @@ export function AdBanner() {
   return (
     <View style={styles.container}>
       <BannerAd
-        unitId={TestIds.BANNER}
+        unitId={BANNER_UNIT_ID}
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
         requestOptions={{ requestNonPersonalizedAdsOnly: true }}
       />

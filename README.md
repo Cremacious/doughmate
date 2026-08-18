@@ -189,6 +189,7 @@ areas, and 18 free substitutions.
   | Unlimited recipes | `FREE_RECIPE_LIMIT = 5` |
   | Unlimited starters | `FREE_STARTER_LIMIT = 1` |
   | Unlimited timers at once | `FREE_TIMER_LIMIT = 1` |
+  | The full swap library | `substitutions.json` `pro` set, 83 of 101 |
   | Baker's percentages | `app/recipe/[id].tsx` |
   | No ads, ever | `AdSlot` / `AdBanner` |
 
@@ -196,11 +197,17 @@ areas, and 18 free substitutions.
   **entry point** of each create action, so a baker at the cap meets the paywall
   before filling in a form rather than after. `atLimit` only ever blocks adding:
   a collection already over the cap is never hidden or deleted.
+  `searchSubstitutions(query, isPro)` takes the entitlement as an argument, so
+  the lookup stays pure and the Pro set cannot leak into a free search.
 - **Ads** (AdMob): a banner on Convert / Recipes / Starters, **hidden entirely
   for Pro.** Banners only, no interstitials — a full screen ad mid recipe is the
-  main threat to review average on a cooking app. Wired with Google's public
-  test IDs, so **real ad unit ids must be swapped in before shipping** or the
-  free tier earns nothing.
+  main threat to review average on a cooking app.
+
+  Unit ids resolve in `src/lib/adUnits.ts`: it prefers
+  `EXPO_PUBLIC_ADMOB_BANNER_IOS` / `_ANDROID` and falls back to Google's test
+  ids, so a dev build with no AdMob account still renders. **Set the real ids
+  before shipping or the free tier earns nothing** — `USING_TEST_AD_UNITS` is
+  exported so a release check can assert against it.
 
 ## Notifications
 

@@ -140,7 +140,7 @@
     "search_placeholder": "Search substitutions",
     "swap_for": "Swap for",
     "empty": "Nothing matches. Try another ingredient.",
-    "pro_teaser": "Full baker's math with Pro."
+    "pro_teaser": "{{count}} more swaps and full baker's math with Pro."
   },
   "scaler": {
     "title": "Scale a recipe",
@@ -386,6 +386,7 @@
       "Unlimited recipes",
       "Unlimited starters",
       "Unlimited timers at once",
+      "The full swap library",
       "Baker's percentages",
       "No ads, ever"
     ],
