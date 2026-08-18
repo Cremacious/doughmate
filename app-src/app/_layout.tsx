@@ -86,7 +86,9 @@ function ThemedApp() {
   const { palette, isDark } = useAppTheme();
 
   useEffect(() => {
-    initAds();
+    // Gathers consent, then initializes. Rejections are handled inside, so a
+    // failure here leaves the app running with ads simply switched off.
+    void initAds();
   }, []);
 
   return (

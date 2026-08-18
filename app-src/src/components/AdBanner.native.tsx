@@ -1,19 +1,28 @@
-// Ad banner: native. A test banner, hidden entirely for Pro bakers.
+// Ad banner: native. Hidden entirely for Pro bakers, and held back until consent
+// is settled and the SDK is initialized, so it never renders a dead frame.
+//
+// requestNonPersonalizedAdsOnly stays true: Doughmate does not serve personalized
+// ads, which is what keeps the ATT prompt off iOS.
+import { useSyncExternalStore } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
+import { getAdsReady, subscribeAdsReady } from '@/lib/ads';
+import { BANNER_UNIT_ID } from '@/lib/adUnits';
 import { usePro } from '@/state/pro';
 import { spacing } from '@/theme';
 
 export function AdBanner() {
   const { isPro } = usePro();
-  if (isPro) {
+  const ready = useSyncExternalStore(subscribeAdsReady, getAdsReady, getAdsReady);
+
+  if (isPro || !ready) {
     return null;
   }
   return (
     <View style={styles.container}>
       <BannerAd
-        unitId={TestIds.BANNER}
+        unitId={BANNER_UNIT_ID}
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
         requestOptions={{ requestNonPersonalizedAdsOnly: true }}
       />

@@ -10,7 +10,15 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useNow } from '@/hooks/useNow';
-import { formatRemaining, formatStepTime, isTimerDone, timerRemainingMs } from '@/lib/timer';
+import { atLimit, FREE_TIMER_LIMIT } from '@/lib/limits';
+import {
+  activeTimerCount,
+  formatRemaining,
+  formatStepTime,
+  isTimerDone,
+  timerRemainingMs,
+} from '@/lib/timer';
+import { usePro } from '@/state/pro';
 import { useTimers } from '@/state/timers';
 import { radius, spacing, typography } from '@/theme';
 import { useToast } from '@/ui/Toast';
@@ -35,6 +43,7 @@ export function StepTimerControl({
   const { t } = useTranslation();
   const { palette } = useAppTheme();
   const { timers, startTimer } = useTimers();
+  const { isPro } = usePro();
   const { show } = useToast();
   const now = useNow();
 
@@ -46,6 +55,11 @@ export function StepTimerControl({
   if (!running) {
     const label = `▶ ${t('timers.start_step_timer', { time: timeLabel })}`;
     const onPress = () => {
+      // Free bakers run one timer at a time. Overlapping stages are the Pro upgrade.
+      if (atLimit(activeTimerCount(timers, now), FREE_TIMER_LIMIT, isPro)) {
+        router.push('/paywall');
+        return;
+      }
       startTimer({ label: stepText.trim().slice(0, 40), stepLabel, recipeId, durationMs });
       show({ message: t('timers.timer_started', { time: timeLabel }), variant: 'confirmation' });
     };

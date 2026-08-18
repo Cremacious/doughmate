@@ -133,16 +133,585 @@
   ],
   "pro": [
     {
-      "note": "Additional 80+ substitutions unlocked with Pro. See docs/substitutions-pro-list.md when populating v1.5 update.",
-      "categories_covered": [
-        "dairy-free swaps",
-        "gluten-free flour blends",
-        "egg replacers for various uses",
-        "vegan butter/cream alternatives",
-        "sugar alternatives (stevia, monk fruit, erythritol conversions)",
-        "specific ingredient swaps (mascarpone, ricotta, buttermilk variations)",
-        "regional ingredient equivalents (US to UK terminology)"
-      ]
+      "id": "milk_oat",
+      "missing": "Milk (dairy free)",
+      "amount": "1 cup",
+      "substitute": "1 cup oat milk",
+      "notes": "1:1 swap. Oat milk browns well and is the closest to whole milk in bakes."
+    },
+    {
+      "id": "milk_soy",
+      "missing": "Milk (dairy free, for rich bakes)",
+      "amount": "1 cup",
+      "substitute": "1 cup unsweetened soy milk",
+      "notes": "1:1 swap. Highest protein of the plant milks, so it browns and sets best."
+    },
+    {
+      "id": "milk_almond",
+      "missing": "Milk (dairy free, light bakes)",
+      "amount": "1 cup",
+      "substitute": "1 cup unsweetened almond milk",
+      "notes": "1:1 swap. Thinner than dairy milk, so crumb can be slightly drier."
+    },
+    {
+      "id": "buttermilk_dairyfree",
+      "missing": "Buttermilk (dairy free)",
+      "amount": "1 cup",
+      "substitute": "1 cup unsweetened soy milk plus 1 tablespoon lemon juice. Stir and rest 5 minutes.",
+      "notes": "Soy curdles best. Rice and almond milk stay thin but still add the acid."
+    },
+    {
+      "id": "butter_vegan_block",
+      "missing": "Butter (dairy free)",
+      "amount": "1 cup",
+      "substitute": "1 cup vegan block butter",
+      "notes": "1:1 swap. Use block, not tub spread, which holds too much water for pastry."
+    },
+    {
+      "id": "cream_cheese_dairyfree",
+      "missing": "Cream cheese (dairy free)",
+      "amount": "8 oz",
+      "substitute": "8 oz dairy free cream cheese, or 1 cup raw cashews soaked 4 hours and blended with 1 tablespoon lemon juice",
+      "notes": "Cashew version is thicker. Chill before frosting so it pipes."
+    },
+    {
+      "id": "sour_cream_dairyfree",
+      "missing": "Sour cream (dairy free)",
+      "amount": "1 cup",
+      "substitute": "1 cup unsweetened coconut yogurt plus 1 teaspoon lemon juice",
+      "notes": "1:1 swap. Adds a faint coconut note to lighter bakes."
+    },
+    {
+      "id": "yogurt_dairyfree",
+      "missing": "Yogurt (dairy free)",
+      "amount": "1 cup",
+      "substitute": "1 cup unsweetened soy or coconut yogurt",
+      "notes": "1:1 swap. Choose unsweetened or the bake turns cloying."
+    },
+    {
+      "id": "whipping_cream_coconut",
+      "missing": "Heavy cream (for whipping)",
+      "amount": "1 cup",
+      "substitute": "1 cup coconut cream, chilled overnight and the solid part whipped",
+      "notes": "Whips to soft peaks only. Keep it cold and it holds for a few hours."
+    },
+    {
+      "id": "mascarpone_diy",
+      "missing": "Mascarpone",
+      "amount": "8 oz",
+      "substitute": "8 oz cream cheese beaten with 1/4 cup heavy cream and 2 tablespoons softened butter",
+      "notes": "Close in richness. A little tangier than the real thing."
+    },
+    {
+      "id": "ricotta_cottage",
+      "missing": "Ricotta",
+      "amount": "1 cup",
+      "substitute": "1 cup cottage cheese, blended smooth",
+      "notes": "1:1 swap. Drain first if the cheese is very wet."
+    },
+    {
+      "id": "creme_fraiche_sour_cream",
+      "missing": "Creme fraiche",
+      "amount": "1 cup",
+      "substitute": "1 cup sour cream",
+      "notes": "1:1 swap. Sour cream is tangier and splits at a higher heat, so keep it off the boil."
+    },
+    {
+      "id": "evaporated_milk_diy",
+      "missing": "Evaporated milk",
+      "amount": "1 cup",
+      "substitute": "2 1/4 cups whole milk simmered gently down to 1 cup, then cooled",
+      "notes": "Takes about 25 minutes. Stir often so it does not catch."
+    },
+    {
+      "id": "half_and_half_diy",
+      "missing": "Half and half",
+      "amount": "1 cup",
+      "substitute": "1/2 cup whole milk plus 1/2 cup heavy cream",
+      "notes": "1:1 once mixed. Works anywhere half and half is poured, not whipped."
+    },
+    {
+      "id": "ap_flour_gf",
+      "missing": "All purpose flour (gluten free)",
+      "amount": "1 cup",
+      "substitute": "1 cup measure for measure gluten free blend that already contains xanthan gum",
+      "notes": "Rest the batter 30 minutes so the starches hydrate. Check labels for cross contamination."
+    },
+    {
+      "id": "gf_blend_diy",
+      "missing": "Gluten free flour blend",
+      "amount": "3 cups",
+      "substitute": "1 1/2 cups white rice flour, 3/4 cup potato starch, 1/2 cup tapioca starch, 1/4 cup brown rice flour, 2 teaspoons xanthan gum",
+      "notes": "Whisk thoroughly and store airtight. Use cup for cup in place of all purpose."
+    },
+    {
+      "id": "xanthan_psyllium",
+      "missing": "Xanthan gum",
+      "amount": "1 teaspoon",
+      "substitute": "2 teaspoons whole psyllium husk",
+      "notes": "Psyllium gives a chewier, more bread like crumb. Add liquid slowly, it drinks more."
+    },
+    {
+      "id": "xanthan_chia",
+      "missing": "Xanthan gum (for quick bakes)",
+      "amount": "1 teaspoon",
+      "substitute": "1 tablespoon ground chia soaked in 3 tablespoons water",
+      "notes": "Best in muffins and cookies. Leaves faint flecks."
+    },
+    {
+      "id": "oat_flour_diy",
+      "missing": "Oat flour",
+      "amount": "1 cup",
+      "substitute": "1 1/4 cups rolled oats blended fine",
+      "notes": "Use certified gluten free oats if that matters for your bake."
+    },
+    {
+      "id": "breadcrumbs_gf",
+      "missing": "Breadcrumbs (gluten free)",
+      "amount": "1 cup",
+      "substitute": "1 cup pulsed gluten free crackers, or 1 cup rolled oats blitzed coarse",
+      "notes": "Toast briefly for colour, they brown more slowly than wheat crumbs."
+    },
+    {
+      "id": "graham_crumbs_gf",
+      "missing": "Graham cracker crumbs (gluten free)",
+      "amount": "1 1/2 cups",
+      "substitute": "1 1/2 cups crushed gluten free digestive style biscuits",
+      "notes": "Add an extra tablespoon of melted butter, gluten free crumbs bind loosely."
+    },
+    {
+      "id": "almond_flour_sunflower",
+      "missing": "Almond flour (nut free)",
+      "amount": "1 cup",
+      "substitute": "1 cup sunflower seed flour",
+      "notes": "1:1 swap. Can turn faintly green next to baking soda, which is harmless."
+    },
+    {
+      "id": "semolina_sub",
+      "missing": "Semolina",
+      "amount": "1 cup",
+      "substitute": "1 cup fine cornmeal, or 1 cup durum flour",
+      "notes": "Cornmeal gives the same grit for dusting. Texture in doughs will be softer."
+    },
+    {
+      "id": "egg_chia",
+      "missing": "Egg (1 large, for binding)",
+      "amount": "1 egg",
+      "substitute": "1 tablespoon ground chia plus 3 tablespoons water, rested 5 minutes",
+      "notes": "Binds like flax with a milder flavour. Best in dark or spiced bakes."
+    },
+    {
+      "id": "egg_applesauce",
+      "missing": "Egg (1 large, for moisture)",
+      "amount": "1 egg",
+      "substitute": "1/4 cup unsweetened applesauce",
+      "notes": "Adds moisture, not lift. Use in muffins and quick breads, up to two eggs worth."
+    },
+    {
+      "id": "egg_banana",
+      "missing": "Egg (1 large, for moisture)",
+      "amount": "1 egg",
+      "substitute": "1/4 cup mashed ripe banana",
+      "notes": "Adds moisture and banana flavour. Fine in spiced bakes, obvious in vanilla ones."
+    },
+    {
+      "id": "egg_yogurt",
+      "missing": "Egg (1 large, for richness)",
+      "amount": "1 egg",
+      "substitute": "1/4 cup plain yogurt",
+      "notes": "Keeps the crumb tender. Does not leaven, so pair with a little extra baking powder."
+    },
+    {
+      "id": "egg_soda_vinegar",
+      "missing": "Egg (1 large, for lift)",
+      "amount": "1 egg",
+      "substitute": "1 teaspoon baking soda plus 1 tablespoon white vinegar, mixed in last",
+      "notes": "Purely for rise. Get it into the oven quickly, the fizz is short lived."
+    },
+    {
+      "id": "egg_white_aquafaba",
+      "missing": "Egg white (1)",
+      "amount": "1 white",
+      "substitute": "2 tablespoons aquafaba, the liquid from a tin of chickpeas",
+      "notes": "1:1 by volume. Whips to stiff peaks with a pinch of cream of tartar."
+    },
+    {
+      "id": "egg_whole_aquafaba",
+      "missing": "Egg (1 large, whole)",
+      "amount": "1 egg",
+      "substitute": "3 tablespoons aquafaba",
+      "notes": "Works in cakes and brownies. Not in custards, which need the yolk to set."
+    },
+    {
+      "id": "egg_yolk_sub",
+      "missing": "Egg yolk (1)",
+      "amount": "1 yolk",
+      "substitute": "1 tablespoon full fat yogurt plus 1 teaspoon oil",
+      "notes": "Covers the fat and the moisture. Will not thicken a custard on its own."
+    },
+    {
+      "id": "egg_wash_sub",
+      "missing": "Egg wash",
+      "amount": "1 egg beaten",
+      "substitute": "2 tablespoons milk, plant milk, cream, or aquafaba brushed thin",
+      "notes": "Milk browns softly, cream browns deepest, aquafaba gives the closest shine."
+    },
+    {
+      "id": "sugar_coconut",
+      "missing": "Granulated sugar",
+      "amount": "1 cup",
+      "substitute": "1 cup coconut sugar",
+      "notes": "1:1 swap. Darkens the crumb and tastes faintly of caramel."
+    },
+    {
+      "id": "sugar_honey",
+      "missing": "Granulated sugar",
+      "amount": "1 cup",
+      "substitute": "3/4 cup honey. Reduce other liquid by 2 tablespoons and drop the oven 25F.",
+      "notes": "Browns much faster. Keep an eye on the edges."
+    },
+    {
+      "id": "sugar_maple",
+      "missing": "Granulated sugar",
+      "amount": "1 cup",
+      "substitute": "3/4 cup maple syrup. Reduce other liquid by 3 tablespoons.",
+      "notes": "Adds moisture and a clear maple note. Best in muffins and quick breads."
+    },
+    {
+      "id": "sugar_erythritol",
+      "missing": "Granulated sugar (lower sugar)",
+      "amount": "1 cup",
+      "substitute": "1 1/3 cups erythritol",
+      "notes": "About 70 percent as sweet. Does not caramelise, and can taste cooling."
+    },
+    {
+      "id": "sugar_monkfruit",
+      "missing": "Granulated sugar (lower sugar)",
+      "amount": "1 cup",
+      "substitute": "1 cup monk fruit blend measured for baking",
+      "notes": "1:1 for the blends cut with erythritol. Pure monk fruit is far sweeter, read the tin."
+    },
+    {
+      "id": "sugar_stevia",
+      "missing": "Granulated sugar (lower sugar)",
+      "amount": "1 cup",
+      "substitute": "1 teaspoon liquid stevia plus 1/3 cup applesauce or yogurt to replace the bulk",
+      "notes": "Stevia sweetens but adds no body, so something has to fill the volume."
+    },
+    {
+      "id": "powdered_sugar_diy",
+      "missing": "Powdered sugar",
+      "amount": "1 cup",
+      "substitute": "1 cup granulated sugar plus 1 tablespoon cornstarch, blended until floury",
+      "notes": "Let the dust settle before opening the blender. Sieve before icing."
+    },
+    {
+      "id": "caster_sugar_diy",
+      "missing": "Caster sugar",
+      "amount": "1 cup",
+      "substitute": "1 cup granulated sugar pulsed briefly in a blender",
+      "notes": "Stop while it is still grainy. Blitzed too far it becomes powdered sugar."
+    },
+    {
+      "id": "dark_brown_diy",
+      "missing": "Dark brown sugar",
+      "amount": "1 cup",
+      "substitute": "1 cup granulated sugar plus 2 tablespoons molasses, rubbed together",
+      "notes": "Light brown uses 1 tablespoon instead. Rub with fingertips until evenly damp."
+    },
+    {
+      "id": "turbinado_sub",
+      "missing": "Turbinado sugar",
+      "amount": "1/4 cup",
+      "substitute": "1/4 cup demerara sugar, or granulated sugar for a finer finish",
+      "notes": "For sprinkling. Granulated loses the crunch but keeps the sparkle."
+    },
+    {
+      "id": "shortening_butter",
+      "missing": "Shortening",
+      "amount": "1 cup",
+      "substitute": "1 cup plus 2 tablespoons butter",
+      "notes": "The extra covers the water in butter. Spread is slightly wider, flavour better."
+    },
+    {
+      "id": "oil_butter",
+      "missing": "Vegetable oil",
+      "amount": "1 cup",
+      "substitute": "1 cup melted and cooled butter",
+      "notes": "1:1 swap. Richer flavour, marginally firmer crumb once cool."
+    },
+    {
+      "id": "oil_applesauce",
+      "missing": "Vegetable oil (lighter bake)",
+      "amount": "1 cup",
+      "substitute": "1/2 cup oil plus 1/2 cup unsweetened applesauce",
+      "notes": "Replace half at most. All applesauce turns the crumb gummy."
+    },
+    {
+      "id": "lard_sub",
+      "missing": "Lard",
+      "amount": "1 cup",
+      "substitute": "1 cup shortening, or 1 cup butter for flavour",
+      "notes": "Shortening matches the texture. Butter browns better but holds less flake."
+    },
+    {
+      "id": "coconut_oil_sub",
+      "missing": "Coconut oil",
+      "amount": "1 cup",
+      "substitute": "1 cup butter, or 1 cup neutral oil",
+      "notes": "1:1 either way. Butter for flavour, oil for a softer set at room temperature."
+    },
+    {
+      "id": "ghee_sub",
+      "missing": "Ghee",
+      "amount": "1 cup",
+      "substitute": "1 cup clarified butter, or 1 cup butter with the recipe liquid reduced by 2 tablespoons",
+      "notes": "Plain butter carries water, so the small reduction keeps the balance."
+    },
+    {
+      "id": "bread_flour_diy",
+      "missing": "Bread flour",
+      "amount": "1 cup",
+      "substitute": "1 cup all purpose flour plus 1 teaspoon vital wheat gluten",
+      "notes": "Lifts the protein enough for a chewier crumb and a stronger rise."
+    },
+    {
+      "id": "pastry_flour_diy",
+      "missing": "Pastry flour",
+      "amount": "1 cup",
+      "substitute": "2/3 cup all purpose flour plus 1/3 cup cake flour",
+      "notes": "Sits between the two in protein. Ideal for tender pie crust."
+    },
+    {
+      "id": "whole_wheat_partial",
+      "missing": "Whole wheat flour",
+      "amount": "1 cup",
+      "substitute": "1 cup white whole wheat flour, or 1/2 cup whole wheat plus 1/2 cup all purpose",
+      "notes": "Swapping all of it makes a denser loaf. Half and half is the safe bet."
+    },
+    {
+      "id": "rye_sub",
+      "missing": "Rye flour",
+      "amount": "1 cup",
+      "substitute": "1 cup whole wheat flour",
+      "notes": "Loses the rye tang. Add 1 teaspoon caraway to get some of it back."
+    },
+    {
+      "id": "cornstarch_arrowroot",
+      "missing": "Cornstarch",
+      "amount": "1 tablespoon",
+      "substitute": "1 tablespoon arrowroot, or 2 tablespoons all purpose flour",
+      "notes": "Arrowroot sets clearer and does not like long boiling. Flour goes cloudy."
+    },
+    {
+      "id": "tapioca_sub",
+      "missing": "Tapioca starch",
+      "amount": "1 tablespoon",
+      "substitute": "1 tablespoon arrowroot or cornstarch",
+      "notes": "1:1 swap. Tapioca gives the glossiest fruit fillings."
+    },
+    {
+      "id": "potato_starch_sub",
+      "missing": "Potato starch",
+      "amount": "1 tablespoon",
+      "substitute": "1 tablespoon cornstarch",
+      "notes": "1:1 swap. Not the same as potato flour, which is far heavier."
+    },
+    {
+      "id": "vital_gluten_note",
+      "missing": "Vital wheat gluten",
+      "amount": "1 teaspoon",
+      "substitute": "No true swap. Use bread flour in place of all purpose instead.",
+      "notes": "Nothing else adds protein this way. Adjust the flour rather than the additive."
+    },
+    {
+      "id": "baking_soda_powder",
+      "missing": "Baking soda",
+      "amount": "1 teaspoon",
+      "substitute": "3 teaspoons baking powder, and cut any acid in the recipe",
+      "notes": "Rise is weaker and can taste salty. Better to buy soda if you can."
+    },
+    {
+      "id": "sourdough_to_yeast",
+      "missing": "Sourdough starter",
+      "amount": "1 cup",
+      "substitute": "2 1/4 teaspoons instant yeast, plus 1/2 cup flour and 1/2 cup water added to the dough",
+      "notes": "Ready in hours instead of a day. You lose the sour, so expect a milder loaf."
+    },
+    {
+      "id": "yeast_to_sourdough",
+      "missing": "Instant yeast",
+      "amount": "2 1/4 teaspoons",
+      "substitute": "1 cup active starter, minus 1/2 cup flour and 1/2 cup water from the recipe",
+      "notes": "Give the dough far longer to rise. Watch the dough, not the clock."
+    },
+    {
+      "id": "lemon_juice_vinegar",
+      "missing": "Lemon juice (for acid)",
+      "amount": "1 tablespoon",
+      "substitute": "1 tablespoon white vinegar",
+      "notes": "1:1 for chemistry. Vinegar brings no citrus flavour, so skip it in lemon bakes."
+    },
+    {
+      "id": "cocoa_dutch_natural",
+      "missing": "Dutch process cocoa",
+      "amount": "1/2 cup",
+      "substitute": "1/2 cup natural cocoa, and swap the baking powder for 1/8 teaspoon baking soda per 1/2 cup",
+      "notes": "The two cocoas differ in acidity, so the leavener has to change with them."
+    },
+    {
+      "id": "cocoa_natural_dutch",
+      "missing": "Natural cocoa powder",
+      "amount": "1/2 cup",
+      "substitute": "1/2 cup Dutch process cocoa, and swap baking soda for 1 teaspoon baking powder",
+      "notes": "Going the other way needs the opposite leavener or the bake falls flat."
+    },
+    {
+      "id": "semisweet_chocolate_diy",
+      "missing": "Semisweet chocolate",
+      "amount": "1 oz",
+      "substitute": "1 tablespoon cocoa powder plus 2 teaspoons sugar plus 2 teaspoons butter",
+      "notes": "Fine melted into batter. Will not temper or set as a coating."
+    },
+    {
+      "id": "choc_chips_bar",
+      "missing": "Chocolate chips",
+      "amount": "1 cup",
+      "substitute": "6 oz chocolate bar, chopped",
+      "notes": "Chopped bar melts into pools rather than holding its shape. Usually an improvement."
+    },
+    {
+      "id": "espresso_powder_sub",
+      "missing": "Espresso powder",
+      "amount": "1 teaspoon",
+      "substitute": "2 teaspoons instant coffee granules, crushed fine",
+      "notes": "Weaker, so the doubling matters. Deepens chocolate without tasting of coffee."
+    },
+    {
+      "id": "almond_extract_sub",
+      "missing": "Almond extract",
+      "amount": "1 teaspoon",
+      "substitute": "1/2 teaspoon vanilla extract plus a drop of amaretto if you have it",
+      "notes": "Nothing truly replaces it. Use less, almond is assertive."
+    },
+    {
+      "id": "lemon_zest_sub",
+      "missing": "Lemon zest",
+      "amount": "1 teaspoon",
+      "substitute": "1/2 teaspoon lemon extract, or 2 teaspoons dried lemon peel",
+      "notes": "Zest carries oils that extract cannot match. Add at the end for the brightest note."
+    },
+    {
+      "id": "pumpkin_spice_diy",
+      "missing": "Pumpkin pie spice",
+      "amount": "1 tablespoon",
+      "substitute": "1 1/2 teaspoons cinnamon, 1 teaspoon ginger, 1/2 teaspoon nutmeg, 1/4 teaspoon allspice, 1/4 teaspoon cloves",
+      "notes": "Mix and store airtight. Scales up neatly."
+    },
+    {
+      "id": "apple_spice_diy",
+      "missing": "Apple pie spice",
+      "amount": "1 tablespoon",
+      "substitute": "2 teaspoons cinnamon, 1/2 teaspoon nutmeg, 1/4 teaspoon allspice, 1/4 teaspoon cardamom",
+      "notes": "Softer and warmer than pumpkin spice. Good on anything with fruit."
+    },
+    {
+      "id": "buttermilk_powder_sub",
+      "missing": "Buttermilk powder",
+      "amount": "1/4 cup",
+      "substitute": "1 cup liquid buttermilk, and hold back 1 cup of the recipe liquid",
+      "notes": "Powder exists to keep the mix dry, so only swap when the liquid can move."
+    },
+    {
+      "id": "uk_plain_flour",
+      "missing": "Plain flour (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup all purpose flour",
+      "notes": "The same flour under two names. No adjustment needed."
+    },
+    {
+      "id": "uk_strong_flour",
+      "missing": "Strong flour (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup bread flour",
+      "notes": "Same high protein flour. Straight swap."
+    },
+    {
+      "id": "uk_caster_sugar",
+      "missing": "Caster sugar (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup superfine sugar, or granulated pulsed briefly",
+      "notes": "Dissolves faster than granulated, which matters in meringue and creaming."
+    },
+    {
+      "id": "uk_icing_sugar",
+      "missing": "Icing sugar (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup powdered or confectioners sugar",
+      "notes": "Same thing. UK icing sugar sometimes has no cornstarch, so icing can set softer."
+    },
+    {
+      "id": "uk_bicarb",
+      "missing": "Bicarbonate of soda (UK)",
+      "amount": "1 teaspoon",
+      "substitute": "1 teaspoon baking soda",
+      "notes": "Identical. Only the name changes."
+    },
+    {
+      "id": "uk_cornflour",
+      "missing": "Cornflour (UK)",
+      "amount": "1 tablespoon",
+      "substitute": "1 tablespoon cornstarch",
+      "notes": "Identical. Not to be confused with US cornflour, which is milled corn."
+    },
+    {
+      "id": "uk_double_cream",
+      "missing": "Double cream (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup heavy cream",
+      "notes": "Double cream is richer at about 48 percent fat, so heavy cream whips a little softer."
+    },
+    {
+      "id": "uk_single_cream",
+      "missing": "Single cream (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup light cream, or half and half",
+      "notes": "Too thin to whip either way. Fine for pouring and enriching."
+    },
+    {
+      "id": "uk_golden_syrup",
+      "missing": "Golden syrup (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup light corn syrup, or 3/4 cup honey",
+      "notes": "Corn syrup matches the texture. Golden syrup has a buttery note honey mimics better."
+    },
+    {
+      "id": "uk_treacle",
+      "missing": "Black treacle (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup molasses",
+      "notes": "Near enough identical. Treacle is a shade less bitter."
+    },
+    {
+      "id": "uk_muscovado",
+      "missing": "Muscovado sugar (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup dark brown sugar",
+      "notes": "Muscovado is moister and stronger. Dark brown is the closest easy swap."
+    },
+    {
+      "id": "uk_digestives",
+      "missing": "Digestive biscuits (UK)",
+      "amount": "1 1/2 cups crushed",
+      "substitute": "1 1/2 cups crushed graham crackers",
+      "notes": "Swap by volume of crumbs. Graham is a touch sweeter."
+    },
+    {
+      "id": "uk_self_raising",
+      "missing": "Self raising flour (UK)",
+      "amount": "1 cup",
+      "substitute": "1 cup all purpose flour plus 1 1/2 teaspoons baking powder plus 1/4 teaspoon salt",
+      "notes": "Whisk thoroughly so the leavener is evenly spread."
     }
   ]
 }

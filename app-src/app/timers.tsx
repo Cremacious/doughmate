@@ -10,9 +10,11 @@ import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useNow } from '@/hooks/useNow';
 import { triggerHaptic } from '@/lib/haptics';
-import { formatRemaining } from '@/lib/timer';
+import { atLimit, FREE_TIMER_LIMIT } from '@/lib/limits';
+import { activeTimerCount, formatRemaining } from '@/lib/timer';
 import { scaleType } from '@/lib/typeScale';
 import { useBakePlan } from '@/state/bakePlan';
+import { usePro } from '@/state/pro';
 import { useTimers } from '@/state/timers';
 import { radius, spacing, stroke, typography } from '@/theme';
 import { BakePlanCard } from '@/ui/BakePlanCard';
@@ -37,6 +39,7 @@ export default function TimersSheet() {
   const now = useNow();
   const { timers, startTimer, pauseTimer, resumeTimer, cancelTimer } = useTimers();
   const { plan, cancelPlan } = useBakePlan();
+  const { isPro } = usePro();
 
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -47,6 +50,12 @@ export default function TimersSheet() {
   const durationMs = (hours * 3600 + minutes * 60) * 1000;
 
   const start = () => {
+    // Free bakers run one timer at a time. A second one is the Pro upgrade, so the
+    // paywall replaces the start rather than the timer failing silently.
+    if (atLimit(activeTimerCount(timers, now), FREE_TIMER_LIMIT, isPro)) {
+      router.push('/paywall');
+      return;
+    }
     startTimer({ label: label.trim() || t('timers.title'), durationMs });
     setHours(0);
     setMinutes(0);

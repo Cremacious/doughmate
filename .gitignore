@@ -5,3 +5,7 @@
 # root forwarder package.json has no deps, but npm may still create these
 node_modules/
 package-lock.json
+
+# eas-cli and expo scaffold an empty {"expo":{}} here if run from the repo root
+# instead of app-src/. The real app config lives in app-src/app.json.
+/app.json
