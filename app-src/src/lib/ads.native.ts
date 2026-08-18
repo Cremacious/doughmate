@@ -15,7 +15,7 @@
 // tracking permission to ask for. See AdBanner for the request flag.
 import mobileAds, { AdsConsent } from 'react-native-google-mobile-ads';
 
-import { USING_TEST_AD_UNITS } from './adUnits';
+import { TEST_DEVICE_IDS, USING_TEST_AD_UNITS } from './adUnits';
 
 export const ADS_AVAILABLE = true;
 
@@ -68,6 +68,11 @@ export async function initAds(): Promise<void> {
   }
 
   try {
+    if (TEST_DEVICE_IDS.length > 0) {
+      // Must land before initialize(), or the first request goes out untagged
+      // and this device sees one genuine ad before the allowlist takes effect.
+      await mobileAds().setRequestConfiguration({ testDeviceIdentifiers: TEST_DEVICE_IDS });
+    }
     await mobileAds().initialize();
     setAdsReady(true);
   } catch {

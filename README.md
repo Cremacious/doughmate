@@ -209,6 +209,19 @@ areas, and 18 free substitutions.
   before shipping or the free tier earns nothing** — `USING_TEST_AD_UNITS` is
   exported so a release check can assert against it.
 
+  Real ids are stored as EAS environment variables on the `production`
+  environment, and each build profile in `eas.json` names its environment. That
+  mapping is what loads them: without it a production build silently falls back
+  to test ids.
+
+  **Never tap an ad in your own build.** Self clicks are invalid traffic and
+  Google's enforcement is automated. To exercise the real unit id safely, set
+  `EXPO_PUBLIC_ADMOB_TEST_DEVICE_ID` to the identifier the SDK logs on first
+  launch (comma separated, `EMULATOR` for simulators). Those devices get test
+  ads against the real unit id. It is applied via `setRequestConfiguration`
+  before `initialize()`, since a later call would let one genuine ad through
+  first.
+
 ## Notifications
 
 `ReminderSync` (mounted at the root) reconciles a local feed reminder per starter
