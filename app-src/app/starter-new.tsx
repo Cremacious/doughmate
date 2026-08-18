@@ -12,7 +12,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { scaleType } from '@/lib/typeScale';
-import { useStarters } from '@/state/starters';
+import { type Starter, useStarters } from '@/state/starters';
 import { radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
@@ -28,7 +28,8 @@ const RATIOS = ['1:1:1', '1:2:2', '1:5:5'];
 export default function NewStarterSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
-  const { starters, addStarter, updateStarter, getStarter } = useStarters();
+  const { starters, addStarter, updateStarter, getStarter, removeStarter, restoreStarter } =
+    useStarters();
   const { show } = useToast();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const existing = id ? getStarter(id) : undefined;
@@ -52,6 +53,24 @@ export default function NewStarterSheet() {
       router.back();
       show({ message: t('starters.toast_added', { name: finalName }), variant: 'confirmation' });
     }
+  };
+
+  // Deleting lives here rather than on the detail sheet, so the destructive action is
+  // only reachable once you have said you want to change something.
+  const deleteStarter = () => {
+    if (!existing) {
+      return;
+    }
+    const removed: Starter = existing;
+    removeStarter(existing.id);
+    // This editor is only ever opened from the starter's own detail sheet, and that
+    // sheet renders empty once its starter is gone. Pop both, back to the list.
+    router.dismiss(2);
+    show({
+      message: t('starters.toast_deleted', { name: removed.name }),
+      actionLabel: t('recipes.button_undo'),
+      onAction: () => restoreStarter(removed),
+    });
   };
 
   const fieldLabel = (text: string) => (
@@ -177,6 +196,15 @@ export default function NewStarterSheet() {
             ]}
           />
         </Card>
+
+        {existing ? (
+          <Button
+            label={t('starters.button_delete')}
+            variant="destructive"
+            onPress={deleteStarter}
+            haptic="warning"
+          />
+        ) : null}
       </ScrollView>
     </BottomSheet>
   );

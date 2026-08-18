@@ -23,7 +23,6 @@ import { IconButton } from '@/ui/IconButton';
 import { StepTimerControl } from '@/ui/StepTimerControl';
 import { Stepper } from '@/ui/Stepper';
 import { Tip } from '@/ui/Tip';
-import { useToast } from '@/ui/Toast';
 
 function ingAmountText(ingredient: RecipeIngredient, factor: number, format: NumberFormat): string {
   if (typeof ingredient.amount !== 'number') return ingredient.unit;
@@ -38,9 +37,8 @@ export default function RecipeDetailSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getRecipe, removeRecipe, restoreRecipe } = useRecipes();
+  const { getRecipe } = useRecipes();
   const { isPro } = usePro();
-  const { show } = useToast();
   const { settings } = useSettings();
 
   const recipe = getRecipe(id);
@@ -83,16 +81,6 @@ export default function RecipeDetailSheet() {
 
   const scaled = factor !== 1;
   const canPlanBake = recipe.steps.some((s) => s.time && parseDuration(s.time) !== null);
-
-  const del = () => {
-    removeRecipe(recipe.id);
-    router.back();
-    show({
-      message: t('recipes.toast_deleted'),
-      actionLabel: t('recipes.button_undo'),
-      onAction: () => restoreRecipe(recipe),
-    });
-  };
 
   return (
     <BottomSheet
@@ -400,13 +388,6 @@ export default function RecipeDetailSheet() {
             </Card>
           </>
         ) : null}
-
-        <Button
-          label={t('recipes.delete_recipe')}
-          onPress={del}
-          variant="destructive"
-          haptic="tap"
-        />
       </ScrollView>
     </BottomSheet>
   );

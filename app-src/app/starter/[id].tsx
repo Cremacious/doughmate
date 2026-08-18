@@ -24,7 +24,7 @@ export default function StarterDetailSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getStarter, feedStarter, removeStarter, restoreStarter } = useStarters();
+  const { getStarter, feedStarter } = useStarters();
   const { celebrate } = useSamMood();
   const { show } = useToast();
   const [now, setNow] = useState(() => Date.now());
@@ -60,16 +60,6 @@ export default function StarterDetailSheet() {
     setNow(Date.now());
     celebrate();
     show({ message: t('starters.toast_fed', { name: starter.name }), variant: 'confirmation' });
-  };
-
-  const del = () => {
-    removeStarter(starter.id);
-    router.back();
-    show({
-      message: t('starters.toast_deleted', { name: starter.name }),
-      actionLabel: t('recipes.button_undo'),
-      onAction: () => restoreStarter(starter),
-    });
   };
 
   return (
@@ -197,13 +187,6 @@ export default function StarterDetailSheet() {
             </Card>
           </>
         ) : null}
-
-        <Button
-          label={t('starters.button_delete')}
-          onPress={del}
-          variant="destructive"
-          haptic="tap"
-        />
       </ScrollView>
     </BottomSheet>
   );

@@ -105,7 +105,7 @@ function fromRecipe(recipe: Recipe): {
 export default function RecipeEditorSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
-  const { addRecipe, updateRecipe, getRecipe } = useRecipes();
+  const { addRecipe, updateRecipe, getRecipe, removeRecipe, restoreRecipe } = useRecipes();
   const { show } = useToast();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const existing = id ? getRecipe(id) : undefined;
@@ -177,6 +177,24 @@ export default function RecipeEditorSheet() {
     }
     router.back();
     show({ message: t('recipes.toast_saved'), variant: 'confirmation' });
+  };
+
+  // Deleting lives here rather than on the detail sheet, so the destructive action is
+  // only reachable once you have said you want to change something.
+  const deleteRecipe = () => {
+    if (!existing) {
+      return;
+    }
+    const removed: Recipe = existing;
+    removeRecipe(existing.id);
+    // This editor is only ever opened from the recipe's own detail sheet, and that
+    // sheet renders empty once its recipe is gone. Pop both, back to the list.
+    router.dismiss(2);
+    show({
+      message: t('recipes.toast_deleted'),
+      actionLabel: t('recipes.button_undo'),
+      onAction: () => restoreRecipe(removed),
+    });
   };
 
   const floured = fontScale > 1;
@@ -454,6 +472,15 @@ export default function RecipeEditorSheet() {
             })}
           </View>
         </View>
+
+        {existing ? (
+          <Button
+            label={t('recipes.delete_recipe')}
+            variant="destructive"
+            onPress={deleteRecipe}
+            haptic="warning"
+          />
+        ) : null}
       </ScrollView>
 
       {unitPicker ? (
