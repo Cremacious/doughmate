@@ -24,18 +24,19 @@ import {
 import { formatRemaining } from '@/lib/timer';
 import { type BakePlan, useBakePlan } from '@/state/bakePlan';
 import { useRecipes } from '@/state/recipes';
-import { radius, spacing, typography } from '@/theme';
+import { scaleType } from '@/lib/typeScale';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
+import { Card } from '@/ui/Card';
 import { ScheduleTimeline } from '@/ui/ScheduleTimeline';
-import { SegmentedControl } from '@/ui/SegmentedControl';
 import { Stepper } from '@/ui/Stepper';
 
 const DAY_KEYS = [0, 1, 2, 3];
 
 export default function BakePlanSheet() {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
   const { recipeId } = useLocalSearchParams<{ recipeId?: string }>();
   const { getRecipe } = useRecipes();
   const { plan, armPlan, cancelPlan } = useBakePlan();
@@ -198,6 +199,91 @@ export default function BakePlanSheet() {
                 })}
               </View>
 
+              {/* The sheet's one hero: the time you are aiming at. */}
+              <Card tier="hero" heroColor={palette.proofTeal} style={styles.timeHero}>
+                <View style={styles.timeRow}>
+                  <View
+                    style={[
+                      styles.timeTile,
+                      { backgroundColor: palette.bgSurface, borderColor: palette.outline },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        typography.numeric.hero,
+                        {
+                          fontSize: 44 * fontScale,
+                          lineHeight: 48 * fontScale,
+                          color: palette.textInk,
+                        },
+                      ]}
+                    >
+                      {hour12}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.timeTile,
+                      { backgroundColor: palette.bgSurface, borderColor: palette.outline },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        typography.numeric.hero,
+                        {
+                          fontSize: 44 * fontScale,
+                          lineHeight: 48 * fontScale,
+                          color: palette.textInk,
+                        },
+                      ]}
+                    >
+                      {String(minute).padStart(2, '0')}
+                    </Text>
+                  </View>
+                  <View style={styles.meridiemCol}>
+                    {(['AM', 'PM'] as const).map((m) => (
+                      <Pressable
+                        key={m}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: meridiem === m }}
+                        onPress={() => {
+                          triggerHaptic('select');
+                          setMeridiem(m);
+                        }}
+                        style={[
+                          styles.meridiem,
+                          {
+                            backgroundColor: meridiem === m ? palette.accentButter : 'transparent',
+                            borderColor: palette.outline,
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            typography.labelSm,
+                            scaleType(typography.labelSm, fontScale),
+                            { color: meridiem === m ? palette.onButter : palette.onTealSoft },
+                          ]}
+                        >
+                          {t(m === 'AM' ? 'bakePlan.am' : 'bakePlan.pm')}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
+                {feasible ? (
+                  <Text
+                    style={[
+                      typography.body.sm,
+                      scaleType(typography.body.sm, fontScale),
+                      { color: palette.onTealSoft },
+                    ]}
+                  >
+                    {`${t('bakePlan.start_baking')} ${formatDayLabel(schedule.startAt, now)} ${formatClock(schedule.startAt)}`}
+                  </Text>
+                ) : null}
+              </Card>
+
               <View style={styles.stepperRow}>
                 <View style={styles.stepperCol}>
                   <Text style={[typography.label, { color: palette.textFaint }]}>
@@ -212,15 +298,6 @@ export default function BakePlanSheet() {
                   <Stepper value={minute} onChange={setMinute} min={0} max={55} step={5} wrap />
                 </View>
               </View>
-
-              <SegmentedControl
-                options={[
-                  { id: 'AM' as const, label: t('bakePlan.am') },
-                  { id: 'PM' as const, label: t('bakePlan.pm') },
-                ]}
-                value={meridiem}
-                onChange={setMeridiem}
-              />
             </View>
 
             {feasible ? (
@@ -229,16 +306,9 @@ export default function BakePlanSheet() {
                   {t('bakePlan.your_schedule')}
                 </Text>
 
-                <View style={[styles.hero, { backgroundColor: palette.proofTealWash }]}>
-                  <Text style={[typography.label, { color: palette.proofTealText }]}>
-                    {t('bakePlan.start_baking')}
-                  </Text>
-                  <Text style={[typography.numeric.lg, { color: palette.proofTealText }]}>
-                    {`${formatDayLabel(schedule.startAt, now)} ${formatClock(schedule.startAt)}`}
-                  </Text>
-                </View>
-
-                <ScheduleTimeline steps={schedule.steps} finishAt={finishAt} />
+                <Card>
+                  <ScheduleTimeline steps={schedule.steps} finishAt={finishAt} />
+                </Card>
 
                 <Button label={t('bakePlan.arm')} onPress={() => void armThisPlan()} haptic="pop" />
                 <Text style={[typography.body.sm, styles.center, { color: palette.textFaint }]}>
@@ -301,12 +371,14 @@ function ArmedSection({ plan, now, palette, t, onCancel }: ArmedSectionProps) {
         })}
       </Text>
 
-      <ScheduleTimeline
-        steps={steps}
-        finishAt={plan.finishAt}
-        currentIndex={progress.currentIndex}
-        nextIndex={progress.nextIndex}
-      />
+      <Card>
+        <ScheduleTimeline
+          steps={steps}
+          finishAt={plan.finishAt}
+          currentIndex={progress.currentIndex}
+          nextIndex={progress.nextIndex}
+        />
+      </Card>
 
       <Button label={t('bakePlan.cancel')} variant="destructive" onPress={onCancel} />
     </View>
@@ -331,6 +403,24 @@ const styles = StyleSheet.create({
   },
   stepperRow: { flexDirection: 'row', justifyContent: 'space-around' },
   stepperCol: { alignItems: 'center', gap: spacing.sm },
-  hero: { borderRadius: radius.lg, padding: spacing.md, gap: spacing['2xs'] },
+  timeHero: { gap: spacing.sm },
+  timeRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  timeTile: {
+    width: 78,
+    height: 64,
+    borderRadius: radius.lg,
+    borderWidth: stroke.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  meridiemCol: { gap: spacing['2xs'] },
+  meridiem: {
+    minWidth: 52,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 7,
+    borderRadius: radius.pill,
+    borderWidth: stroke.soft,
+    alignItems: 'center',
+  },
   warning: { borderRadius: radius.lg, padding: spacing.md },
 });

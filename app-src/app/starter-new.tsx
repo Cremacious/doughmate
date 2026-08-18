@@ -1,15 +1,22 @@
 // Add a starter, a tall sheet. Name, hydration, feed ratio, feed interval and
 // notes. The interval steps in 6 hour jumps. Footer adds the starter.
+//
+// Hydration and ratio are the same control with two emphases on purpose: hydration
+// is the one people actually change, so its selection is butter and lifts onto a hard
+// shadow, while the ratio settles for an ink fill.
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { useStarters } from '@/state/starters';
-import { radius, spacing, typography } from '@/theme';
+import { scaleType } from '@/lib/typeScale';
+import { type Starter, useStarters } from '@/state/starters';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
+import { Card } from '@/ui/Card';
 import { Chip } from '@/ui/Chip';
 import { Input } from '@/ui/Input';
 import { Stepper } from '@/ui/Stepper';
@@ -21,7 +28,8 @@ const RATIOS = ['1:1:1', '1:2:2', '1:5:5'];
 export default function NewStarterSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
-  const { starters, addStarter, updateStarter, getStarter } = useStarters();
+  const { starters, addStarter, updateStarter, getStarter, removeStarter, restoreStarter } =
+    useStarters();
   const { show } = useToast();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const existing = id ? getStarter(id) : undefined;
@@ -47,14 +55,54 @@ export default function NewStarterSheet() {
     }
   };
 
+  // Deleting lives here rather than on the detail sheet, so the destructive action is
+  // only reachable once you have said you want to change something.
+  const deleteStarter = () => {
+    if (!existing) {
+      return;
+    }
+    const removed: Starter = existing;
+    removeStarter(existing.id);
+    // This editor is only ever opened from the starter's own detail sheet, and that
+    // sheet renders empty once its starter is gone. Pop both, back to the list.
+    router.dismiss(2);
+    show({
+      message: t('starters.toast_deleted', { name: removed.name }),
+      actionLabel: t('recipes.button_undo'),
+      onAction: () => restoreStarter(removed),
+    });
+  };
+
+  const fieldLabel = (text: string) => (
+    <Text
+      style={[
+        typography.label,
+        scaleType(typography.label, fontScale),
+        { color: palette.textFaint },
+      ]}
+    >
+      {text}
+    </Text>
+  );
+
   return (
     <BottomSheet
       size="tall"
       onClose={() => router.back()}
       header={
-        <Text style={[typography.display.md, styles.title, { color: palette.textInk }]}>
-          {existing ? t('starters.edit_title') : t('starters.add_title')}
-        </Text>
+        <View style={styles.header}>
+          <Sam size={52} emotion="curious" />
+          <Text
+            style={[
+              typography.display.md,
+              scaleType(typography.display.md, fontScale),
+              styles.title,
+              { color: palette.textInk },
+            ]}
+          >
+            {existing ? t('starters.edit_title') : t('starters.add_title')}
+          </Text>
+        </View>
       }
       footer={
         <Button
@@ -69,56 +117,65 @@ export default function NewStarterSheet() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Input
-          label={t('starters.new_name_field')}
-          value={name}
-          onChangeText={setName}
-          placeholder={t('starters.new_name_placeholder')}
-        />
+        <Card>
+          <Input
+            label={t('starters.new_name_field')}
+            value={name}
+            onChangeText={setName}
+            placeholder={t('starters.new_name_placeholder')}
+          />
+        </Card>
 
-        <View style={styles.field}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>
-            {t('starters.new_hydration_label')}
-          </Text>
-          <View style={styles.chips}>
+        <Card>
+          {fieldLabel(t('starters.new_hydration_label'))}
+          <View style={styles.threeUp}>
             {HYDRATIONS.map((h) => (
-              <Chip
-                key={h}
-                label={t('starters.hydration_badge', { value: h })}
-                selected={hydration === h}
-                onPress={() => setHydration(h)}
-              />
+              <View key={h} style={styles.cell}>
+                <Chip
+                  label={t('starters.hydration_badge', { value: h })}
+                  emphasis="butter"
+                  size="md"
+                  numeric
+                  raised
+                  selected={hydration === h}
+                  onPress={() => setHydration(h)}
+                />
+              </View>
             ))}
           </View>
-        </View>
 
-        <View style={styles.field}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>
-            {t('starters.new_ratio_label')}
-          </Text>
-          <View style={styles.chips}>
+          {fieldLabel(t('starters.new_ratio_label'))}
+          <View style={styles.threeUp}>
             {RATIOS.map((r) => (
-              <Chip key={r} label={r} selected={ratio === r} onPress={() => setRatio(r)} />
+              <View key={r} style={styles.cell}>
+                <Chip
+                  label={r}
+                  size="md"
+                  numeric
+                  selected={ratio === r}
+                  onPress={() => setRatio(r)}
+                />
+              </View>
             ))}
           </View>
-        </View>
+        </Card>
 
-        <View style={styles.rowField}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>
-            {t('starters.new_interval_label')}
-          </Text>
-          <View style={styles.intervalRow}>
-            <Stepper value={intervalHours} onChange={setIntervalHours} min={6} step={6} />
-            <Text style={[typography.numeric.sm, { color: palette.textSoft }]}>
-              {t('starters.interval_value', { hours: intervalHours })}
-            </Text>
-          </View>
-        </View>
+        <Card>
+          {fieldLabel(t('starters.new_interval_label'))}
+          <Stepper
+            value={intervalHours}
+            onChange={setIntervalHours}
+            min={6}
+            step={6}
+            spread
+            formatValue={(v) => t('starters.interval_hours', { count: v })}
+            decrementLabel={t('starters.new_interval_label')}
+            incrementLabel={t('starters.new_interval_label')}
+          />
+        </Card>
 
-        <View style={styles.field}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>
-            {t('starters.new_notes_label')}
-          </Text>
+        <Card>
+          {fieldLabel(t('starters.new_notes_label'))}
           <TextInput
             value={notes}
             onChangeText={setNotes}
@@ -128,26 +185,47 @@ export default function NewStarterSheet() {
             textAlignVertical="top"
             style={[
               typography.body.lg,
+              scaleType(typography.body.lg, fontScale),
               styles.area,
               {
                 height: fontScale > 1 ? 120 : 100,
-                backgroundColor: palette.bgSunken,
+                backgroundColor: palette.bgCanvas,
+                borderColor: palette.borderField,
                 color: palette.textInk,
               },
             ]}
           />
-        </View>
+        </Card>
+
+        {existing ? (
+          <Button
+            label={t('starters.button_delete')}
+            variant="destructive"
+            onPress={deleteStarter}
+            haptic="warning"
+          />
+        ) : null}
       </ScrollView>
     </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { marginTop: spacing.xs },
-  body: { padding: spacing.xl, gap: spacing.lg, paddingBottom: spacing['3xl'] },
-  field: { gap: spacing.xs },
-  rowField: { gap: spacing.sm },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  intervalRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
-  area: { borderRadius: radius.lg, padding: spacing.md },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    alignSelf: 'stretch',
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.xs,
+  },
+  title: { flexShrink: 1 },
+  body: { padding: spacing.xl, gap: spacing.md, paddingBottom: spacing['3xl'] },
+  threeUp: { flexDirection: 'row', gap: spacing.sm },
+  cell: { flex: 1 },
+  area: {
+    borderRadius: radius.lg,
+    borderWidth: stroke.soft,
+    padding: spacing.md,
+  },
 });

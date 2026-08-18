@@ -4,18 +4,21 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useNow } from '@/hooks/useNow';
+import { triggerHaptic } from '@/lib/haptics';
 import { formatRemaining } from '@/lib/timer';
+import { scaleType } from '@/lib/typeScale';
 import { useBakePlan } from '@/state/bakePlan';
 import { useTimers } from '@/state/timers';
-import { spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { BakePlanCard } from '@/ui/BakePlanCard';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
+import { Card } from '@/ui/Card';
 import { Chip } from '@/ui/Chip';
 import { Input } from '@/ui/Input';
 import { Stepper } from '@/ui/Stepper';
@@ -30,7 +33,7 @@ const QUICK_PICKS = [
 
 export default function TimersSheet() {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
   const now = useNow();
   const { timers, startTimer, pauseTimer, resumeTimer, cancelTimer } = useTimers();
   const { plan, cancelPlan } = useBakePlan();
@@ -38,6 +41,8 @@ export default function TimersSheet() {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [label, setLabel] = useState('');
+  // Which tile the stepper is editing. The active one is ink filled.
+  const [unit, setUnit] = useState<'hours' | 'minutes'>('hours');
 
   const durationMs = (hours * 3600 + minutes * 60) * 1000;
 
@@ -53,9 +58,28 @@ export default function TimersSheet() {
       size="tall"
       onClose={() => router.back()}
       header={
-        <Text style={[typography.display.md, styles.title, { color: palette.textInk }]}>
-          {t('timers.title')}
-        </Text>
+        <View style={styles.headerBlock}>
+          <Text
+            style={[
+              typography.label,
+              scaleType(typography.label, fontScale),
+              { color: timers.length > 0 ? palette.proofTealText : palette.textFaint },
+            ]}
+          >
+            {timers.length > 0
+              ? t('timers.eyebrow_running', { count: timers.length })
+              : t('timers.eyebrow_none')}
+          </Text>
+          <Text
+            style={[
+              typography.display.md,
+              scaleType(typography.display.md, fontScale),
+              { color: palette.textInk },
+            ]}
+          >
+            {t('timers.title')}
+          </Text>
+        </View>
       }
     >
       <ScrollView
@@ -92,11 +116,12 @@ export default function TimersSheet() {
               {t('timers.running')}
             </Text>
             <View style={styles.list}>
-              {timers.map((timer) => (
+              {timers.map((timer, i) => (
                 <TimerCard
                   key={timer.id}
                   timer={timer}
                   now={now}
+                  hero={i === 0}
                   onPauseResume={() =>
                     timer.status === 'running' ? pauseTimer(timer.id) : resumeTimer(timer.id)
                   }
@@ -107,37 +132,102 @@ export default function TimersSheet() {
           </View>
         )}
 
-        <View style={styles.section}>
-          <Text style={[typography.label, { color: palette.textSoft }]}>{t('timers.custom')}</Text>
-
-          <Text style={[typography.numeric.hero, styles.preview, { color: palette.textInk }]}>
-            {formatRemaining(durationMs)}
+        <View style={styles.ruledLabel}>
+          <View style={[styles.rule, { backgroundColor: palette.divider }]} />
+          <Text
+            style={[
+              typography.labelSm,
+              scaleType(typography.labelSm, fontScale),
+              { color: palette.textFaint },
+            ]}
+          >
+            {t('timers.custom')}
           </Text>
+          <View style={[styles.rule, { backgroundColor: palette.divider }]} />
+        </View>
 
-          <Text style={[typography.label, { color: palette.textSoft }]}>
+        <Card>
+          <Input
+            label={t('timers.label_optional')}
+            value={label}
+            onChangeText={setLabel}
+            placeholder={t('timers.label_placeholder')}
+          />
+
+          <Text
+            style={[
+              typography.label,
+              scaleType(typography.label, fontScale),
+              { color: palette.textFaint },
+            ]}
+          >
             {t('timers.how_long')}
           </Text>
 
-          <View style={styles.stepperRow}>
-            <View style={styles.stepperCol}>
-              <Text style={[typography.label, { color: palette.textFaint }]}>
-                {t('timers.hours')}
-              </Text>
-              <Stepper value={hours} onChange={setHours} min={0} />
-            </View>
-            <View style={styles.stepperCol}>
-              <Text style={[typography.label, { color: palette.textFaint }]}>
-                {t('timers.minutes')}
-              </Text>
-              <Stepper value={minutes} onChange={setMinutes} min={0} step={5} />
-            </View>
+          <View style={styles.tileRow}>
+            {[
+              { id: 'hours' as const, value: hours, label: t('timers.hours') },
+              { id: 'minutes' as const, value: minutes, label: t('timers.minutes') },
+            ].map((tile) => {
+              const active = unit === tile.id;
+              return (
+                <Pressable
+                  key={tile.id}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                  onPress={() => {
+                    triggerHaptic('select');
+                    setUnit(tile.id);
+                  }}
+                  style={[
+                    styles.tile,
+                    {
+                      backgroundColor: active ? palette.outline : palette.bgCanvas,
+                      borderColor: active ? palette.outline : palette.borderField,
+                      borderWidth: active ? 0 : stroke.soft,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      typography.numeric.lg,
+                      scaleType(typography.numeric.lg, fontScale),
+                      { color: active ? palette.accentButter : palette.textInk },
+                    ]}
+                  >
+                    {tile.value}
+                  </Text>
+                  <Text
+                    style={[
+                      typography.labelSm,
+                      scaleType(typography.labelSm, fontScale),
+                      { color: active ? palette.accentButter : palette.textFaint },
+                    ]}
+                  >
+                    {tile.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
+
+          {/* One stepper, driving whichever tile is active. */}
+          <Stepper
+            value={unit === 'hours' ? hours : minutes}
+            onChange={unit === 'hours' ? setHours : setMinutes}
+            min={0}
+            step={unit === 'hours' ? 1 : 5}
+            spread
+            decrementLabel={unit === 'hours' ? t('timers.hours') : t('timers.minutes')}
+            incrementLabel={unit === 'hours' ? t('timers.hours') : t('timers.minutes')}
+          />
 
           <View style={styles.chips}>
             {QUICK_PICKS.map((pick) => (
               <Chip
                 key={pick.label}
                 label={pick.label}
+                numeric
                 selected={hours === pick.hours && minutes === pick.minutes}
                 onPress={() => {
                   setHours(pick.hours);
@@ -147,12 +237,16 @@ export default function TimersSheet() {
             ))}
           </View>
 
-          <Input
-            label={t('timers.label_optional')}
-            value={label}
-            onChangeText={setLabel}
-            placeholder={t('timers.label_placeholder')}
-          />
+          <Text
+            style={[
+              typography.numeric.md,
+              scaleType(typography.numeric.md, fontScale),
+              styles.preview,
+              { color: palette.textSoft },
+            ]}
+          >
+            {formatRemaining(durationMs)}
+          </Text>
 
           <Button
             label={t('timers.start')}
@@ -160,21 +254,34 @@ export default function TimersSheet() {
             disabled={hours === 0 && minutes === 0}
             haptic="pop"
           />
-        </View>
+        </Card>
       </ScrollView>
     </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { marginTop: spacing.xs },
-  body: { padding: spacing.xl, gap: spacing['2xl'], paddingBottom: spacing['3xl'] },
+  headerBlock: { alignSelf: 'stretch', paddingHorizontal: spacing.xl, marginTop: spacing.xs },
+  body: { padding: spacing.xl, gap: spacing.md, paddingBottom: spacing['3xl'] },
   empty: { alignItems: 'center', gap: spacing['2xs'], paddingVertical: spacing.xl },
   center: { textAlign: 'center' },
   section: { gap: spacing.md },
   list: { gap: spacing.sm },
+  ruledLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  rule: { flex: 1, height: stroke.hairline },
+  tileRow: { flexDirection: 'row', gap: spacing.sm },
+  tile: {
+    flex: 1,
+    height: 60,
+    borderRadius: radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   preview: { textAlign: 'center' },
-  stepperRow: { flexDirection: 'row', justifyContent: 'space-around' },
-  stepperCol: { alignItems: 'center', gap: spacing.sm },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

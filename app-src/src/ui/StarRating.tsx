@@ -8,9 +8,13 @@ export interface StarRatingProps {
   value: number;
   onChange?: (v: number) => void;
   size?: number;
+  /** Filled star colour. Ink on a butter hero, where butter stars would vanish. */
+  color?: string;
+  /** Empty star colour, paired with `color`. */
+  emptyColor?: string;
 }
 
-export function StarRating({ value, onChange, size = 22 }: StarRatingProps) {
+export function StarRating({ value, onChange, size = 22, color, emptyColor }: StarRatingProps) {
   const { palette } = useAppTheme();
   const stars = [1, 2, 3, 4, 5];
   return (
@@ -18,7 +22,14 @@ export function StarRating({ value, onChange, size = 22 }: StarRatingProps) {
       {stars.map((n) => {
         const filled = n <= value;
         const glyph = (
-          <Text style={{ fontSize: size, color: filled ? palette.accentButter : palette.border }}>
+          <Text
+            style={{
+              fontSize: size,
+              color: filled
+                ? (color ?? palette.accentButter)
+                : (emptyColor ?? (color ? palette.onButterSoft : palette.border)),
+            }}
+          >
             {'★'}
           </Text>
         );

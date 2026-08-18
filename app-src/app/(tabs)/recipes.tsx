@@ -1,27 +1,24 @@
 // Recipes tab: the Recipe Box, and the Bakes journal, switched by a segmented
-// control. Recipes keeps its tag filter, RecipeCard list, and New recipe button.
-// Bakes shows a chronological list of BakeCards (or a Sam empty state) and a Log
-// a bake button.
+// control. Recipes keeps its tag filter and RecipeCard list; Bakes shows a
+// chronological list of BakeCards. Both create actions live on the corner FAB, and
+// both empty states are the Fresh Bake hero rather than a centred pair of lines.
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
-import { Sam } from '@/components/Sam';
-import { useAppTheme } from '@/hooks/useAppTheme';
 import { useBakes } from '@/state/bakes';
 import { useRecipes } from '@/state/recipes';
-import { spacing, typography } from '@/theme';
+import { spacing } from '@/theme';
 import { BakeCard } from '@/ui/BakeCard';
-import { Button } from '@/ui/Button';
 import { Chip } from '@/ui/Chip';
+import { EmptyState } from '@/ui/EmptyState';
 import { RecipeCard } from '@/ui/RecipeCard';
 import { Screen } from '@/ui/Screen';
 import { SegmentedControl } from '@/ui/SegmentedControl';
 
 export default function RecipesScreen() {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
   const { recipes } = useRecipes();
   const { bakes } = useBakes();
   const [tag, setTag] = useState<string | null>(null);
@@ -42,35 +39,41 @@ export default function RecipesScreen() {
   const newRecipe = () => router.push('/recipe-new');
   const logABake = () => router.push('/bake-new');
 
-  const footer =
-    segment === 'recipes' ? (
-      <Button label={t('recipes.new_recipe')} onPress={newRecipe} haptic="pop" />
-    ) : (
-      <Button label={t('bakes.log_a_bake')} onPress={logABake} haptic="pop" />
-    );
+  const onRecipes = segment === 'recipes';
 
   return (
-    <Screen title={t('tabs.recipes')} footer={footer}>
-      <SegmentedControl
-        options={[
-          { id: 'recipes', label: t('bakes.seg_recipes') },
-          { id: 'bakes', label: t('bakes.seg_bakes') },
-        ]}
-        value={segment}
-        onChange={setSegment}
-      />
-
-      {segment === 'recipes' ? (
+    <Screen
+      title={t('tabs.recipes')}
+      eyebrow={t('recipes.eyebrow_saved', {
+        count: onRecipes ? recipes.length : bakes.length,
+      })}
+      settingsLabel={t('common.open_settings')}
+      fab={{
+        iconName: 'add',
+        onPress: onRecipes ? newRecipe : logABake,
+        accessibilityLabel: onRecipes ? t('recipes.new_recipe_action') : t('bakes.log_a_bake'),
+      }}
+      // Pinned: switching between recipes and bakes has to stay reachable however far
+      // down the list you are.
+      sticky={
+        <SegmentedControl
+          options={[
+            { id: 'recipes', label: t('bakes.seg_recipes') },
+            { id: 'bakes', label: t('bakes.seg_bakes') },
+          ]}
+          value={segment}
+          onChange={setSegment}
+        />
+      }
+    >
+      {onRecipes ? (
         recipes.length === 0 ? (
-          <View style={styles.empty}>
-            <Sam size={132} />
-            <Text style={[typography.display.md, styles.emptyTitle, { color: palette.textInk }]}>
-              {t('recipes.empty_title')}
-            </Text>
-            <Text style={[typography.body.md, styles.emptyBody, { color: palette.textSoft }]}>
-              {t('recipes.empty_body_full')}
-            </Text>
-          </View>
+          <EmptyState
+            headline={t('recipes.empty_title')}
+            body={t('recipes.empty_body_full')}
+            primary={{ label: t('recipes.new_recipe_action'), onPress: newRecipe }}
+            secondary={{ label: t('bakes.log_a_bake'), onPress: logABake }}
+          />
         ) : (
           <>
             {tags.length > 0 ? (
@@ -80,13 +83,21 @@ export default function RecipesScreen() {
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={styles.tagRow}
               >
+                {/* Filters are butter: browsing, not deciding. */}
                 <Chip
-                  label={t('recipes.tag_all')}
+                  label={`${t('recipes.tag_all')} ${recipes.length}`}
+                  emphasis="butter"
                   selected={tag === null}
                   onPress={() => setTag(null)}
                 />
                 {tags.map((x) => (
-                  <Chip key={x} label={x} selected={tag === x} onPress={() => setTag(x)} />
+                  <Chip
+                    key={x}
+                    label={x}
+                    emphasis="butter"
+                    selected={tag === x}
+                    onPress={() => setTag(x)}
+                  />
                 ))}
               </ScrollView>
             ) : null}
@@ -101,15 +112,13 @@ export default function RecipesScreen() {
           </>
         )
       ) : bakes.length === 0 ? (
-        <View style={styles.empty}>
-          <Sam size={132} />
-          <Text style={[typography.display.md, styles.emptyTitle, { color: palette.textInk }]}>
-            {t('bakes.empty_title')}
-          </Text>
-          <Text style={[typography.body.md, styles.emptyBody, { color: palette.textSoft }]}>
-            {t('bakes.empty_body')}
-          </Text>
-        </View>
+        <EmptyState
+          headline={t('bakes.empty_title')}
+          body={t('bakes.empty_body')}
+          primary={{ label: t('bakes.log_a_bake'), onPress: logABake }}
+          secondary={{ label: t('recipes.new_recipe_action'), onPress: newRecipe }}
+          emotion="happy"
+        />
       ) : (
         bakes.map((b) => (
           <BakeCard
@@ -125,8 +134,6 @@ export default function RecipesScreen() {
 }
 
 const styles = StyleSheet.create({
-  tagRow: { gap: spacing.sm, paddingBottom: spacing.xs },
-  empty: { alignItems: 'center', paddingTop: spacing['3xl'], gap: spacing.sm },
-  emptyTitle: { textAlign: 'center', marginTop: spacing.md },
-  emptyBody: { textAlign: 'center', maxWidth: 280 },
+  // Room below so a selected chip's hard shadow is not clipped by the scroll view.
+  tagRow: { gap: spacing.sm, paddingBottom: spacing.xs, paddingRight: spacing.xl },
 });

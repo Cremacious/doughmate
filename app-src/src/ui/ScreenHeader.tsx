@@ -1,48 +1,80 @@
-// Proof screen header. Title on the left, a gear that opens Settings on the
-// right, plus a Pro pill when entitled. No other top chrome, no back button.
+// Fresh Bake screen header. Title on the left under an eyebrow that carries the
+// screen's live state ("one is hungry", "1 running"), a gear that opens Settings on
+// the right, plus a Pro pill when entitled. No other top chrome, no back button.
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { scaleType } from '@/lib/typeScale';
 import { usePro } from '@/state/pro';
 import { radius, spacing, typography } from '@/theme';
-import { Icon } from './Icon';
+import { IconButton } from './IconButton';
+
+/** The screen title is set by hand: 36 goes to 42, not to 36 times 1.25. */
+const TITLE = { normal: 36, floured: 42 } as const;
 
 export interface ScreenHeaderProps {
   title: string;
+  /** Live state above the title. Its colour is the meaning. */
+  eyebrow?: string;
+  eyebrowColor?: string;
+  settingsLabel: string;
 }
 
-export function ScreenHeader({ title }: ScreenHeaderProps) {
+export function ScreenHeader({ title, eyebrow, eyebrowColor, settingsLabel }: ScreenHeaderProps) {
+  const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
   const { isPro } = usePro();
 
   return (
     <View style={styles.header}>
-      <Text
-        style={[
-          typography.display.lg,
-          scaleType(typography.display.lg, fontScale),
-          { color: palette.textInk },
-        ]}
-        numberOfLines={1}
-      >
-        {title}
-      </Text>
+      <View style={styles.titleBlock}>
+        {eyebrow ? (
+          <Text
+            numberOfLines={1}
+            style={[
+              typography.label,
+              scaleType(typography.label, fontScale),
+              { color: eyebrowColor ?? palette.textFaint },
+            ]}
+          >
+            {eyebrow}
+          </Text>
+        ) : null}
+        <Text
+          style={[
+            typography.display.lg,
+            {
+              fontSize: fontScale > 1 ? TITLE.floured : TITLE.normal,
+              lineHeight: Math.round((fontScale > 1 ? TITLE.floured : TITLE.normal) * (38 / 36)),
+              color: palette.textInk,
+            },
+          ]}
+          numberOfLines={1}
+        >
+          {title}
+        </Text>
+      </View>
       <View style={styles.right}>
         {isPro ? (
           <View style={[styles.proPill, { backgroundColor: palette.proWash }]}>
-            <Text style={[typography.label, { color: palette.pro }]}>Pro</Text>
+            <Text
+              style={[
+                typography.labelSm,
+                scaleType(typography.labelSm, fontScale),
+                { color: palette.pro },
+              ]}
+            >
+              {t('common.pro')}
+            </Text>
           </View>
         ) : null}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={title}
+        <IconButton
+          iconName="settings"
+          accessibilityLabel={settingsLabel}
           onPress={() => router.push('/settings')}
-          style={[styles.gear, { backgroundColor: palette.bgSunken }]}
-        >
-          <Icon name="settings" size={22} color={palette.textInk} />
-        </Pressable>
+        />
       </View>
     </View>
   );
@@ -51,23 +83,17 @@ export function ScreenHeader({ title }: ScreenHeaderProps) {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
     gap: spacing.md,
     paddingVertical: spacing.sm,
   },
+  titleBlock: { flexShrink: 1, gap: 2 },
   right: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   proPill: {
     paddingHorizontal: spacing.sm,
     paddingVertical: 5,
     borderRadius: radius.pill,
-  },
-  gear: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 

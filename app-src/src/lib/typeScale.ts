@@ -8,3 +8,13 @@ export function scaleType(
 ): TextStyle {
   return { fontSize: token.fontSize * scale, lineHeight: token.lineHeight * scale };
 }
+
+/**
+ * A line height that will not crop a big numeral. `typography.numeric.hero` runs a
+ * 76/72 ratio for optical tightness, but a line box shorter than the glyph clips the
+ * tops of digits on iOS, so any oversized numeral sizes its own leading through here.
+ * Digits carry no descenders, so the extra room falls below the baseline harmlessly.
+ */
+export function numeralLine(fontSize: number): { fontSize: number; lineHeight: number } {
+  return { fontSize, lineHeight: Math.ceil(fontSize * 1.08) };
+}

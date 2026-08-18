@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useSettings } from '@/state/settings';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { IconBadge } from '@/ui/IconBadge';
 import { OnboardingScaffold } from '@/ui/OnboardingScaffold';
 
@@ -14,7 +14,7 @@ function ExampleChip() {
   const { palette } = useAppTheme();
   return (
     <View
-      style={[styles.chip, { backgroundColor: palette.bgSurface, borderColor: palette.border }]}
+      style={[styles.chip, { backgroundColor: palette.bgSurface, borderColor: palette.outline }]}
     >
       <Text style={[typography.body.lg, { color: palette.textInk }]}>
         {t('onboarding.convert.example_from')}
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    borderWidth: 1,
+    borderWidth: stroke.ink,
     borderRadius: radius.pill,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,

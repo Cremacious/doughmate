@@ -1,11 +1,13 @@
-// Proof Input. Sunken field, optional label above, focus ring. Numbers render in
-// the tabular numeric face.
+// Fresh Bake Input. A quiet field on the canvas fill, so it reads as a hole in the
+// standard card rather than another raised surface. Focus swaps the soft edge for the
+// ink one, which is the only state change the field needs.
 import { useState } from 'react';
 import { type KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { scaleType } from '@/lib/typeScale';
-import { radius, spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
+import { fieldHeight } from './fieldMetrics';
 
 export interface InputProps {
   value: string;
@@ -15,6 +17,12 @@ export interface InputProps {
   keyboardType?: KeyboardTypeOptions;
   numeric?: boolean;
   autoFocus?: boolean;
+  /** Overrides the field height, for the tall oven temperature field. */
+  height?: number;
+  /** Overrides the numeric face size, paired with `height`. */
+  numericSize?: number;
+  /** The one required field on a sheet gets the ink edge at rest. */
+  required?: boolean;
 }
 
 export function Input({
@@ -25,19 +33,24 @@ export function Input({
   keyboardType,
   numeric = false,
   autoFocus = false,
+  height,
+  numericSize,
+  required = false,
 }: InputProps) {
   const { palette, fontScale } = useAppTheme();
   const [focused, setFocused] = useState(false);
-  const floured = fontScale > 1;
+
+  const inked = focused || required;
 
   return (
     <View style={styles.wrap}>
       {label ? (
         <Text
+          numberOfLines={1}
           style={[
             typography.label,
             scaleType(typography.label, fontScale),
-            { color: palette.textSoft },
+            { color: palette.textFaint },
           ]}
         >
           {label}
@@ -47,10 +60,10 @@ export function Input({
         style={[
           styles.box,
           {
-            height: floured ? 64 : 56,
-            backgroundColor: palette.bgSunken,
-            borderColor: focused ? palette.primary : 'transparent',
-            borderWidth: focused ? 2 : 0,
+            height: height ? height * fontScale : fieldHeight(fontScale),
+            backgroundColor: palette.bgCanvas,
+            borderColor: inked ? palette.outline : palette.borderField,
+            borderWidth: inked ? stroke.ink : stroke.soft,
           },
         ]}
       >
@@ -66,7 +79,10 @@ export function Input({
           onBlur={() => setFocused(false)}
           style={[
             numeric
-              ? { fontFamily: typography.numeric.hero.fontFamily, fontSize: 20 * fontScale }
+              ? {
+                  fontFamily: typography.numeric.md.fontFamily,
+                  fontSize: (numericSize ?? typography.numeric.md.fontSize) * fontScale,
+                }
               : [typography.body.lg, scaleType(typography.body.lg, fontScale)],
             styles.input,
             { color: palette.textInk },

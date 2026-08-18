@@ -8,18 +8,21 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatQuantity, type NumberFormat } from '@/lib/convert';
 import { bakersPercentages, groupBySection } from '@/lib/recipe';
+import { tagStripFor } from '@/lib/recipeTag';
 import { formatStepTime, parseDuration } from '@/lib/timer';
+import { scaleType } from '@/lib/typeScale';
 import { usePro } from '@/state/pro';
 import { type RecipeIngredient, useRecipes } from '@/state/recipes';
 import { useSettings } from '@/state/settings';
-import { radius, spacing, typography } from '@/theme';
+import { hardShadow, radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
+import { HardShadow } from '@/ui/HardShadow';
+import { IconButton } from '@/ui/IconButton';
 import { StepTimerControl } from '@/ui/StepTimerControl';
 import { Stepper } from '@/ui/Stepper';
 import { Tip } from '@/ui/Tip';
-import { useToast } from '@/ui/Toast';
 
 function ingAmountText(ingredient: RecipeIngredient, factor: number, format: NumberFormat): string {
   if (typeof ingredient.amount !== 'number') return ingredient.unit;
@@ -32,11 +35,10 @@ function ingAmountText(ingredient: RecipeIngredient, factor: number, format: Num
 
 export default function RecipeDetailSheet() {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getRecipe, removeRecipe, restoreRecipe } = useRecipes();
+  const { getRecipe } = useRecipes();
   const { isPro } = usePro();
-  const { show } = useToast();
   const { settings } = useSettings();
 
   const recipe = getRecipe(id);
@@ -53,26 +55,32 @@ export default function RecipeDetailSheet() {
     );
   }
 
-  const metaParts = [
-    t('recipes.meta_ingredients', { count: recipe.ingredients.length }),
-    t('recipes.meta_steps', { count: recipe.steps.length }),
+  const strip = tagStripFor(recipe.tags, t);
+  const stripColor =
+    strip === 'teal'
+      ? palette.proofTealText
+      : strip === 'butter'
+        ? palette.butterText
+        : palette.primaryText;
+
+  // Three tiles, each leading with its number. A joined grey sentence hid all three.
+  const metaTiles: { value: string; label: string }[] = [
+    {
+      value: String(recipe.ingredients.length),
+      label: t('recipes.count_ingredients', { count: recipe.ingredients.length }),
+    },
+    {
+      value: String(recipe.steps.length),
+      label: t('recipes.count_steps', { count: recipe.steps.length }),
+    },
+    {
+      value: recipe.yieldLabel.trim() || String(recipe.servings),
+      label: recipe.yieldLabel.trim() ? t('recipes.new_yield_label') : t('recipes.servings'),
+    },
   ];
-  if (recipe.yieldLabel.trim()) {
-    metaParts.push(recipe.yieldLabel.trim());
-  }
 
   const scaled = factor !== 1;
   const canPlanBake = recipe.steps.some((s) => s.time && parseDuration(s.time) !== null);
-
-  const del = () => {
-    removeRecipe(recipe.id);
-    router.back();
-    show({
-      message: t('recipes.toast_deleted'),
-      actionLabel: t('recipes.button_undo'),
-      onAction: () => restoreRecipe(recipe),
-    });
-  };
 
   return (
     <BottomSheet
@@ -80,36 +88,76 @@ export default function RecipeDetailSheet() {
       onClose={() => router.back()}
       header={
         <View style={styles.headerRow}>
-          <Text style={[typography.display.lg, styles.title, { color: palette.textInk }]}>
-            {recipe.name}
-          </Text>
+          <View style={styles.headerText}>
+            {recipe.tags.length > 0 ? (
+              <Text
+                style={[
+                  typography.label,
+                  scaleType(typography.label, fontScale),
+                  { color: stripColor },
+                ]}
+                numberOfLines={1}
+              >
+                {recipe.tags.join(' · ')}
+              </Text>
+            ) : null}
+            <Text
+              style={[
+                typography.display.lg,
+                scaleType(typography.display.lg, fontScale),
+                { color: palette.textInk },
+              ]}
+              numberOfLines={2}
+            >
+              {recipe.name}
+            </Text>
+          </View>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('recipes.edit')}
             onPress={() => router.push(`/recipe-new?id=${recipe.id}`)}
-            style={[styles.editBtn, { backgroundColor: palette.bgSunken }]}
           >
-            <Text style={[typography.title, { color: palette.textInk }]}>
-              ✎ {t('recipes.edit')}
-            </Text>
+            <HardShadow offset={hardShadow.control} radius={radius.pill}>
+              <View
+                style={[
+                  styles.editBtn,
+                  { backgroundColor: palette.bgSurface, borderColor: palette.outline },
+                ]}
+              >
+                <Text
+                  style={[
+                    typography.chip,
+                    scaleType(typography.chip, fontScale),
+                    { color: palette.textInk },
+                  ]}
+                >
+                  {t('recipes.edit')}
+                </Text>
+              </View>
+            </HardShadow>
           </Pressable>
         </View>
       }
       footer={
         <View style={styles.footerCol}>
-          <Button
-            label={t('recipes.start_baking')}
-            onPress={() => router.push(`/recipe/${recipe.id}/cook`)}
-            haptic="pop"
-          />
-          {canPlanBake ? (
-            <Button
-              label={t('bakePlan.title')}
-              onPress={() => router.push(`/bake-plan?recipeId=${recipe.id}`)}
-              variant="secondary"
-              haptic="tap"
-            />
-          ) : null}
+          <View style={styles.footerRow}>
+            <View style={styles.footerPrimary}>
+              <Button
+                label={t('recipes.start_baking')}
+                onPress={() => router.push(`/recipe/${recipe.id}/cook`)}
+                haptic="pop"
+              />
+            </View>
+            {canPlanBake ? (
+              <IconButton
+                iconName="timer"
+                size={54}
+                radius={radius.xl}
+                accessibilityLabel={t('bakePlan.title')}
+                onPress={() => router.push(`/bake-plan?recipeId=${recipe.id}`)}
+              />
+            ) : null}
+          </View>
           <Button
             label={t('bakes.log_a_bake')}
             onPress={() => router.push(`/bake-new?recipeId=${recipe.id}`)}
@@ -121,32 +169,75 @@ export default function RecipeDetailSheet() {
     >
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <Tip id="recipe.scale" text={t('tips.recipe_scale')} />
-        <Text style={[typography.body.sm, { color: palette.textSoft }]}>
-          {metaParts.join('  ·  ')}
-        </Text>
+        <View style={styles.metaRow}>
+          {metaTiles.map((tile) => (
+            <View key={tile.label} style={[styles.metaTile, { backgroundColor: palette.bgSunken }]}>
+              <Text
+                style={[
+                  typography.numeric.md,
+                  scaleType(typography.numeric.md, fontScale),
+                  { color: palette.textInk },
+                ]}
+                numberOfLines={1}
+              >
+                {tile.value}
+              </Text>
+              <Text
+                style={[
+                  typography.labelSm,
+                  scaleType(typography.labelSm, fontScale),
+                  { color: palette.textFaint },
+                ]}
+                numberOfLines={1}
+              >
+                {tile.label}
+              </Text>
+            </View>
+          ))}
+        </View>
 
         {/* Scale */}
         <Text style={[typography.label, styles.sectionLabel, { color: palette.textSoft }]}>
           {t('recipes.scale_heading')}
         </Text>
-        <Card style={styles.scaleCard}>
+        <Card tier="hero" heroColor={palette.accentButter} style={styles.scaleCard}>
           <View style={styles.scaleTop}>
-            <Text style={[typography.body.lg, { color: palette.textInk }]}>
+            <Text
+              style={[
+                typography.subheading,
+                scaleType(typography.subheading, fontScale),
+                { color: palette.onButter },
+              ]}
+            >
               {t('recipes.serves')}
             </Text>
             <Stepper
               value={Math.max(1, Math.round(baseServings * factor))}
               onChange={(v) => setFactor(v / baseServings)}
+              decrementLabel={t('recipes.servings')}
+              incrementLabel={t('recipes.servings')}
             />
           </View>
           {scaled ? (
-            <View style={[styles.scaleNote, { borderTopColor: palette.border }]}>
-              <Text style={[typography.numeric.sm, { color: palette.primaryText }]}>
+            <View style={[styles.scaleNote, { borderTopColor: palette.outline }]}>
+              <Text
+                style={[
+                  typography.numeric.sm,
+                  scaleType(typography.numeric.sm, fontScale),
+                  { color: palette.onButter },
+                ]}
+              >
                 {t('recipes.now_at', { factor: formatQuantity(factor) })}
               </Text>
               <Pressable accessibilityRole="button" onPress={() => setFactor(1)}>
-                <Text style={[typography.label, { color: palette.textSoft }]}>
-                  ↺ {t('recipes.reset')}
+                <Text
+                  style={[
+                    typography.labelSm,
+                    scaleType(typography.labelSm, fontScale),
+                    { color: palette.onButterSoft },
+                  ]}
+                >
+                  {t('recipes.reset')}
                 </Text>
               </Pressable>
             </View>
@@ -175,7 +266,12 @@ export default function RecipeDetailSheet() {
                 {group.items.map((ing, ii) => (
                   <View key={ii} style={styles.ingRow}>
                     <Text
-                      style={[typography.numeric.sm, styles.ingAmt, { color: palette.primary }]}
+                      style={[
+                        typography.numeric.sm,
+                        scaleType(typography.numeric.sm, fontScale),
+                        styles.ingAmt,
+                        { color: palette.primary },
+                      ]}
                     >
                       {ingAmountText(ing, factor, settings.numberFormat)}
                     </Text>
@@ -211,8 +307,26 @@ export default function RecipeDetailSheet() {
             )}
           </Card>
         ) : (
-          <Card onPress={() => router.push('/paywall')} style={styles.locked}>
-            <Text style={[typography.body.lg, { color: palette.pro }]}>
+          <Card tier="quiet" onPress={() => router.push('/paywall')} style={styles.locked}>
+            <View style={[styles.proBadge, { backgroundColor: palette.proWash }]}>
+              <Text
+                style={[
+                  typography.labelSm,
+                  scaleType(typography.labelSm, fontScale),
+                  { color: palette.pro },
+                ]}
+              >
+                {t('common.pro')}
+              </Text>
+            </View>
+            <Text
+              style={[
+                typography.body.lg,
+                scaleType(typography.body.lg, fontScale),
+                styles.lockedText,
+                { color: palette.pro },
+              ]}
+            >
               {t('recipes.bakers_locked')}
             </Text>
             <Text style={[typography.body.lg, { color: palette.pro }]}>›</Text>
@@ -274,13 +388,6 @@ export default function RecipeDetailSheet() {
             </Card>
           </>
         ) : null}
-
-        <Button
-          label={t('recipes.delete_recipe')}
-          onPress={del}
-          variant="destructive"
-          haptic="tap"
-        />
       </ScrollView>
     </BottomSheet>
   );
@@ -290,22 +397,40 @@ const styles = StyleSheet.create({
   footerCol: { gap: spacing.sm },
   headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    gap: spacing.sm,
+    gap: spacing.md,
     alignSelf: 'stretch',
     width: '100%',
     paddingHorizontal: spacing.xl,
     marginTop: spacing.xs,
   },
-  title: { flexShrink: 1 },
+  headerText: { flexShrink: 1, gap: 2 },
   editBtn: {
     height: 40,
     paddingHorizontal: spacing.md,
     borderRadius: radius.pill,
+    borderWidth: stroke.ink,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  footerRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  footerPrimary: { flex: 1 },
+  metaRow: { flexDirection: 'row', gap: spacing.sm },
+  metaTile: {
+    flex: 1,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    alignItems: 'center',
+    gap: 1,
+  },
+  proBadge: {
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+  },
+  lockedText: { flex: 1 },
   body: { padding: spacing.xl, gap: spacing.md },
   sectionLabel: { marginTop: spacing.sm },
   list: { gap: spacing.sm },
@@ -323,7 +448,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
+    borderTopWidth: stroke.soft,
     paddingTop: spacing.sm,
   },
 
@@ -341,7 +466,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingVertical: spacing['2xs'],
   },
-  ingAmt: { minWidth: 66 },
+  ingAmt: { minWidth: 58 },
   ingItem: { flexShrink: 1 },
 
   steps: { gap: spacing.md },

@@ -1,5 +1,9 @@
 // Cook mode, a full sheet. One step at a time with large targets for messy hands.
 // The last step closes with a Sam toast. No back button: swipe down to leave.
+//
+// This is the only screen that inverts on both themes. Standing at a counter with a
+// timer running, the screen is a work surface rather than a page, so it goes dark and
+// the step text gets the whole width.
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,16 +11,20 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatStepTime, parseDuration } from '@/lib/timer';
+import { numeralLine, scaleType } from '@/lib/typeScale';
 import { useRecipes } from '@/state/recipes';
-import { spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { StepTimerControl } from '@/ui/StepTimerControl';
 import { useToast } from '@/ui/Toast';
 
+/** The ghost step number sitting behind the instruction. */
+const GHOST = 96;
+
 export default function CookModeSheet() {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getRecipe } = useRecipes();
   const { show } = useToast();
@@ -32,10 +40,15 @@ export default function CookModeSheet() {
 
   if (!recipe || steps.length === 0) {
     return (
-      <BottomSheet size="full" onClose={() => router.back()}>
+      <BottomSheet
+        size="full"
+        onClose={() => router.back()}
+        canvasColor={palette.cookCanvas}
+        footerColor={palette.cookFooter}
+      >
         <View style={styles.body}>
-          <Text style={[typography.body.lg, { color: palette.textSoft }]}>
-            {t('recipes.meta_steps', { count: 0 })}
+          <Text style={[typography.body.lg, { color: palette.cookDim }]}>
+            {t('recipes.count_steps', { count: 0 })}
           </Text>
         </View>
       </BottomSheet>
@@ -50,10 +63,32 @@ export default function CookModeSheet() {
     <BottomSheet
       size="full"
       onClose={() => router.back()}
+      canvasColor={palette.cookCanvas}
+      footerColor={palette.cookFooter}
       header={
-        <Text style={[typography.title, styles.counter, { color: palette.textSoft }]}>
-          {recipe.name} · {t('recipes.cook_step', { current: index + 1, total: steps.length })}
-        </Text>
+        <View style={styles.headerBlock}>
+          <Text
+            style={[
+              typography.label,
+              scaleType(typography.label, fontScale),
+              styles.centred,
+              { color: palette.cookDim },
+            ]}
+            numberOfLines={1}
+          >
+            {recipe.name}
+          </Text>
+          <Text
+            style={[
+              typography.subheading,
+              scaleType(typography.subheading, fontScale),
+              styles.centred,
+              { color: palette.onPrimary },
+            ]}
+          >
+            {t('recipes.cook_step', { current: index + 1, total: steps.length })}
+          </Text>
+        </View>
       }
       footer={
         <View style={styles.footerCol}>
@@ -64,6 +99,7 @@ export default function CookModeSheet() {
                   label={t('recipes.cook_back')}
                   onPress={() => setIndex((i) => Math.max(0, i - 1))}
                   variant="quiet"
+                  size="lg"
                   haptic="tap"
                 />
               </View>
@@ -72,6 +108,7 @@ export default function CookModeSheet() {
               <Button
                 label={last ? t('recipes.cook_done') : t('recipes.cook_next')}
                 onPress={() => (last ? finish() : setIndex((i) => i + 1))}
+                size="lg"
                 haptic="pop"
               />
             </View>
@@ -84,6 +121,16 @@ export default function CookModeSheet() {
               haptic="tap"
             />
           ) : null}
+          <Text
+            style={[
+              typography.body.sm,
+              scaleType(typography.body.sm, fontScale),
+              styles.centred,
+              { color: palette.cookDim },
+            ]}
+          >
+            {t('recipes.cook_swipe_hint')}
+          </Text>
         </View>
       }
     >
@@ -96,29 +143,52 @@ export default function CookModeSheet() {
                 styles.dot,
                 {
                   width: i === index ? 22 : 8,
-                  backgroundColor: i === index ? palette.primary : palette.grabber,
+                  backgroundColor: i === index ? palette.primary : palette.cookGhost,
                 },
               ]}
             />
           ))}
         </View>
 
-        <Text style={[typography.numeric.hero, { color: palette.textFaint }]}>{index + 1}</Text>
-        <Text style={[typography.display.md, { color: palette.textInk }]}>{step.text}</Text>
+        <Text style={[typography.numeric.hero, numeralLine(GHOST), { color: palette.cookGhost }]}>
+          {index + 1}
+        </Text>
+        <Text
+          style={[
+            typography.display.xl,
+            scaleType(typography.display.xl, fontScale),
+            { color: palette.onPrimary },
+          ]}
+        >
+          {step.text}
+        </Text>
+
         {step.time ? (
-          <Text style={[typography.display.lg, { color: palette.proofTeal }]}>
-            {formatStepTime(step.time)}
-          </Text>
-        ) : null}
-        {step.time && stepDurationMs !== null ? (
-          <StepTimerControl
-            recipeId={recipe.id}
-            stepIndex={index}
-            stepText={step.text}
-            time={step.time}
-            durationMs={stepDurationMs}
-            size="large"
-          />
+          <View style={styles.timerRow}>
+            <View style={[styles.duration, { backgroundColor: palette.proofTeal }]}>
+              <Text
+                style={[
+                  typography.numeric.lg,
+                  scaleType(typography.numeric.lg, fontScale),
+                  { color: palette.onTeal },
+                ]}
+              >
+                {formatStepTime(step.time)}
+              </Text>
+            </View>
+            {stepDurationMs !== null ? (
+              <View style={styles.timerControl}>
+                <StepTimerControl
+                  recipeId={recipe.id}
+                  stepIndex={index}
+                  stepText={step.text}
+                  time={step.time}
+                  durationMs={stepDurationMs}
+                  size="large"
+                />
+              </View>
+            ) : null}
+          </View>
         ) : null}
       </ScrollView>
     </BottomSheet>
@@ -126,10 +196,20 @@ export default function CookModeSheet() {
 }
 
 const styles = StyleSheet.create({
-  counter: { marginTop: spacing.xs, textAlign: 'center', paddingHorizontal: spacing.xl },
-  body: { padding: spacing.xl, gap: spacing.lg, flexGrow: 1, justifyContent: 'center' },
+  headerBlock: { alignSelf: 'stretch', paddingHorizontal: spacing.xl, gap: 2 },
+  centred: { textAlign: 'center' },
+  body: { padding: spacing.xl, gap: spacing.md, flexGrow: 1, justifyContent: 'center' },
   dots: { flexDirection: 'row', gap: spacing.xs, alignItems: 'center' },
-  dot: { height: 8, borderRadius: 999 },
+  dot: { height: 8, borderRadius: radius.pill },
+  timerRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
+  duration: {
+    borderRadius: radius.lg,
+    borderWidth: stroke.ink,
+    borderColor: 'transparent',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  timerControl: { flex: 1, minWidth: 180 },
   footerCol: { gap: spacing.sm },
   footerRow: { flexDirection: 'row', gap: spacing.sm },
   footerItem: { flex: 1 },

@@ -9,6 +9,9 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import type { SamEmotion } from '@/lib/samEmotion';
 
 const ASPECT = 104 / 120;
+/** Tight crop drops the drawing's slack so Sam fills a circular avatar. */
+const TIGHT_VIEWBOX = '6 12 108 84';
+const TIGHT_ASPECT = 84 / 108;
 
 const SHADOW = '#8B5A2B';
 const EAR = '#C77D3A';
@@ -24,6 +27,16 @@ export interface SamProps {
   size?: number;
   /** Which face to show. Defaults to a gentle idle smile. */
   emotion?: SamEmotion;
+  /**
+   * Crops the viewBox in to the loaf itself. Use inside a circular avatar so Sam
+   * fills the circle instead of floating in the middle of it.
+   */
+  tightCrop?: boolean;
+  /**
+   * Overrides the crust fill. Pass `samCrustPale` on a butter or plum hero, where
+   * the usual crust disappears into the fill.
+   */
+  crust?: string;
 }
 
 function Face({ emotion, ink }: { emotion: SamEmotion; ink: string }) {
@@ -138,21 +151,26 @@ function Face({ emotion, ink }: { emotion: SamEmotion; ink: string }) {
   }
 }
 
-export function Sam({ size = 96, emotion = 'idle' }: SamProps) {
+export function Sam({ size = 96, emotion = 'idle', tightCrop = false, crust }: SamProps) {
   const { palette } = useAppTheme();
   const ink = palette.samOutline;
-  const crust = palette.samCrust;
+  const crustFill = crust ?? palette.samCrust;
 
   return (
-    <Svg width={size} height={size * ASPECT} viewBox="0 0 120 104">
+    <Svg
+      width={size}
+      height={size * (tightCrop ? TIGHT_ASPECT : ASPECT)}
+      viewBox={tightCrop ? TIGHT_VIEWBOX : '0 0 120 104'}
+    >
       <Ellipse cx={60} cy={98} rx={40} ry={4.5} fill={SHADOW} opacity={0.18} />
+      {/* 3.0 so the loaf holds its own beside a 2px outlined card. */}
       <Path
         d="M14 64 C14 32 40 20 60 20 C80 20 106 32 106 64 C106 82 88 92 60 92 C32 92 14 82 14 64 Z"
-        fill={crust}
+        fill={crustFill}
         stroke={ink}
-        strokeWidth={2.6}
+        strokeWidth={3}
       />
-      <G stroke={EAR} strokeWidth={3} strokeLinecap="round">
+      <G stroke={EAR} strokeWidth={3.4} strokeLinecap="round">
         <Path d="M40 36 l11 11" />
         <Path d="M57 32 l12 11" />
         <Path d="M75 36 l11 11" />

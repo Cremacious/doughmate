@@ -1,12 +1,18 @@
-// Proof onboarding scaffold. Full canvas, no chrome. A hero slot, headline and
-// body, optional middle content, progress dots, and a primary plus a quiet exit.
+// Fresh Bake onboarding scaffold. Full bleed butter, no card and no chrome: these
+// screens are one idea each, and a card around a single idea is just a smaller screen.
+// A hero slot, headline and body, optional middle content, progress dots, and a
+// primary plus a quiet exit.
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
-import { spacing, typography } from '@/theme';
-import { Button } from './Button';
+import { triggerHaptic } from '@/lib/haptics';
+import { scaleType } from '@/lib/typeScale';
+import { radius, shadow, spacing, typography } from '@/theme';
+
+const PRIMARY_HEIGHT = 58;
 
 export interface OnboardingScaffoldProps {
   step: number;
@@ -34,17 +40,32 @@ export function OnboardingScaffold({
   secondaryLabel,
   onSecondary,
 }: OnboardingScaffoldProps) {
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
+  const [pressed, setPressed] = useState(false);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: palette.bgCanvas }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: palette.accentButter }]}>
       <View style={styles.content}>
         <View style={styles.hero}>{hero}</View>
         <View style={styles.textGroup}>
-          <Text style={[typography.display.lg, styles.center, { color: palette.textInk }]}>
+          <Text
+            style={[
+              typography.display.xl,
+              scaleType(typography.display.xl, fontScale),
+              styles.center,
+              { color: palette.onButter },
+            ]}
+          >
             {title}
           </Text>
-          <Text style={[typography.body.lg, styles.center, { color: palette.textSoft }]}>
+          <Text
+            style={[
+              typography.body.lg,
+              scaleType(typography.body.lg, fontScale),
+              styles.center,
+              { color: palette.onButterBody },
+            ]}
+          >
             {body}
           </Text>
         </View>
@@ -58,17 +79,58 @@ export function OnboardingScaffold({
               key={i}
               style={[
                 styles.dot,
-                {
-                  width: i === step - 1 ? 22 : 8,
-                  backgroundColor: i === step - 1 ? palette.primary : palette.grabber,
-                },
+                i === step - 1
+                  ? { width: 26, height: 9, backgroundColor: palette.outline }
+                  : { width: 9, height: 9, backgroundColor: palette.heroDim },
               ]}
             />
           ))}
         </View>
-        <Button label={primaryLabel} onPress={onPrimary} haptic="pop" />
+
+        <Pressable
+          accessibilityRole="button"
+          onPressIn={() => setPressed(true)}
+          onPressOut={() => setPressed(false)}
+          onPress={() => {
+            triggerHaptic('pop');
+            onPrimary();
+          }}
+          style={[
+            styles.primary,
+            shadow.md,
+            { backgroundColor: palette.outline, opacity: pressed ? 0.9 : 1 },
+          ]}
+        >
+          <Text
+            style={[
+              typography.button,
+              scaleType(typography.button, fontScale),
+              { color: palette.accentButter },
+            ]}
+          >
+            {primaryLabel}
+          </Text>
+        </Pressable>
+
         {secondaryLabel && onSecondary ? (
-          <Button label={secondaryLabel} onPress={onSecondary} variant="quiet" />
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              triggerHaptic('tap');
+              onSecondary();
+            }}
+            style={styles.skip}
+          >
+            <Text
+              style={[
+                typography.button,
+                scaleType(typography.button, fontScale),
+                { color: palette.onButterSoft },
+              ]}
+            >
+              {secondaryLabel}
+            </Text>
+          </Pressable>
         ) : null}
       </View>
     </SafeAreaView>
@@ -95,7 +157,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     alignItems: 'center',
   },
-  dot: { height: 8, borderRadius: 999 },
+  dot: { borderRadius: radius.pill },
+  primary: {
+    height: PRIMARY_HEIGHT,
+    borderRadius: radius.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  skip: { height: 48, alignItems: 'center', justifyContent: 'center' },
 });
 
 export default OnboardingScaffold;

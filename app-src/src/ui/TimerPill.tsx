@@ -16,12 +16,12 @@ import { formatClock, planProgress } from '@/lib/schedule';
 import { formatRemaining, isTimerDone, timerRemainingMs } from '@/lib/timer';
 import { useBakePlan } from '@/state/bakePlan';
 import { useTimers } from '@/state/timers';
-import { radius, shadow, spacing, typography } from '@/theme';
+import { radius, shadow, spacing, stroke, typography } from '@/theme';
 import { ProgressRing } from './ProgressRing';
 
 export function TimerPill() {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, isDark } = useAppTheme();
   const insets = useSafeAreaInsets();
   const now = useNow();
   const { timers, pauseTimer, resumeTimer, cancelTimer } = useTimers();
@@ -59,7 +59,17 @@ export function TimerPill() {
         }}
         style={[styles.wrap, { top: insets.top + spacing.xs }]}
       >
-        <View style={[styles.pill, shadow.md, { backgroundColor: palette.proofTealWash }]}>
+        <View
+          style={[
+            styles.pill,
+            isDark ? shadow.md : null,
+            {
+              backgroundColor: palette.proofTealWash,
+              borderColor: palette.outline,
+              borderWidth: isDark ? 0 : stroke.ink,
+            },
+          ]}
+        >
           <View style={[styles.dot, { backgroundColor: palette.proofTeal }]} />
           <View style={styles.body}>
             <Text style={[typography.title, { color: palette.textInk }]} numberOfLines={1}>
@@ -99,7 +109,17 @@ export function TimerPill() {
 
   return (
     <View style={[styles.wrap, { top: insets.top + spacing.xs }]}>
-      <View style={[styles.pill, shadow.md, { backgroundColor: palette.proofTealWash }]}>
+      <View
+        style={[
+          styles.pill,
+          isDark ? shadow.md : null,
+          {
+            backgroundColor: palette.proofTealWash,
+            borderColor: palette.outline,
+            borderWidth: isDark ? 0 : stroke.ink,
+          },
+        ]}
+      >
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${label} ${timeText}`}

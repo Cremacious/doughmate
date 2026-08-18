@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { dailyFeedCounts } from '@/lib/starterMood';
-import { spacing, typography } from '@/theme';
+import { radius, spacing, stroke, typography } from '@/theme';
 
 export interface FeedHeatmapProps {
   feeds: number[];
@@ -39,7 +39,7 @@ export function FeedHeatmap({ feeds, now, days = 28 }: FeedHeatmapProps) {
               backgroundColor: op === 0 ? palette.bgSunken : palette.proofTeal,
               opacity: op === 0 ? 1 : op,
             },
-            ring ? { borderWidth: 2, borderColor: palette.primary } : null,
+            ring ? { borderWidth: stroke.ink, borderColor: palette.primary } : null,
           ]}
         />
       </View>
@@ -77,9 +77,9 @@ const styles = StyleSheet.create({
   wrap: { gap: spacing.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cellOuter: { width: `${100 / 7}%`, aspectRatio: 1, padding: 3 },
-  cellInner: { flex: 1, borderRadius: 6 },
+  cellInner: { flex: 1, borderRadius: radius.sm },
   legend: { flexDirection: 'row', alignItems: 'center', gap: 4, justifyContent: 'flex-end' },
-  legendCell: { width: 12, height: 12, borderRadius: 3 },
+  legendCell: { width: 12, height: 12, borderRadius: radius.sm / 2 },
 });
 
 export default FeedHeatmap;
