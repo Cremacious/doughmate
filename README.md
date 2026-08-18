@@ -89,7 +89,7 @@ of files; Metro picks `*.native.*` on device and the plain file on web, so the
 | ------------------------- | ---------------------------- | ------------------- |
 | `lib/storage.ts`          | `lib/storage.native.ts`      | key/value storage   |
 | `lib/purchases.ts`        | `lib/purchases.native.ts`    | RevenueCat Pro      |
-| `lib/ads.ts`              | `lib/ads.native.ts`          | AdMob interstitial  |
+| `lib/ads.ts`              | `lib/ads.native.ts`          | AdMob init          |
 | `components/AdBanner.tsx` | `components/AdBanner.native.tsx` | AdMob banner    |
 | `components/Sam.tsx`      | `components/Sam.native.tsx`  | SVG vs Lottie Sam   |
 
@@ -181,12 +181,26 @@ areas, and 18 free substitutions.
 
 ## Monetization
 
-- **Pro** (RevenueCat, entitlement id `pro`): a single purchase. Unlocks are
-  gated in the UI; free limits are `FREE_RECIPE_LIMIT = 10` and
-  `FREE_STARTER_LIMIT = 5` (`src/lib/limits.ts`), which route to the paywall.
-- **Ads** (AdMob): a banner on Convert / Recipes / Starters and an interstitial
-  after every fifth saved conversion. **Hidden entirely for Pro.** Wired with
-  Google's public test IDs so it runs without an AdMob account.
+- **Pro** (RevenueCat, entitlement id `pro`): a single purchase, $4.99. Every
+  paywall bullet maps to a real gate:
+
+  | Bullet | Gate |
+  | --- | --- |
+  | Unlimited recipes | `FREE_RECIPE_LIMIT = 5` |
+  | Unlimited starters | `FREE_STARTER_LIMIT = 1` |
+  | Unlimited timers at once | `FREE_TIMER_LIMIT = 1` |
+  | Baker's percentages | `app/recipe/[id].tsx` |
+  | No ads, ever | `AdSlot` / `AdBanner` |
+
+  Caps live in `src/lib/limits.ts` and are checked with `atLimit()` at the
+  **entry point** of each create action, so a baker at the cap meets the paywall
+  before filling in a form rather than after. `atLimit` only ever blocks adding:
+  a collection already over the cap is never hidden or deleted.
+- **Ads** (AdMob): a banner on Convert / Recipes / Starters, **hidden entirely
+  for Pro.** Banners only, no interstitials — a full screen ad mid recipe is the
+  main threat to review average on a cooking app. Wired with Google's public
+  test IDs, so **real ad unit ids must be swapped in before shipping** or the
+  free tier earns nothing.
 
 ## Notifications
 

@@ -7,7 +7,9 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet } from 'react-native';
 
+import { atLimit, FREE_RECIPE_LIMIT } from '@/lib/limits';
 import { useBakes } from '@/state/bakes';
+import { usePro } from '@/state/pro';
 import { useRecipes } from '@/state/recipes';
 import { spacing } from '@/theme';
 import { BakeCard } from '@/ui/BakeCard';
@@ -21,6 +23,7 @@ export default function RecipesScreen() {
   const { t } = useTranslation();
   const { recipes } = useRecipes();
   const { bakes } = useBakes();
+  const { isPro } = usePro();
   const [tag, setTag] = useState<string | null>(null);
   const [segment, setSegment] = useState<'recipes' | 'bakes'>('recipes');
   const [now] = useState(() => Date.now());
@@ -36,7 +39,10 @@ export default function RecipesScreen() {
     [recipes, tag]
   );
 
-  const newRecipe = () => router.push('/recipe-new');
+  // Gated at the entry point, not on save: a baker who is at the cap should meet the
+  // paywall before filling in a form, never after.
+  const newRecipe = () =>
+    router.push(atLimit(recipes.length, FREE_RECIPE_LIMIT, isPro) ? '/paywall' : '/recipe-new');
   const logABake = () => router.push('/bake-new');
 
   const onRecipes = segment === 'recipes';

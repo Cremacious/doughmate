@@ -3,5 +3,3 @@
 export const ADS_AVAILABLE = false;
 
 export function initAds(): void {}
-
-export function showInterstitialIfReady(): void {}

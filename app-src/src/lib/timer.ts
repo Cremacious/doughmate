@@ -55,6 +55,15 @@ export function isTimerDone(timer: TimerLike, now: number): boolean {
   return timer.status === 'running' && now >= (timer.endsAt ?? Infinity);
 }
 
+/**
+ * Timers still occupying a slot. A finished timer sits in the list until it is
+ * dismissed, but it has stopped doing anything, so it does not hold the free
+ * tier's slot against the next bake.
+ */
+export function activeTimerCount(timers: TimerLike[], now: number): number {
+  return timers.filter((timer) => !isTimerDone(timer, now)).length;
+}
+
 /** "3h 41m" over an hour, "12:04" (m:ss) under an hour, "0:00" at zero. */
 export function formatRemaining(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000));

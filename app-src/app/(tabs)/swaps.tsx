@@ -28,7 +28,7 @@ export default function SwapsScreen() {
   return (
     <Screen
       title={t('tabs.swaps')}
-      eyebrow={t('swaps.eyebrow_free', { count: allCount })}
+      eyebrow={t('swaps.eyebrow_count', { count: allCount })}
       settingsLabel={t('common.open_settings')}
     >
       <View

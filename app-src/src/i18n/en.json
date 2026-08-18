@@ -140,7 +140,7 @@
     "search_placeholder": "Search substitutions",
     "swap_for": "Swap for",
     "empty": "Nothing matches. Try another ingredient.",
-    "pro_teaser": "More swaps and full baker's math with Pro."
+    "pro_teaser": "Full baker's math with Pro."
   },
   "scaler": {
     "title": "Scale a recipe",
@@ -385,19 +385,13 @@
     "features": [
       "Unlimited recipes",
       "Unlimited starters",
+      "Unlimited timers at once",
       "Baker's percentages",
-      "Fermentation timer",
-      "Every theme",
       "No ads, ever"
     ],
     "cta": "Get Pro for $4.99",
     "restore": "Restore purchases",
     "close": "Close",
-    "contextual": {
-      "sixth_starter": "Want unlimited starters and full baker's math?",
-      "eleventh_recipe": "Want to save unlimited recipes?",
-      "seasonal_theme": "Get every current and future theme with Pro."
-    },
     "cta_label": "Get Pro",
     "price": "$4.99"
   },
@@ -589,7 +583,7 @@
     "done_at": "Done at"
   },
   "swaps": {
-    "eyebrow_free": "{{count}} free swaps",
+    "eyebrow_count": "{{count}} swaps",
     "search_placeholder": "Out of what?",
     "use_instead": "Use instead"
   }

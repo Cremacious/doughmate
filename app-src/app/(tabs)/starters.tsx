@@ -5,7 +5,9 @@ import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { atLimit, FREE_STARTER_LIMIT } from '@/lib/limits';
 import { feedStatus } from '@/lib/starter';
+import { usePro } from '@/state/pro';
 import { useSamMood } from '@/state/samMood';
 import { useStarters } from '@/state/starters';
 import { EmptyState } from '@/ui/EmptyState';
@@ -20,6 +22,7 @@ export default function StartersScreen() {
   const { t } = useTranslation();
   const { starters, feedStarter, removeStarter, restoreStarter } = useStarters();
   const { celebrate } = useSamMood();
+  const { isPro } = usePro();
   const { show } = useToast();
   const [now, setNow] = useState(() => Date.now());
 
@@ -28,7 +31,9 @@ export default function StartersScreen() {
     return () => clearInterval(id);
   }, []);
 
-  const add = () => router.push('/starter-new');
+  // Gated at the entry point, so the paywall arrives before the form, not after it.
+  const add = () =>
+    router.push(atLimit(starters.length, FREE_STARTER_LIMIT, isPro) ? '/paywall' : '/starter-new');
 
   // Exactly one hero per screen: the first starter that is actually hungry.
   const dueIds = useMemo(
