@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { TIMER_BANNER_SPACE, useTimerBannerVisible } from '@/hooks/useTimerBannerVisible';
 import {
   convert,
   formatQuantity,
@@ -91,6 +92,7 @@ export default function ConvertScreen() {
   const reduced = useReducedMotion();
   const { settings } = useSettings();
   const adVisible = useAdSlotVisible();
+  const bannerVisible = useTimerBannerVisible();
 
   const [mode, setMode] = useState<Mode>('ingredient');
   const [sheet, setSheet] = useState<
@@ -398,233 +400,243 @@ export default function ConvertScreen() {
   return (
     <View style={[styles.root, { backgroundColor: palette.bgCanvas }]}>
       <SafeAreaView edges={['top']} style={styles.flex}>
-        <View style={{ paddingHorizontal: gutter }}>
-          <ScreenHeader
-            title={t('tabs.convert')}
-            eyebrow={t(`converter.modes.${mode}` as 'converter.modes.ingredient')}
-            eyebrowColor={palette.primaryText}
-            settingsLabel={t('common.open_settings')}
-          />
-        </View>
-
-        {/* paddingBottom so the selected chip's hard shadow is not clipped. */}
-        <View
-          accessibilityRole="tablist"
-          accessibilityLabel={t('converter.mode_row_label')}
-          style={[styles.modeRow, { paddingHorizontal: gutter }]}
-        >
-          <ModeChip
-            iconName={MODE_ICON[mode]}
-            label={t(`converter.modes.${mode}` as 'converter.modes.ingredient')}
-            selected
-            onPress={() => setSheet('modes')}
-          />
-          {visibleOthers.map((m) => (
-            <ModeChip
-              key={m}
-              iconName={MODE_ICON[m]}
-              label={t(`converter.modes.${m}` as 'converter.modes.ingredient')}
-              selected={false}
-              onPress={() => setMode(m)}
-            />
-          ))}
-          {hiddenCount > 0 ? (
-            <ModeOverflowChip
-              count={hiddenCount}
-              label={t('common.more_converters')}
-              onPress={() => setSheet('modes')}
-            />
-          ) : null}
-        </View>
-
         {/*
-          Pinned and opaque. The answer is the hero, so it never scrolls under the mode
-          row, and the card below scrolls cleanly beneath it rather than showing through
-          or colliding with its shadow.
+          The timers pill floats over the top edge, so the scroll viewport starts below
+          it. That keeps the mode row from pinning underneath the pill.
         */}
-        <View
-          style={[styles.hero, { paddingHorizontal: gutter, backgroundColor: palette.bgCanvas }]}
-        >
-          <ResultDisplay
-            label={result.label}
-            value={result.value}
-            unit={result.unit}
-            emptyText={result.emptyText}
-            contextPill={result.contextPill}
-            contextNote={result.contextNote}
-          />
-        </View>
-
-        <ScrollView
-          contentContainerStyle={[
-            styles.body,
-            { paddingHorizontal: gutter, paddingBottom: bottomClearance },
-          ]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <Animated.View
-            key={mode}
-            entering={
-              reduced ? FadeIn.duration(120) : FadeInDown.springify().stiffness(130).damping(20)
-            }
+        <View style={[styles.flex, bannerVisible && { paddingTop: TIMER_BANNER_SPACE }]}>
+          <ScrollView
+            style={styles.flex}
+            contentContainerStyle={{ paddingBottom: bottomClearance }}
+            stickyHeaderIndices={MODE_ROW_STICKY}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
-            <Card style={styles.inputCard}>
-              {mode === 'ingredient' ? (
-                <>
-                  <PickerField
-                    label={t('converter.pick_ingredient')}
-                    value={ingredient.name}
-                    onPress={() => setSheet('ingredient')}
-                  />
-                  {amountAndUnits(
-                    amount,
-                    setAmount,
-                    t('converter.label_amount'),
-                    ingredientFraction,
-                    t(`units.${iFrom}` as 'units.g'),
-                    t(`units.${iTo}` as 'units.g')
-                  )}
-                  {openSide === 'from'
-                    ? chipRow(unitOptions(INGREDIENT_FROM), iFrom, setIFrom)
-                    : chipRow(unitOptions(INGREDIENT_TO), iTo, setITo)}
-                </>
-              ) : null}
+            <View style={{ paddingHorizontal: gutter }}>
+              <ScreenHeader
+                title={t('tabs.convert')}
+                eyebrow={t(`converter.modes.${mode}` as 'converter.modes.ingredient')}
+                eyebrowColor={palette.primaryText}
+                settingsLabel={t('common.open_settings')}
+              />
+            </View>
 
-              {mode === 'pan' ? (
-                <>
-                  <PanPicker
-                    label={t('pan.from_label')}
-                    pan={fromPan}
-                    onPress={() => setSheet('panFrom')}
-                  />
-                  <Text style={[styles.panArrow, { color: palette.textInk }]}>↓</Text>
-                  <PanPicker
-                    label={t('pan.to_label')}
-                    pan={toPan}
-                    onPress={() => setSheet('panTo')}
-                  />
-                </>
-              ) : null}
-
-              {mode === 'oven' ? (
-                <>
-                  <Input
-                    label={t('oven.amount_label')}
-                    value={temp}
-                    onChangeText={setTemp}
-                    numeric
-                    height={76}
-                    numericSize={44}
-                  />
-                  <View style={styles.halfRow}>
-                    {(['f', 'c'] as const).map((u) => (
-                      <View key={u} style={styles.halfCell}>
-                        <Chip
-                          label={t(u === 'f' ? 'oven.unit_f' : 'oven.unit_c')}
-                          size="md"
-                          selected={ovenUnit === u}
-                          onPress={() => setOvenUnit(u)}
-                        />
-                      </View>
-                    ))}
-                  </View>
-                  {chipRow(
-                    COMMON_TEMPS[ovenUnit].map((v) => ({ id: String(v), label: String(v) })),
-                    temp,
-                    setTemp,
-                    true
-                  )}
-                </>
-              ) : null}
-
-              {mode === 'yeast' ? (
-                <>
-                  {amountAndUnits(
-                    yAmount,
-                    setYAmount,
-                    t('yeast.amount_label'),
-                    yeastFraction,
-                    getYeastType(yFrom)?.name ?? '',
-                    getYeastType(yTo)?.name ?? ''
-                  )}
-                  {openSide === 'from'
-                    ? chipRow(
-                        listYeastTypes().map((y) => ({ id: y.id, label: y.name })),
-                        yFrom,
-                        setYFrom
-                      )
-                    : chipRow(
-                        listYeastTypes().map((y) => ({ id: y.id, label: y.name })),
-                        yTo,
-                        setYTo
-                      )}
-                </>
-              ) : null}
-
-              {mode === 'egg' ? (
-                <>
-                  <Labeled label={t('egg.count_label')}>
-                    <Stepper
-                      value={eggCount}
-                      onChange={setEggCount}
-                      min={1}
-                      size={52}
-                      spread
-                      decrementLabel={t('egg.count_label')}
-                      incrementLabel={t('egg.count_label')}
-                    />
-                  </Labeled>
-                  <Labeled label={t('egg.from_label')}>
-                    {chipRow(
-                      listEggSizes().map((s) => ({ id: s.id, label: s.name })),
-                      eFrom,
-                      setEFrom
-                    )}
-                  </Labeled>
-                  <Labeled label={t('egg.to_label')}>
-                    {chipRow(
-                      listEggSizes().map((s) => ({ id: s.id, label: s.name })),
-                      eTo,
-                      setETo
-                    )}
-                  </Labeled>
-                </>
-              ) : null}
-
-              {mode === 'butter' ? (
-                <>
-                  {amountAndUnits(
-                    bAmount,
-                    setBAmount,
-                    t('butter.amount_label'),
-                    butterFraction,
-                    t(`units.${bFrom}` as 'units.g'),
-                    t(`units.${bTo}` as 'units.g')
-                  )}
-                  {openSide === 'from'
-                    ? chipRow(unitOptions(BUTTER_UNITS), bFrom, setBFrom)
-                    : chipRow(unitOptions(BUTTER_UNITS), bTo, setBTo)}
-                </>
-              ) : null}
-            </Card>
-          </Animated.View>
-
-          {/* Sam's footnote lives on the canvas, not in a dismissible tip card. */}
-          <View style={styles.footnote}>
-            <Sam size={30} />
-            <Text
+            {/*
+              The one pinned row on this screen. Opaque and full bleed, so the answer
+              and the input card scroll under something the eye can see rather than
+              being cut at a seam the colour of the canvas. paddingBottom keeps the
+              selected chip's hard shadow inside the band.
+            */}
+            <View
               style={[
-                typography.body.sm,
-                scaleType(typography.body.sm, fontScale),
-                styles.footnoteText,
-                { color: palette.textFaint },
+                styles.modeBand,
+                { paddingHorizontal: gutter, backgroundColor: palette.bgCanvas },
               ]}
             >
-              {t('tips.convert_modes')}
-            </Text>
-          </View>
-        </ScrollView>
+              <View
+                accessibilityRole="tablist"
+                accessibilityLabel={t('converter.mode_row_label')}
+                style={styles.modeRow}
+              >
+                <ModeChip
+                  iconName={MODE_ICON[mode]}
+                  label={t(`converter.modes.${mode}` as 'converter.modes.ingredient')}
+                  selected
+                  onPress={() => setSheet('modes')}
+                />
+                {visibleOthers.map((m) => (
+                  <ModeChip
+                    key={m}
+                    iconName={MODE_ICON[m]}
+                    label={t(`converter.modes.${m}` as 'converter.modes.ingredient')}
+                    selected={false}
+                    onPress={() => setMode(m)}
+                  />
+                ))}
+                {hiddenCount > 0 ? (
+                  <ModeOverflowChip
+                    count={hiddenCount}
+                    label={t('common.more_converters')}
+                    onPress={() => setSheet('modes')}
+                  />
+                ) : null}
+              </View>
+            </View>
+
+            {/* The answer and its inputs move together: one page, one scroll. */}
+            <View style={[styles.body, { paddingHorizontal: gutter }]}>
+              <ResultDisplay
+                label={result.label}
+                value={result.value}
+                unit={result.unit}
+                emptyText={result.emptyText}
+                contextPill={result.contextPill}
+                contextNote={result.contextNote}
+              />
+              <Animated.View
+                key={mode}
+                entering={
+                  reduced ? FadeIn.duration(120) : FadeInDown.springify().stiffness(130).damping(20)
+                }
+              >
+                <Card style={styles.inputCard}>
+                  {mode === 'ingredient' ? (
+                    <>
+                      <PickerField
+                        label={t('converter.pick_ingredient')}
+                        value={ingredient.name}
+                        onPress={() => setSheet('ingredient')}
+                      />
+                      {amountAndUnits(
+                        amount,
+                        setAmount,
+                        t('converter.label_amount'),
+                        ingredientFraction,
+                        t(`units.${iFrom}` as 'units.g'),
+                        t(`units.${iTo}` as 'units.g')
+                      )}
+                      {openSide === 'from'
+                        ? chipRow(unitOptions(INGREDIENT_FROM), iFrom, setIFrom)
+                        : chipRow(unitOptions(INGREDIENT_TO), iTo, setITo)}
+                    </>
+                  ) : null}
+
+                  {mode === 'pan' ? (
+                    <>
+                      <PanPicker
+                        label={t('pan.from_label')}
+                        pan={fromPan}
+                        onPress={() => setSheet('panFrom')}
+                      />
+                      <Text style={[styles.panArrow, { color: palette.textInk }]}>↓</Text>
+                      <PanPicker
+                        label={t('pan.to_label')}
+                        pan={toPan}
+                        onPress={() => setSheet('panTo')}
+                      />
+                    </>
+                  ) : null}
+
+                  {mode === 'oven' ? (
+                    <>
+                      <Input
+                        label={t('oven.amount_label')}
+                        value={temp}
+                        onChangeText={setTemp}
+                        numeric
+                        height={76}
+                        numericSize={44}
+                      />
+                      <View style={styles.halfRow}>
+                        {(['f', 'c'] as const).map((u) => (
+                          <View key={u} style={styles.halfCell}>
+                            <Chip
+                              label={t(u === 'f' ? 'oven.unit_f' : 'oven.unit_c')}
+                              size="md"
+                              selected={ovenUnit === u}
+                              onPress={() => setOvenUnit(u)}
+                            />
+                          </View>
+                        ))}
+                      </View>
+                      {chipRow(
+                        COMMON_TEMPS[ovenUnit].map((v) => ({ id: String(v), label: String(v) })),
+                        temp,
+                        setTemp,
+                        true
+                      )}
+                    </>
+                  ) : null}
+
+                  {mode === 'yeast' ? (
+                    <>
+                      {amountAndUnits(
+                        yAmount,
+                        setYAmount,
+                        t('yeast.amount_label'),
+                        yeastFraction,
+                        getYeastType(yFrom)?.name ?? '',
+                        getYeastType(yTo)?.name ?? ''
+                      )}
+                      {openSide === 'from'
+                        ? chipRow(
+                            listYeastTypes().map((y) => ({ id: y.id, label: y.name })),
+                            yFrom,
+                            setYFrom
+                          )
+                        : chipRow(
+                            listYeastTypes().map((y) => ({ id: y.id, label: y.name })),
+                            yTo,
+                            setYTo
+                          )}
+                    </>
+                  ) : null}
+
+                  {mode === 'egg' ? (
+                    <>
+                      <Labeled label={t('egg.count_label')}>
+                        <Stepper
+                          value={eggCount}
+                          onChange={setEggCount}
+                          min={1}
+                          size={52}
+                          spread
+                          decrementLabel={t('egg.count_label')}
+                          incrementLabel={t('egg.count_label')}
+                        />
+                      </Labeled>
+                      <Labeled label={t('egg.from_label')}>
+                        {chipRow(
+                          listEggSizes().map((s) => ({ id: s.id, label: s.name })),
+                          eFrom,
+                          setEFrom
+                        )}
+                      </Labeled>
+                      <Labeled label={t('egg.to_label')}>
+                        {chipRow(
+                          listEggSizes().map((s) => ({ id: s.id, label: s.name })),
+                          eTo,
+                          setETo
+                        )}
+                      </Labeled>
+                    </>
+                  ) : null}
+
+                  {mode === 'butter' ? (
+                    <>
+                      {amountAndUnits(
+                        bAmount,
+                        setBAmount,
+                        t('butter.amount_label'),
+                        butterFraction,
+                        t(`units.${bFrom}` as 'units.g'),
+                        t(`units.${bTo}` as 'units.g')
+                      )}
+                      {openSide === 'from'
+                        ? chipRow(unitOptions(BUTTER_UNITS), bFrom, setBFrom)
+                        : chipRow(unitOptions(BUTTER_UNITS), bTo, setBTo)}
+                    </>
+                  ) : null}
+                </Card>
+              </Animated.View>
+
+              {/* Sam's footnote lives on the canvas, not in a dismissible tip card. */}
+              <View style={styles.footnote}>
+                <Sam size={30} />
+                <Text
+                  style={[
+                    typography.body.sm,
+                    scaleType(typography.body.sm, fontScale),
+                    styles.footnoteText,
+                    { color: palette.textFaint },
+                  ]}
+                >
+                  {t('tips.convert_modes')}
+                </Text>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
       </SafeAreaView>
 
       <AdSlot />
@@ -744,18 +756,19 @@ function Labeled({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
+/** The mode row is the second block in the scroll, after the header. */
+const MODE_ROW_STICKY = [1];
+
 const styles = StyleSheet.create({
   root: { flex: 1 },
   flex: { flex: 1 },
-  modeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
-  },
-  hero: { paddingTop: spacing.sm, paddingBottom: spacing.md, zIndex: 1 },
-  body: { flexGrow: 1, gap: spacing.md },
+  // The band is the sticky child, so it carries only paint and padding. React Native
+  // moves a sticky child's style onto its own wrapper and replaces it with flex: 1,
+  // which would strip flexDirection and stack the chips. The row lives one level in,
+  // where its layout survives. paddingBottom keeps the selected chip's shadow inside.
+  modeBand: { paddingTop: spacing.xs, paddingBottom: spacing.sm },
+  modeRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  body: { paddingTop: spacing.sm, gap: spacing.md },
   inputCard: { gap: spacing.md },
   labeled: { gap: spacing.xs },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },

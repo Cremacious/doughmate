@@ -53,16 +53,19 @@ export default function RecipesScreen() {
         onPress: onRecipes ? newRecipe : logABake,
         accessibilityLabel: onRecipes ? t('recipes.new_recipe_action') : t('bakes.log_a_bake'),
       }}
+      // Pinned: switching between recipes and bakes has to stay reachable however far
+      // down the list you are.
+      sticky={
+        <SegmentedControl
+          options={[
+            { id: 'recipes', label: t('bakes.seg_recipes') },
+            { id: 'bakes', label: t('bakes.seg_bakes') },
+          ]}
+          value={segment}
+          onChange={setSegment}
+        />
+      }
     >
-      <SegmentedControl
-        options={[
-          { id: 'recipes', label: t('bakes.seg_recipes') },
-          { id: 'bakes', label: t('bakes.seg_bakes') },
-        ]}
-        value={segment}
-        onChange={setSegment}
-      />
-
       {onRecipes ? (
         recipes.length === 0 ? (
           <EmptyState
