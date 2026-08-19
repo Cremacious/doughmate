@@ -324,7 +324,8 @@ export default function BakeEditorSheet() {
         <OptionSheet
           title={t('bakes.link_recipe')}
           searchable
-          searchPlaceholder={t('converter.picker_search_placeholder')}
+          size="half"
+          searchPlaceholder={t('bakes.recipe_search_placeholder')}
           selectedId={recipeId ?? ''}
           onClose={() => setPicker(null)}
           onSelect={(rid) => {

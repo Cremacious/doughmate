@@ -24,6 +24,14 @@ export interface OptionSheetProps {
   selectedId?: string;
   searchable?: boolean;
   searchPlaceholder?: string;
+  /**
+   * Overrides the sheet height. Defaults to full when searchable, half
+   * otherwise. A sheet opened from inside another BottomSheet (rather than
+   * directly on a screen) needs `tall` instead of `full` — the outer sheet
+   * clips its own content to its panel, so a nested `full` sheet's content
+   * renders past that boundary and never becomes visible.
+   */
+  size?: 'half' | 'tall' | 'full';
 }
 
 export function OptionSheet({
@@ -34,6 +42,7 @@ export function OptionSheet({
   selectedId,
   searchable = false,
   searchPlaceholder,
+  size,
 }: OptionSheetProps) {
   const { t } = useTranslation();
   const { palette } = useAppTheme();
@@ -49,7 +58,7 @@ export function OptionSheet({
 
   return (
     <BottomSheet
-      size={searchable ? 'full' : 'half'}
+      size={size ?? (searchable ? 'full' : 'half')}
       onClose={onClose}
       header={
         <Text style={[typography.display.md, styles.title, { color: palette.textInk }]}>
@@ -61,12 +70,7 @@ export function OptionSheet({
         <View style={styles.topRow}>
           {searchable ? (
             <View style={styles.searchField}>
-              <Input
-                value={query}
-                onChangeText={setQuery}
-                placeholder={searchPlaceholder}
-                autoFocus
-              />
+              <Input value={query} onChangeText={setQuery} placeholder={searchPlaceholder} />
             </View>
           ) : (
             <View style={styles.searchField} />
@@ -83,7 +87,11 @@ export function OptionSheet({
             <Text style={[typography.heading, { color: palette.textSoft }]}>✕</Text>
           </Pressable>
         </View>
-        <ScrollView contentContainerStyle={styles.list} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.list}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
           {filtered.map((o) => {
             const sel = o.id === selectedId;
             return (

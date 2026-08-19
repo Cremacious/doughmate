@@ -503,6 +503,7 @@
     "field_name": "What did you bake?",
     "name_placeholder": "Name this bake",
     "link_recipe": "Link a recipe",
+    "recipe_search_placeholder": "Search recipes",
     "field_when": "When",
     "field_rating": "How did it turn out?",
     "field_crumb": "Crumb",
