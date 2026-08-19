@@ -44,7 +44,7 @@ export function SegmentedControl<T extends string>({
               styles.seg,
               {
                 height,
-                backgroundColor: selected ? palette.outline : 'transparent',
+                backgroundColor: selected ? palette.primary : 'transparent',
                 borderWidth: selected ? 0 : stroke.soft,
                 borderColor: palette.border,
               },

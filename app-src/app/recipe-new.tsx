@@ -29,7 +29,20 @@ import { Tip } from '@/ui/Tip';
 import { useToast } from '@/ui/Toast';
 import { UnitPickerField } from '@/ui/UnitPickerField';
 
-const TAG_KEYS = ['tag_sourdough', 'tag_bread', 'tag_sweet', 'tag_quick', 'tag_everyday'] as const;
+const TAG_KEYS = [
+  'tag_sourdough',
+  'tag_bread',
+  'tag_sweet',
+  'tag_quick',
+  'tag_everyday',
+  'tag_vegan',
+  'tag_gluten_free',
+  'tag_whole_grain',
+] as const;
+
+/** Soft caps for custom tags, so chips never overrun the row or the storage shape. */
+const MAX_TAGS = 8;
+const MAX_TAG_LENGTH = 20;
 
 interface IngredientDraft {
   amount: string;
@@ -105,7 +118,7 @@ function fromRecipe(recipe: Recipe): {
 export default function RecipeEditorSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
-  const { addRecipe, updateRecipe, getRecipe, removeRecipe, restoreRecipe } = useRecipes();
+  const { recipes, addRecipe, updateRecipe, getRecipe, removeRecipe, restoreRecipe } = useRecipes();
   const { show } = useToast();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const existing = id ? getRecipe(id) : undefined;
@@ -119,6 +132,7 @@ export default function RecipeEditorSheet() {
   );
   const [steps, setSteps] = useState<StepDraft[]>(initial?.steps ?? [{ text: '', time: '' }]);
   const [tags, setTags] = useState<string[]>(existing?.tags ?? []);
+  const [tagDraft, setTagDraft] = useState('');
   // which ingredient's unit picker is open, or null
   const [unitPicker, setUnitPicker] = useState<{ s: number; i: number } | null>(null);
 
@@ -161,7 +175,48 @@ export default function RecipeEditorSheet() {
   const toggleTag = (tag: string) =>
     setTags((prev) => (prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag]));
 
+  const presetLabels = TAG_KEYS.map((key) => t(`recipes.${key}` as 'recipes.tag_bread'));
+  // Tags on this recipe that aren't one of the preset chips: earlier custom tags,
+  // shown as their own removable row.
+  const customAppliedTags = tags.filter((tag) => !presetLabels.includes(tag));
+  const atTagCap = tags.length >= MAX_TAGS;
+
+  const addCustomTag = (raw: string) => {
+    const trimmed = raw.trim().slice(0, MAX_TAG_LENGTH);
+    if (trimmed === '' || atTagCap) {
+      return;
+    }
+    const exists = tags.some((tag) => tag.toLowerCase() === trimmed.toLowerCase());
+    if (exists) {
+      setTagDraft('');
+      return;
+    }
+    setTags((prev) => [...prev, trimmed]);
+    setTagDraft('');
+  };
+
+  // Tags used on other recipes, offered as one-tap suggestions while typing so
+  // "Gluten-Free" and "gluten free" don't end up as two different tags.
+  const tagSuggestions = tagDraft.trim()
+    ? [...new Set(recipes.flatMap((r) => r.tags))]
+        .filter(
+          (tag) =>
+            tag.toLowerCase().includes(tagDraft.trim().toLowerCase()) &&
+            !presetLabels.includes(tag) &&
+            !tags.some((applied) => applied.toLowerCase() === tag.toLowerCase())
+        )
+        .slice(0, 5)
+    : [];
+
   const save = () => {
+    const hasContent =
+      sections.some((sec) =>
+        sec.ingredients.some((ing) => ing.item.trim() !== '' || ing.amount.trim() !== '')
+      ) || steps.some((st) => st.text.trim() !== '');
+    if (!hasContent) {
+      show({ message: t('recipes.toast_needs_content') });
+      return;
+    }
     const input = toRecipeInput(
       name.trim() || t('recipes.new_recipe'),
       yieldLabel.trim(),
@@ -470,7 +525,53 @@ export default function RecipeEditorSheet() {
                 />
               );
             })}
+            {customAppliedTags.map((tag) => (
+              <Chip
+                key={tag}
+                label={tag}
+                emphasis="butter"
+                selected
+                onPress={() => toggleTag(tag)}
+              />
+            ))}
           </View>
+
+          <View style={styles.tagInputRow}>
+            <TextInput
+              value={tagDraft}
+              onChangeText={setTagDraft}
+              onSubmitEditing={() => addCustomTag(tagDraft)}
+              returnKeyType="done"
+              maxLength={MAX_TAG_LENGTH}
+              editable={!atTagCap}
+              placeholder={t('recipes.custom_tag_placeholder')}
+              placeholderTextColor={palette.textFaint}
+              style={[
+                typography.body.lg,
+                styles.tagInput,
+                { backgroundColor: palette.bgSunken, color: palette.textInk },
+              ]}
+            />
+            <IconButton
+              iconName="add"
+              variant="quiet"
+              accessibilityLabel={t('recipes.custom_tag_add')}
+              onPress={() => addCustomTag(tagDraft)}
+              color={atTagCap ? palette.textFaint : undefined}
+            />
+          </View>
+
+          {tagSuggestions.length > 0 ? (
+            <View style={styles.tags}>
+              {tagSuggestions.map((tag) => (
+                <Chip key={tag} label={tag} emphasis="butter" onPress={() => addCustomTag(tag)} />
+              ))}
+            </View>
+          ) : null}
+
+          <Text style={[typography.labelSm, { color: palette.textFaint }]}>
+            {t('recipes.tag_cap_hint', { max: MAX_TAGS, maxLength: MAX_TAG_LENGTH })}
+          </Text>
         </View>
 
         {existing ? (
@@ -553,4 +654,11 @@ const styles = StyleSheet.create({
   stepFooterRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm },
   stepTimeField: { flex: 1 },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  tagInputRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  tagInput: {
+    flex: 1,
+    height: 44,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.md,
+  },
 });

@@ -6,9 +6,10 @@
 // same, but confirmation no longer gets its own fill: a toast is chrome, and chrome
 // does not get to be a second hero.
 import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FullWindowOverlay } from 'react-native-screens';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -62,7 +63,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      {toast ? <ToastView key={toast.id} toast={toast} onDismiss={dismiss} /> : null}
+      {toast ? (
+        // Every screen in this app presents as a native transparentModal, which on
+        // iOS sits in its own presentation layer above the regular view tree — a
+        // plain sibling view here would render behind whatever modal is open.
+        // FullWindowOverlay puts it back on top. Android's modals don't have this
+        // problem, so it renders inline there.
+        Platform.OS === 'ios' ? (
+          <FullWindowOverlay>
+            <ToastView key={toast.id} toast={toast} onDismiss={dismiss} />
+          </FullWindowOverlay>
+        ) : (
+          <ToastView key={toast.id} toast={toast} onDismiss={dismiss} />
+        )
+      ) : null}
     </ToastContext.Provider>
   );
 }

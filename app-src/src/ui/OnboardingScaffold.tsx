@@ -80,7 +80,7 @@ export function OnboardingScaffold({
               style={[
                 styles.dot,
                 i === step - 1
-                  ? { width: 26, height: 9, backgroundColor: palette.outline }
+                  ? { width: 26, height: 9, backgroundColor: palette.primary }
                   : { width: 9, height: 9, backgroundColor: palette.heroDim },
               ]}
             />
@@ -98,7 +98,7 @@ export function OnboardingScaffold({
           style={[
             styles.primary,
             shadow.md,
-            { backgroundColor: palette.outline, opacity: pressed ? 0.9 : 1 },
+            { backgroundColor: palette.primary, opacity: pressed ? 0.9 : 1 },
           ]}
         >
           <Text

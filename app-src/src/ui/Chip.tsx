@@ -43,7 +43,7 @@ export function Chip({
   const butter = emphasis === 'butter';
 
   const face = numeric ? typography.numeric.sm : typography.chip;
-  const fill = selected ? (butter ? palette.accentButter : palette.outline) : 'transparent';
+  const fill = selected ? (butter ? palette.accentButter : palette.primary) : 'transparent';
   const fg = selected ? (butter ? palette.onButter : palette.onPrimary) : palette.textSoft;
 
   const body = (

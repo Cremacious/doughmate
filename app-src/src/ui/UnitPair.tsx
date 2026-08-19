@@ -60,7 +60,7 @@ export function UnitPair({
 
   return (
     <View
-      style={[styles.row, { height: fieldHeight(fontScale), backgroundColor: palette.outline }]}
+      style={[styles.row, { height: fieldHeight(fontScale), backgroundColor: palette.primary }]}
     >
       {half('from', fromLabel, fromAccessibilityLabel, palette.onPrimary)}
       <Text

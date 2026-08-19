@@ -136,12 +136,12 @@ export default function StarterDetailSheet() {
             >
               {t(`starters_mood.${mood}_sub` as 'starters_mood.new_sub')}
             </Text>
-            <View style={[styles.countdownPill, { backgroundColor: palette.outline }]}>
+            <View style={[styles.countdownPill, { backgroundColor: palette.accentButter }]}>
               <Text
                 style={[
                   typography.numeric.sm,
                   scaleType(typography.numeric.sm, fontScale),
-                  { color: palette.onPrimary },
+                  { color: palette.onButter },
                 ]}
               >
                 {countdown}

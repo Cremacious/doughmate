@@ -92,14 +92,14 @@ export function ResultDisplay({
       )}
 
       {contextNote ? (
-        <View style={[styles.inset, { backgroundColor: palette.outline }]}>
+        <View style={[styles.inset, { backgroundColor: palette.accentButter }]}>
           <Icon name="timer" size={18} color={palette.proofTeal} />
           <Text
             style={[
               typography.body.sm,
               scaleType(typography.body.sm, fontScale),
               styles.insetText,
-              { color: palette.onPrimary },
+              { color: palette.onButter },
             ]}
           >
             {contextNote}

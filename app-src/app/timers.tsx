@@ -191,8 +191,8 @@ export default function TimersSheet() {
                   style={[
                     styles.tile,
                     {
-                      backgroundColor: active ? palette.outline : palette.bgCanvas,
-                      borderColor: active ? palette.outline : palette.borderField,
+                      backgroundColor: active ? palette.primary : palette.bgCanvas,
+                      borderColor: active ? palette.primary : palette.borderField,
                       borderWidth: active ? 0 : stroke.soft,
                     },
                   ]}

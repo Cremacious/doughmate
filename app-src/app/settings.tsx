@@ -8,6 +8,7 @@
 // around it.
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -150,13 +151,24 @@ export default function SettingsSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
   const { settings, update } = useSettings();
-  const { isPro } = usePro();
+  const { isPro, restore } = usePro();
   const { show } = useToast();
   const version = Constants.expoConfig?.version ?? '1.0.0';
+  const [restoring, setRestoring] = useState(false);
 
   const showTipsAgain = () => {
     update('dismissedTips', []);
     show({ message: t('settings.tips_reset_toast'), variant: 'confirmation' });
+  };
+
+  const onRestore = async () => {
+    setRestoring(true);
+    const restored = await restore();
+    setRestoring(false);
+    show({
+      message: restored ? t('toasts.restore_success') : t('errors.restore_empty'),
+      variant: restored ? 'confirmation' : 'neutral',
+    });
   };
 
   const bodyText = [typography.body.lg, scaleType(typography.body.lg, fontScale)];
@@ -335,6 +347,13 @@ export default function SettingsSheet() {
           </Text>
           <Text style={[typography.subheading, { color: palette.onProSoft }]}>›</Text>
         </Card>
+        {!isPro ? (
+          <Card onPress={onRestore} style={styles.linkRow}>
+            <Text style={[...bodyText, { color: palette.textInk }]}>
+              {restoring ? t('settings.restoring') : t('settings.restore_purchases')}
+            </Text>
+          </Card>
+        ) : null}
 
         <SectionLabel>{t('settings.section_about')}</SectionLabel>
         <DividedCard>
