@@ -1,8 +1,8 @@
 // Sam, Doughmate's sourdough mascot. One chubby outlined boule, drawn in
 // react native svg so it renders identically on web and native, with an
 // expressive face per emotion. The crust and outline come from the theme's Sam
-// tokens; the small accents (score ear, cheeks, flour, sparkles) are a fixed
-// brand palette, intentional in both light and dark.
+// tokens; the small accents (cheeks, sparkles) are a fixed brand palette,
+// intentional in both light and dark.
 import Svg, { Circle, Ellipse, G, Path } from 'react-native-svg';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -14,9 +14,7 @@ const TIGHT_VIEWBOX = '6 12 108 84';
 const TIGHT_ASPECT = 84 / 108;
 
 const SHADOW = '#8B5A2B';
-const EAR = '#C77D3A';
 const CHEEK = '#F2A0A0';
-const FLOUR = '#FBF5EA';
 const SPARKLE = '#2C7A70';
 const ALERT = '#F2603C';
 const ZZZ = '#A08D7C';
@@ -170,13 +168,6 @@ export function Sam({ size = 96, emotion = 'idle', tightCrop = false, crust }: S
         stroke={ink}
         strokeWidth={3}
       />
-      <G stroke={EAR} strokeWidth={3.4} strokeLinecap="round">
-        <Path d="M40 36 l11 11" />
-        <Path d="M57 32 l12 11" />
-        <Path d="M75 36 l11 11" />
-      </G>
-      <Circle cx={30} cy={50} r={1.6} fill={FLOUR} />
-      <Circle cx={92} cy={46} r={1.4} fill={FLOUR} />
       <Face emotion={emotion} ink={ink} />
     </Svg>
   );

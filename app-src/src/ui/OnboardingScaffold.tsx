@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   hero: { marginBottom: spacing['2xl'] },
-  textGroup: { gap: spacing.sm, alignItems: 'center', maxWidth: 320 },
+  textGroup: { gap: spacing.sm, alignItems: 'center', maxWidth: 340 },
   center: { textAlign: 'center' },
   middle: { alignItems: 'center', marginTop: spacing['2xl'] },
   footer: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl, gap: spacing.sm },

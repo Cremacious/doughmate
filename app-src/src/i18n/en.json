@@ -23,8 +23,8 @@
     "next": "Next",
     "skip": "Skip",
     "welcome": {
-      "title": "Hi. I'm Sam.",
-      "body": "Your baking buddy. Let's make the math easy.",
+      "title": "Hi. I'm\nSourdough Sam.",
+      "body": "Your baking buddy.\nLet's make the math easy.",
       "cta": "Get started"
     },
     "convert": {
@@ -39,7 +39,7 @@
     },
     "starters": {
       "title": "Mind your starter",
-      "body": "Track each starter and get a nudge when it's time to feed."
+      "body": "Track each starter\nand get a nudge when it's time to feed."
     },
     "swaps": {
       "title": "Swap in a pinch",
