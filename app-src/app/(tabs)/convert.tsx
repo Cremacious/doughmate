@@ -660,6 +660,7 @@ export default function ConvertScreen() {
         <OptionSheet
           title={t('converter.pick_ingredient')}
           searchable
+          size="tall"
           searchPlaceholder={t('converter.picker_search_placeholder')}
           selectedId={ingredient.id}
           onClose={() => setSheet(null)}
