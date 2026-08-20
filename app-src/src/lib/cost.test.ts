@@ -155,6 +155,29 @@ describe('recipeCost', () => {
     expect(result.total).toBe(0);
     expect(result.perServing).toBe(0);
   });
+
+  // Each line cost rounds to whole cents before the total is summed, so the
+  // displayed lines always add up to the displayed total. Three rows at exactly
+  // $0.125 would drift to a total of $0.38 if the total were computed from the
+  // unrounded sum ($0.375) instead of from the rounded lines ($0.13 x 3 = $0.39).
+  it('rounds each line to whole cents and sums the rounded values for the total', () => {
+    const result = recipeCost(
+      [
+        { amount: 500, unit: 'g', item: 'Bread flour' },
+        { amount: 500, unit: 'g', item: 'Rye flour' },
+        { amount: 500, unit: 'g', item: 'Whole wheat flour' },
+      ],
+      [
+        priced('bread flour', 0.00025),
+        priced('rye flour', 0.00025),
+        priced('whole wheat flour', 0.00025),
+      ],
+      3
+    );
+    expect(result.rows.map((r) => r.cost)).toEqual([0.13, 0.13, 0.13]);
+    expect(result.total).toBeCloseTo(0.39, 10);
+    expect(result.perServing).toBeCloseTo(0.13, 10);
+  });
 });
 
 describe('upsertPrice', () => {

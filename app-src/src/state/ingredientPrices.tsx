@@ -13,7 +13,8 @@ function loadPrices(): IngredientPrice[] {
     return [];
   }
   try {
-    return JSON.parse(raw) as IngredientPrice[];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as IngredientPrice[]) : [];
   } catch {
     return [];
   }

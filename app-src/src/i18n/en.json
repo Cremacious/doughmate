@@ -227,7 +227,7 @@
     "meta_steps_other": "{{count}} steps",
     "tag_all": "All",
     "bakers_pct": "Baker's percentages",
-    "bakers_locked": "See baker's percentages and the levain calculator with Pro",
+    "bakers_locked": "See baker's percentages, the levain calculator, and recipe costs with Pro",
     "levain_heading": "Levain build",
     "levain_target_label": "Target levain weight",
     "levain_target_placeholder": "e.g. 550",
@@ -423,7 +423,8 @@
     "toast_saved": "Saved {{name}}",
     "toast_deleted": "Removed {{name}}",
     "needs_name": "Give the ingredient a name first.",
-    "needs_amount": "Add a price and a package size."
+    "needs_amount": "Add a price and a package size.",
+    "rename_collision": "{{name}} already has a price. Delete it first if you want to replace it."
   },
   "paywall": {
     "title": "Doughmate Pro",
@@ -435,6 +436,7 @@
       "The full swap library",
       "Baker's percentages",
       "Levain build calculator",
+      "Recipe cost calculator",
       "No ads, ever"
     ],
     "cta": "Get Pro for $4.99",

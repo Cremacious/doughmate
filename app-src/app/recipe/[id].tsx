@@ -267,7 +267,7 @@ export default function RecipeDetailSheet() {
               {t('recipes.serves')}
             </Text>
             <Stepper
-              value={Math.max(1, Math.round(baseServings * factor))}
+              value={servingsShown}
               onChange={(v) => setFactor(v / baseServings)}
               decrementLabel={t('recipes.servings')}
               incrementLabel={t('recipes.servings')}

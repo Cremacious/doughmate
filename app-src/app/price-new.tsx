@@ -82,6 +82,14 @@ export default function PriceEditorSheet() {
     // same ingredient) leaves the old record behind under upsert's own key, so it must
     // be removed explicitly or the baker ends up with two prices for one ingredient.
     if (existing && priceKey(existing.ingredientName) !== priceKey(entry.ingredientName)) {
+      // But if the new name already belongs to a different record, removing the old
+      // one and upserting would silently destroy that other record's price. Refuse
+      // instead of guessing which one the baker meant to keep.
+      const collision = getPrice(entry.ingredientName);
+      if (collision) {
+        show({ message: t('prices.rename_collision', { name: collision.ingredientName }) });
+        return;
+      }
       removePrice(existing.ingredientName);
     }
     setPrice(entry);
@@ -96,9 +104,14 @@ export default function PriceEditorSheet() {
     if (!existing) {
       return;
     }
-    removePrice(existing.ingredientName);
+    const removed = existing;
+    removePrice(removed.ingredientName);
     router.back();
-    show({ message: t('prices.toast_deleted', { name: existing.ingredientName }) });
+    show({
+      message: t('prices.toast_deleted', { name: removed.ingredientName }),
+      actionLabel: t('recipes.button_undo'),
+      onAction: () => setPrice(removed),
+    });
   };
 
   return (

@@ -14,6 +14,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { scaleType } from '@/lib/typeScale';
+import { useIngredientPrices } from '@/state/ingredientPrices';
 import { usePro } from '@/state/pro';
 import {
   type FlourStandardPref,
@@ -152,6 +153,7 @@ export default function SettingsSheet() {
   const { palette, fontScale } = useAppTheme();
   const { settings, update } = useSettings();
   const { isPro, restore, debugProOverride, setDebugProOverride } = usePro();
+  const { prices } = useIngredientPrices();
   const { show } = useToast();
   const version = Constants.expoConfig?.version ?? '1.0.0';
   const [restoring, setRestoring] = useState(false);
@@ -303,12 +305,14 @@ export default function SettingsSheet() {
             onValueChange={(v) => update('flouredFingers', v)}
           />
         </Card>
-        <Card onPress={() => router.push('/prices')} style={styles.linkRow}>
-          <Text style={[...bodyText, { color: palette.textInk }]}>
-            {t('settings.ingredient_prices')}
-          </Text>
-          <Text style={[...bodyText, { color: palette.textFaint }]}>›</Text>
-        </Card>
+        {isPro || prices.length > 0 ? (
+          <Card onPress={() => router.push('/prices')} style={styles.linkRow}>
+            <Text style={[...bodyText, { color: palette.textInk }]}>
+              {t('settings.ingredient_prices')}
+            </Text>
+            <Text style={[...bodyText, { color: palette.textFaint }]}>›</Text>
+          </Card>
+        ) : null}
 
         <SectionLabel>{t('settings.section_notifications')}</SectionLabel>
         <DividedCard>

@@ -101,6 +101,11 @@ export function ingredientGrams(ingredient: CostIngredient, opts?: ConvertOption
  * Weight resolvability is checked before the price lookup on purpose: a row that
  * could not be costed even once priced should say so, rather than inviting the
  * baker to add a price that would change nothing.
+ *
+ * Each line cost is rounded to whole cents here, and the total is the sum of those
+ * already-rounded values (not a rounding of the unrounded sum). That keeps the
+ * displayed lines always adding up to the displayed total, the same guarantee the
+ * levain build gives its seed/flour/water split.
  */
 export function recipeCost(
   ingredients: CostIngredient[],
@@ -119,7 +124,8 @@ export function recipeCost(
     if (!price) {
       return { item: ingredient.item, status: 'no_price', cost: null };
     }
-    return { item: ingredient.item, status: 'priced', cost: grams * price.pricePerGram };
+    const cost = Math.round(grams * price.pricePerGram * 100) / 100;
+    return { item: ingredient.item, status: 'priced', cost };
   });
 
   const total = rows.reduce((sum, row) => sum + (row.cost ?? 0), 0);
