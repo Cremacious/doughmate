@@ -53,13 +53,26 @@ export default function RecipeDetailSheet() {
   const [levainHydration, setLevainHydration] = useState(100);
   const [levainRatio, setLevainRatio] = useState('1:2:2');
 
+  // Accept a comma decimal (e.g. "1,5") so a locale-typical entry still parses.
+  const levainTargetWeight = Number(levainTarget.replace(',', '.'));
+
   const levain: LevainBuild | null = useMemo(() => {
-    const target = Number(levainTarget);
-    if (!Number.isFinite(target) || target <= 0) {
+    if (!Number.isFinite(levainTargetWeight) || levainTargetWeight <= 0) {
       return null;
     }
-    return levainBuild(target, levainRatio, levainHydration);
-  }, [levainTarget, levainRatio, levainHydration]);
+    return levainBuild(levainTargetWeight, levainRatio, levainHydration);
+  }, [levainTargetWeight, levainRatio, levainHydration]);
+
+  // Round seed and flour to whole grams for display, then derive water from
+  // the actual target weight so the three shown numbers always sum exactly
+  // to the target (independent rounding could otherwise be off by a gram or two).
+  const levainDisplay = levain
+    ? {
+        seed: Math.round(levain.seed),
+        flour: Math.round(levain.flour),
+        water: levainTargetWeight - Math.round(levain.seed) - Math.round(levain.flour),
+      }
+    : null;
 
   if (!recipe) {
     return (
@@ -181,7 +194,12 @@ export default function RecipeDetailSheet() {
         </View>
       }
     >
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
         <Tip id="recipe.scale" text={t('tips.recipe_scale')} />
         <View style={styles.metaRow}>
           {metaTiles.map((tile) => (
@@ -332,17 +350,35 @@ export default function RecipeDetailSheet() {
                 placeholder={t('recipes.levain_target_placeholder')}
                 numeric
               />
+              <Text
+                style={[
+                  typography.label,
+                  scaleType(typography.label, fontScale),
+                  { color: palette.textFaint },
+                ]}
+              >
+                {t('recipes.levain_hydration_label')}
+              </Text>
               <View style={styles.rowBetween}>
                 {[80, 100, 125].map((h) => (
                   <Chip
                     key={h}
-                    label={`${h}%`}
+                    label={t('starters.hydration_badge', { value: h })}
                     numeric
                     selected={levainHydration === h}
                     onPress={() => setLevainHydration(h)}
                   />
                 ))}
               </View>
+              <Text
+                style={[
+                  typography.label,
+                  scaleType(typography.label, fontScale),
+                  { color: palette.textFaint },
+                ]}
+              >
+                {t('recipes.levain_ratio_label')}
+              </Text>
               <View style={styles.rowBetween}>
                 {['1:1:1', '1:2:2', '1:5:5'].map((r) => (
                   <Chip
@@ -354,14 +390,15 @@ export default function RecipeDetailSheet() {
                   />
                 ))}
               </View>
-              {levain ? (
+              {levainDisplay ? (
                 <>
                   <View style={styles.rowBetween}>
                     <Text style={[typography.body.md, { color: palette.textInk }]}>
                       {t('recipes.levain_seed')}
                     </Text>
                     <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
-                      {formatQuantity(levain.seed, { format: 'decimal' })} g
+                      {formatQuantity(levainDisplay.seed, { format: 'decimal' })}{' '}
+                      {t('recipes.levain_grams_suffix')}
                     </Text>
                   </View>
                   <View style={styles.rowBetween}>
@@ -369,7 +406,8 @@ export default function RecipeDetailSheet() {
                       {t('recipes.levain_flour')}
                     </Text>
                     <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
-                      {formatQuantity(levain.flour, { format: 'decimal' })} g
+                      {formatQuantity(levainDisplay.flour, { format: 'decimal' })}{' '}
+                      {t('recipes.levain_grams_suffix')}
                     </Text>
                   </View>
                   <View style={styles.rowBetween}>
@@ -377,7 +415,8 @@ export default function RecipeDetailSheet() {
                       {t('recipes.levain_water')}
                     </Text>
                     <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
-                      {formatQuantity(levain.water, { format: 'decimal' })} g
+                      {formatQuantity(levainDisplay.water, { format: 'decimal' })}{' '}
+                      {t('recipes.levain_grams_suffix')}
                     </Text>
                   </View>
                 </>

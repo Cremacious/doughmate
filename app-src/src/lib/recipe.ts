@@ -132,7 +132,11 @@ export interface LevainBuild {
  * hydration meaningful on its own, since every preset ratio has matching
  * flour and water parts and would otherwise always imply 100% hydration.
  */
-export function levainBuild(targetWeight: number, ratio: string, hydrationPct: number): LevainBuild {
+export function levainBuild(
+  targetWeight: number,
+  ratio: string,
+  hydrationPct: number
+): LevainBuild {
   const parts = ratio.split(':').map(Number);
   if (parts.length !== 3 || parts.some((p) => !Number.isFinite(p) || p <= 0)) {
     throw new Error(`Invalid levain ratio: "${ratio}"`);
