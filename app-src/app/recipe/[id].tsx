@@ -7,10 +7,12 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatQuantity, type NumberFormat } from '@/lib/convert';
+import { formatUsd, recipeCost } from '@/lib/cost';
 import { bakersPercentages, groupBySection, levainBuild, type LevainBuild } from '@/lib/recipe';
 import { tagStripFor } from '@/lib/recipeTag';
 import { formatStepTime, parseDuration } from '@/lib/timer';
 import { scaleType } from '@/lib/typeScale';
+import { useIngredientPrices } from '@/state/ingredientPrices';
 import { usePro } from '@/state/pro';
 import { type RecipeIngredient, useRecipes } from '@/state/recipes';
 import { useSettings } from '@/state/settings';
@@ -42,12 +44,33 @@ export default function RecipeDetailSheet() {
   const { getRecipe } = useRecipes();
   const { isPro } = usePro();
   const { settings } = useSettings();
+  const { prices } = useIngredientPrices();
 
   const recipe = getRecipe(id);
   const baseServings = recipe && recipe.servings > 0 ? recipe.servings : 1;
   const [factor, setFactor] = useState(1);
 
   const bakers = useMemo(() => (recipe ? bakersPercentages(recipe.ingredients) : null), [recipe]);
+
+  // Servings the baker is actually looking at, so the cost follows the scale block.
+  const servingsShown = Math.max(1, Math.round(baseServings * factor));
+
+  const cost = useMemo(
+    () =>
+      recipe
+        ? recipeCost(
+            recipe.ingredients.map((ing) => ({
+              amount: typeof ing.amount === 'number' ? ing.amount * factor : '',
+              unit: ing.unit,
+              item: ing.item,
+            })),
+            prices,
+            servingsShown,
+            { flourStandard: settings.flourStandard }
+          )
+        : null,
+    [recipe, prices, factor, servingsShown, settings.flourStandard]
+  );
 
   const [levainTarget, setLevainTarget] = useState('');
   const [levainHydration, setLevainHydration] = useState(100);
@@ -422,6 +445,71 @@ export default function RecipeDetailSheet() {
                 </>
               ) : null}
             </Card>
+
+            <Text style={[typography.label, styles.sectionLabel, { color: palette.textSoft }]}>
+              {t('recipes.cost_heading')}
+            </Text>
+            <Card style={styles.list}>
+              {cost && cost.rows.length > 0 ? (
+                <>
+                  {cost.rows.map((row, i) => (
+                    <View key={i} style={styles.rowBetween}>
+                      <Text
+                        style={[typography.body.md, styles.costItem, { color: palette.textInk }]}
+                      >
+                        {row.item}
+                      </Text>
+                      {row.status === 'priced' ? (
+                        <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
+                          {formatUsd(row.cost ?? 0)}
+                        </Text>
+                      ) : row.status === 'no_price' ? (
+                        <Pressable
+                          accessibilityRole="button"
+                          onPress={() =>
+                            router.push(`/price-new?name=${encodeURIComponent(row.item)}`)
+                          }
+                        >
+                          <Text style={[typography.labelSm, { color: palette.primary }]}>
+                            {t('recipes.cost_add_price')}
+                          </Text>
+                        </Pressable>
+                      ) : (
+                        <Text style={[typography.labelSm, { color: palette.textFaint }]}>
+                          {t('recipes.cost_unknown')}
+                        </Text>
+                      )}
+                    </View>
+                  ))}
+                  {cost.pricedCount > 0 ? (
+                    <View style={[styles.costTotals, { borderTopColor: palette.outline }]}>
+                      <View style={styles.rowBetween}>
+                        <Text style={[typography.body.md, { color: palette.textInk }]}>
+                          {t('recipes.cost_total')}
+                        </Text>
+                        <Text style={[typography.numeric.sm, { color: palette.textInk }]}>
+                          {formatUsd(cost.total)}
+                        </Text>
+                      </View>
+                      {cost.perServing !== null ? (
+                        <View style={styles.rowBetween}>
+                          <Text style={[typography.body.md, { color: palette.textSoft }]}>
+                            {t('recipes.cost_per_serving')}
+                          </Text>
+                          <Text style={[typography.numeric.sm, { color: palette.textSoft }]}>
+                            {formatUsd(cost.perServing)}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
+                </>
+              ) : (
+                <Text style={[typography.body.md, { color: palette.textFaint }]}>
+                  {t('recipes.cost_empty')}
+                </Text>
+              )}
+            </Card>
           </>
         ) : (
           <Card tier="quiet" onPress={() => router.push('/paywall')} style={styles.locked}>
@@ -556,6 +644,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing.md,
+  },
+  costItem: { flexShrink: 1 },
+  costTotals: {
+    gap: spacing.sm,
+    borderTopWidth: stroke.soft,
+    paddingTop: spacing.sm,
+    marginTop: spacing['2xs'],
   },
   locked: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 
