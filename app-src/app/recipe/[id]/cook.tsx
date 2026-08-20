@@ -38,6 +38,9 @@ export default function CookModeSheet() {
     show({ message: t('recipes.cook_finished'), variant: 'confirmation' });
   };
 
+  // Reachable when a recipe has no method yet. It used to render the bare unit
+  // noun from `count_steps` ("steps") in cookDim on the cook canvas, with no
+  // header and no footer — a brown screen with no visible text and no way out.
   if (!recipe || steps.length === 0) {
     return (
       <BottomSheet
@@ -45,10 +48,34 @@ export default function CookModeSheet() {
         onClose={() => router.back()}
         canvasColor={palette.cookCanvas}
         footerColor={palette.cookFooter}
+        footer={
+          <Button label={t('common.close')} onPress={() => router.back()} size="lg" haptic="tap" />
+        }
       >
         <View style={styles.body}>
-          <Text style={[typography.body.lg, { color: palette.cookDim }]}>
-            {t('recipes.count_steps', { count: 0 })}
+          <Text
+            style={[
+              typography.display.md,
+              scaleType(typography.display.md, fontScale),
+              styles.centred,
+              { color: palette.onPrimary },
+            ]}
+          >
+            {t('recipes.cook_empty_title')}
+          </Text>
+          {/* onPrimary rather than cookDim: this line carries the only
+              instruction on the screen, and cookDim on the cook canvas is about
+              2:1, which is what made the old empty state look blank. Size, not
+              colour, separates it from the heading. */}
+          <Text
+            style={[
+              typography.body.lg,
+              scaleType(typography.body.lg, fontScale),
+              styles.centred,
+              { color: palette.onPrimary },
+            ]}
+          >
+            {t('recipes.cook_empty_body')}
           </Text>
         </View>
       </BottomSheet>

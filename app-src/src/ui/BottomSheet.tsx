@@ -44,7 +44,23 @@ export function BottomSheet({
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
   const { height: winH } = useWindowDimensions();
-  const sheetH = Math.round(winH * sheetTokens.heights[size]);
+
+  // The panel is anchored to the bottom of its own container, so its height has
+  // to be relative to that container rather than to the window. A sheet opened
+  // from inside a tab screen sits in a box a tab bar shorter than the window,
+  // and a window-sized "tall" panel all but filled it, putting the panel's top
+  // edge — and the grabber with it — at the very top of the screen. A percentage
+  // keeps every sheet the same fraction of whatever contains it.
+  const heightPct = `${sheetTokens.heights[size] * 100}%` as const;
+
+  // The slide distance only has to clear the screen, so the window height works
+  // for the animation even where it would be wrong for the panel itself.
+  const sheetH = winH;
+
+  // Only a full-height panel reaches into the status bar; anything shorter opens
+  // at least a tenth of the container below it, which already clears the inset.
+  // Padding every sheet regardless is what opened a gap above the grabber.
+  const grabberInset = size === 'full' ? insets.top : 0;
 
   const translateY = useSharedValue(reduced ? 0 : sheetH);
   const progress = useSharedValue(reduced ? 1 : 0);
@@ -106,7 +122,7 @@ export function BottomSheet({
           styles.panel,
           shadow.sheet,
           {
-            height: sheetH,
+            height: heightPct,
             backgroundColor: canvasColor ?? palette.bgCanvas,
             borderTopColor: palette.outline,
           },
@@ -114,10 +130,11 @@ export function BottomSheet({
         ]}
       >
         <GestureDetector gesture={pan}>
-          {/* Tall/full sheets can reach the very top of the screen, so the drag
-              handle and title need the status bar's own inset or the phone's
-              battery/wifi icons sit on top of them. */}
-          <View style={[styles.dragArea, { paddingTop: spacing.lg + insets.top }]}>
+          {/* A panel whose top edge reaches into the status bar needs the inset
+              or the phone's battery/wifi icons sit on the handle. One that opens
+              below it needs none, and adding it regardless left a dead band
+              between the panel's top edge and the handle. */}
+          <View style={[styles.dragArea, { paddingTop: spacing.lg + grabberInset }]}>
             <View style={[styles.grabber, { backgroundColor: palette.grabber }]} />
             {header}
           </View>
