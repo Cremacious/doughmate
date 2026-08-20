@@ -398,6 +398,26 @@
     "flour_caption_120": "per cup, US",
     "flour_caption_125": "per cup, European"
   },
+  "prices": {
+    "title": "Ingredient prices",
+    "add_title": "Add a price",
+    "edit_title": "Edit price",
+    "empty": "No prices yet. Add one from a recipe's Cost card.",
+    "name_label": "Ingredient",
+    "name_placeholder": "e.g. Bread flour",
+    "price_label": "Price",
+    "price_placeholder": "4.99",
+    "package_label": "For this much",
+    "package_placeholder": "5",
+    "unit_label": "Unit",
+    "per_100g": "{{price}} per 100 g",
+    "save": "Save price",
+    "delete": "Delete price",
+    "toast_saved": "Saved {{name}}",
+    "toast_deleted": "Removed {{name}}",
+    "needs_name": "Give the ingredient a name first.",
+    "needs_amount": "Add a price and a package size."
+  },
   "paywall": {
     "title": "Doughmate Pro",
     "tagline": "Single purchase, no subscription.",
