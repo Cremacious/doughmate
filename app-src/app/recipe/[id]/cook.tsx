@@ -7,16 +7,13 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { parseDuration } from '@/lib/timer';
-import { numeralLine, scaleType } from '@/lib/typeScale';
+import { scaleType } from '@/lib/typeScale';
 import { useRecipes } from '@/state/recipes';
 import { spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { StepTimerControl } from '@/ui/StepTimerControl';
 import { useToast } from '@/ui/Toast';
-
-/** The step number above the instruction. Sized to label the step, not to lead it. */
-const STEP_NUMERAL = 56;
 
 export default function CookModeSheet() {
   const { t } = useTranslation();
@@ -173,11 +170,6 @@ export default function CookModeSheet() {
       }
     >
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
-        <Text
-          style={[typography.numeric.hero, numeralLine(STEP_NUMERAL), { color: palette.textInk }]}
-        >
-          {index + 1}
-        </Text>
         <Text
           style={[
             typography.display.xl,
