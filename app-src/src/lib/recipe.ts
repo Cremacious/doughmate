@@ -115,6 +115,38 @@ export function bakersPercentages(ingredients: ParsedIngredient[]): BakersRow[] 
   return grams.map((i) => ({ item: i.item, pct: Math.round((i.amount / flour) * 1000) / 10 }));
 }
 
+export interface LevainBuild {
+  seed: number;
+  flour: number;
+  water: number;
+}
+
+/**
+ * Grams of seed, flour, and water to build a levain of `targetWeight` grams,
+ * given a feed ratio ("seed:flour:water" parts, e.g. "1:5:5") and a target
+ * hydration percentage (water as % of flour).
+ *
+ * The ratio's seed part sets the seed's share of the total; its flour and
+ * water parts combine into one relative "new material" share. Hydration
+ * then splits that share into actual flour and water — this is what keeps
+ * hydration meaningful on its own, since every preset ratio has matching
+ * flour and water parts and would otherwise always imply 100% hydration.
+ */
+export function levainBuild(targetWeight: number, ratio: string, hydrationPct: number): LevainBuild {
+  const parts = ratio.split(':').map(Number);
+  if (parts.length !== 3 || parts.some((p) => !Number.isFinite(p) || p <= 0)) {
+    throw new Error(`Invalid levain ratio: "${ratio}"`);
+  }
+  const [seedParts, flourParts, waterParts] = parts as [number, number, number];
+  const newMaterialParts = flourParts + waterParts;
+  const totalParts = seedParts + newMaterialParts;
+  const seed = (targetWeight * seedParts) / totalParts;
+  const newMaterial = (targetWeight * newMaterialParts) / totalParts;
+  const flour = newMaterial / (1 + hydrationPct / 100);
+  const water = newMaterial - flour;
+  return { seed, flour, water };
+}
+
 /** Structural ingredient shape for grouping. Matches state RecipeIngredient. */
 export interface SectionedIngredient {
   amount: number | '';

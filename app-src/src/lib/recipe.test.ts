@@ -1,6 +1,7 @@
 import {
   bakersPercentages,
   groupBySection,
+  levainBuild,
   matchFactor,
   parseIngredientLine,
   parseLeadingQuantity,
@@ -178,6 +179,46 @@ describe('bakersPercentages', () => {
         { amount: '', unit: '', item: 'pinch of salt' },
       ])
     ).toBeNull();
+  });
+});
+
+describe('levainBuild', () => {
+  it('splits a build by ratio parts at 100% hydration', () => {
+    const build = levainBuild(550, '1:5:5', 100);
+    expect(build.seed).toBeCloseTo(50);
+    expect(build.flour).toBeCloseTo(250);
+    expect(build.water).toBeCloseTo(250);
+  });
+
+  it('keeps the seed and total new-material size fixed as hydration changes', () => {
+    const at100 = levainBuild(550, '1:5:5', 100);
+    const at125 = levainBuild(550, '1:5:5', 125);
+    expect(at125.seed).toBeCloseTo(at100.seed);
+    expect(at125.flour + at125.water).toBeCloseTo(at100.flour + at100.water);
+    expect(at125.water).toBeGreaterThan(at100.water);
+    expect(at125.flour).toBeLessThan(at100.flour);
+  });
+
+  it('handles the 1:1:1 ratio', () => {
+    const build = levainBuild(300, '1:1:1', 100);
+    expect(build.seed).toBeCloseTo(100);
+    expect(build.flour).toBeCloseTo(100);
+    expect(build.water).toBeCloseTo(100);
+  });
+
+  it('always sums back to the target weight', () => {
+    for (const ratio of ['1:1:1', '1:2:2', '1:5:5']) {
+      for (const hydration of [80, 100, 125]) {
+        const build = levainBuild(1000, ratio, hydration);
+        expect(build.seed + build.flour + build.water).toBeCloseTo(1000);
+      }
+    }
+  });
+
+  it('throws on a malformed ratio', () => {
+    expect(() => levainBuild(500, 'not-a-ratio', 100)).toThrow();
+    expect(() => levainBuild(500, '1:2', 100)).toThrow();
+    expect(() => levainBuild(500, '1:0:2', 100)).toThrow();
   });
 });
 
