@@ -1,0 +1,131 @@
+# Pro Feature Expansion — Design
+
+Date: 2026-08-20
+Branch: `main`
+Status: Approved for planning
+
+## Problem
+
+A competitive audit turned up a direct, named competitor — **"Baker's Percentage"** by Rando Kall — live on the App Store at $1.99 one-time (vs. Doughmate Pro's $4.99), with dough scaling, hydration tracking, and local recipe storage, and a marketing line of *"No accounts. No ads. No analytics. No tracking."* Doughmate runs ads on its free tier and collects AdMob/RevenueCat data. At feature parity on the calculator alone, Doughmate is the more expensive, ad-supported option.
+
+Doughmate's real differentiators — Sourdough Sam, starter tracking, timers, the bake journal — are already there, but the Pro tier itself doesn't yet reflect "meaningfully more capable app," just "the same app with limits removed." This spec adds three Pro features that widen that gap without expanding scope past what's buildable before submission.
+
+A second, related problem surfaced independently: there is no backup, export, or cloud sync anywhere in the codebase. All data (recipes, starters, bake history, settings) lives only in local device storage (MMKV). A standard iPhone-to-iPhone migration via Apple's own backup/restore already carries this data over with no work required — but there's no way to use a *second* device (e.g. iPhone + iPad) with the same data, and no recovery path outside Apple's own migration flow. Fixing this is valuable on its own merits and doubles as the strongest of the three new Pro features.
+
+## Goals
+
+Three focused, independently shippable Pro features:
+
+1. **iCloud sync** — a user's recipes, starters, bakes, and settings stay in sync across their own devices.
+2. **Pre-ferment/levain calculator** — extends the existing Pro "baker's percentages" feature to compute a sourdough levain build.
+3. **Recipe cost calculator** — per-recipe ingredient cost and cost-per-serving, from a reusable ingredient price list.
+
+## Non-goals (explicitly out this pass)
+
+- **Multi-user sharing or collaboration.** Sync is one person's own data across their own devices, not sharing between different Doughmate users.
+- **Real-time conflict merging.** Two devices editing the same recipe at the same moment is not a supported scenario; last-write-wins is the stated behavior.
+- **Android sync.** iCloud is iOS-only by nature. Android parity (if ever) is a separate, future spec — likely a different sync backend entirely.
+- **Poolish/biga or other pre-ferment types.** Only a sourdough levain build, matching Doughmate's sourdough-first identity.
+- **Multi-currency cost tracking.** USD only, matching every other unit/measurement in the app today.
+- **Volume-based ingredients with no known density in cost calculations.** These show "can't estimate this one" rather than a wrong number.
+
+## Feature 1: iCloud Sync
+
+### Library
+
+[`react-native-cloud-storage`](https://github.com/kuatsu/react-native-cloud-storage) (kuatsu). Chosen over alternatives (`react-native-icloud-kit`, `expo-icloud-storage`, `@nauverse/expo-cloud-settings`, `expo-cloudkit`) because it's the only one with verifiable New Architecture/TurboModule support (confirmed via its `codegenConfig`), matching the app's existing `react-native-mmkv` + `react-native-nitro-modules` stack. It's also the most actively maintained by a wide margin (3,753 weekly downloads vs. the next-best alternative's 128; last published days before this spec) and ships an Expo config plugin, so `eas build` handles the iCloud entitlements automatically — the same pattern already used for the `react-native-google-mobile-ads` plugin in `app.config.js`. No manual Xcode steps.
+
+### Storage mapping
+
+The library ships two relevant APIs; each existing storage key maps to whichever fits its size profile:
+
+| Local key | Cloud API | Why |
+|---|---|---|
+| `doughmate.settings.v1` | KV store (`NSUbiquitousKeyValueStore`) | Small, fixed-shape, fits the 1 MB total-across-all-keys quota comfortably |
+| `doughmate.recipes.v2` | Ubiquitous file storage (iCloud Drive container) | Grows without bound as a user adds recipes; the KV store's 1 MB *total* cap (not per-key) is a real risk here over years of use |
+| `doughmate.starters.v1` | Ubiquitous file storage | Same growth concern |
+| Bake history | Ubiquitous file storage | Same growth concern |
+| `doughmate.ingredientPrices.v1` (new, Feature 3) | Ubiquitous file storage | Grows with the user's ingredient list |
+
+Ubiquitous file storage inherits the user's overall iCloud storage allotment (5 GB+ on the free tier), not the 1 MB KV ceiling, so this isn't a practical constraint at any realistic scale for this app.
+
+### Sync strategy
+
+Each synced blob gets a `syncedAt` timestamp alongside its existing content. On app launch and on foreground:
+
+1. Read the cloud copy (if any) for each key.
+2. Compare its `syncedAt` against the local copy's.
+3. If the cloud copy is newer, overwrite local state and re-render from it.
+4. If local is newer or equal, push local to cloud (debounced, not on every keystroke).
+
+This is last-write-wins at the whole-collection level, not a per-record merge. A user editing the same recipe on two devices at the same time will have one edit silently lose — an accepted, documented limitation given the actual use pattern (one person, occasionally switching devices), not a live collaboration tool.
+
+### Gating and rollout
+
+- **Automatic for Pro users**, no Settings toggle. Matches how polished single-purpose sync (Notes, Reminders) behaves — nothing to find, nothing to forget.
+- Free users are entirely unaffected; the sync layer never activates for them.
+- Requires the existing paid Apple Developer Program membership (already in place).
+
+### Error handling
+
+- iCloud unavailable (signed out, disabled, no network): sync silently no-ops and the app behaves exactly as it does today, fully local. Never blocks or degrades the offline experience.
+- A write that fails (e.g., mid-flight during a device sleep) is retried on the next foreground/launch, not immediately — avoids battery/network churn from aggressive retry loops.
+
+## Feature 2: Pre-ferment / Levain Calculator
+
+Lives inside Recipe Detail's existing Pro "Baker's percentages" card as a new expandable sub-section — no new screen, no new navigation.
+
+### Inputs
+
+Reuses the exact chip patterns already established in Starter creation, so the mental model is familiar rather than new:
+
+- **Target levain weight** (grams, numeric entry)
+- **Hydration** — chip picker, same three options as Starter creation: 80% / 100% / 125%
+- **Build ratio** (seed : flour : water) — chip picker, same three options as Starter creation: 1:1:1 / 1:2:2 / 1:5:5
+
+### Output
+
+Grams of mature starter (seed), flour, and water needed to hit the target weight at the chosen ratio and hydration. Pure arithmetic — split the target weight by ratio parts, adjust the flour/water split for hydration. No new dependencies.
+
+### Gating
+
+Pro-only, identical gate to the rest of the baker's-percentages card.
+
+## Feature 3: Recipe Cost Calculator
+
+### Data model
+
+A new local collection, `doughmate.ingredientPrices.v1`, following the same state-provider pattern as `recipes.tsx`/`starters.tsx`:
+
+```
+{ ingredientName: string, pricePerGram: number, updatedAt: number }
+```
+
+Users enter prices in a natural form ("$4.99 for a 5 lb bag"); the app normalizes and stores `pricePerGram` internally. `ingredientName` is matched case-insensitively against a recipe's free-text ingredient names — it does not require the ingredient to exist in the `ingredients.json` reference list, though that list's density data is what makes volume-to-weight conversion possible for costing (see limitation below).
+
+### UI
+
+- **Inline, on Recipe Detail**: a new Pro-gated "Cost" card. Ingredients with a known price show their line cost; ingredients without one show an "Add price" affordance right there, so pricing happens in the natural flow of looking at a recipe rather than as separate up-front setup.
+- **Settings**: a simple management list to review and edit all previously-entered prices in one place.
+
+### Calculation
+
+Reuses the existing `convert.ts` engine unchanged: each recipe ingredient's amount is converted to grams (via `toGrams`, already used throughout the app), multiplied by that ingredient's `pricePerGram`, summed for a total, divided by `servings` for cost-per-serving.
+
+### Known limitation
+
+An ingredient measured by volume (cups, tbsp, tsp) that has no density entry in `ingredients.json` and no way to resolve grams cannot be priced automatically. It's shown as "can't estimate this one" rather than silently producing a wrong number. This is not expected to be common — most volume-measured baking ingredients already exist in the reference list for the Convert tab.
+
+### Currency
+
+USD only, matching every other unit in the app today. Revisit only if international users specifically ask.
+
+## Testing
+
+- **Sync**: unit tests for the timestamp-comparison logic (cloud newer / local newer / equal) independent of the actual iCloud APIs, which aren't testable in CI. Manual device-pair testing before ship.
+- **Levain calculator**: unit tests for the ratio/hydration arithmetic, mirroring the existing test patterns in `src/lib/*.test.ts`.
+- **Cost calculator**: unit tests for gram conversion + price multiplication, including the "no density available" fallback path.
+
+## Rollout sequencing
+
+Independently shippable in any order; no feature depends on another. Suggested order for implementation planning: levain calculator and cost calculator first (small, self-contained, no new native dependency), iCloud sync last (new native dependency, needs device-pair testing, highest risk of the three).
