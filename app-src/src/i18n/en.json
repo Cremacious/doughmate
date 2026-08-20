@@ -283,8 +283,7 @@
     "count_steps_other": "steps",
     "cook_empty_title": "No method yet",
     "cook_empty_add_steps": "Add steps",
-    "cook_empty_body": "Add steps to this recipe and Sam will walk you through them, one at a time.",
-    "cook_swipe_hint": "Swipe down to step out."
+    "cook_empty_body": "Add steps to this recipe and Sam will walk you through them, one at a time."
   },
   "starters": {
     "title": "Starters",

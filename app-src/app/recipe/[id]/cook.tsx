@@ -146,24 +146,29 @@ export default function CookModeSheet() {
               />
             </View>
           </View>
-          {last ? (
-            <Button
-              label={t('bakes.log_this_bake')}
-              onPress={() => router.push(`/bake-new?recipeId=${recipe.id}`)}
-              variant="quiet"
-              haptic="tap"
-            />
-          ) : null}
-          <Text
-            style={[
-              typography.body.sm,
-              scaleType(typography.body.sm, fontScale),
-              styles.centred,
-              { color: palette.textSoft },
-            ]}
-          >
-            {t('recipes.cook_swipe_hint')}
-          </Text>
+          {/* Close is always reachable, so leaving no longer depends on knowing
+              the sheet can be swiped down. With nothing to log it takes the
+              whole row on its own. */}
+          <View style={styles.footerRow}>
+            {last ? (
+              <View style={styles.footerLog}>
+                <Button
+                  label={t('bakes.log_this_bake')}
+                  onPress={() => router.push(`/bake-new?recipeId=${recipe.id}`)}
+                  variant="quiet"
+                  haptic="tap"
+                />
+              </View>
+            ) : null}
+            <View style={styles.footerClose}>
+              <Button
+                label={t('common.close')}
+                onPress={() => router.back()}
+                variant="quiet"
+                haptic="tap"
+              />
+            </View>
+          </View>
         </View>
       }
     >
@@ -205,4 +210,6 @@ const styles = StyleSheet.create({
   footerCol: { gap: spacing.sm },
   footerRow: { flexDirection: 'row', gap: spacing.sm },
   footerItem: { flex: 1 },
+  footerLog: { flex: 3 },
+  footerClose: { flex: 1 },
 });
