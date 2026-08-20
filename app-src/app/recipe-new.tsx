@@ -275,7 +275,15 @@ export default function RecipeEditorSheet() {
       size="tall"
       onClose={() => router.back()}
       header={
-        <Text style={[typography.display.md, styles.title, { color: palette.textInk }]}>
+        <Text
+          style={[
+            typography.display.md,
+            styles.title,
+            // The base 32/34 line box crops this font's ascenders (same class of
+            // clip `numeralLine` exists to avoid for big numerals).
+            { lineHeight: typography.display.md.lineHeight + 6, color: palette.textInk },
+          ]}
+        >
           {existing ? t('recipes.edit_title') : t('recipes.new_title')}
         </Text>
       }
