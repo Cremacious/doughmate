@@ -1,8 +1,8 @@
 // Ingredient prices the baker has entered, used to cost a recipe. One record per
 // ingredient name, normalised to dollars per gram so any recipe unit can use it.
-import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
+import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 
-import { type IngredientPrice, priceKey, upsertPrice } from '@/lib/cost';
+import { type IngredientPrice, priceKey, removePriceByName, upsertPrice } from '@/lib/cost';
 import { storage } from '@/lib/storage';
 
 const STORAGE_KEY = 'doughmate.ingredientPrices.v1';
@@ -31,25 +31,24 @@ const IngredientPricesContext = createContext<IngredientPricesContextValue | nul
 
 export function IngredientPricesProvider({ children }: { children: ReactNode }) {
   const [prices, setPrices] = useState<IngredientPrice[]>(loadPrices);
+  // Mutations derive from this rather than from the captured `prices`, matching
+  // every other provider. A rename calls removePrice(oldName) then setPrice(new)
+  // back to back in one handler, before React re-renders, so the second call has
+  // to see the first's result. Deriving from a ref also keeps the storage write
+  // out of the setState updater, which React requires to be pure.
+  const listRef = useRef(prices);
 
   const value = useMemo<IngredientPricesContextValue>(() => {
-    // The updater form of setState (not a `prices` closed over from this render) is
-    // required here: a rename calls removePrice(oldName) and setPrice(newEntry) back
-    // to back in the same handler, before React has re-rendered. Computing each commit
-    // from a snapshot of `prices` captured at render time would make the second call
-    // overwrite the first's effect instead of composing with it.
-    const commit = (updater: (prev: IngredientPrice[]) => IngredientPrice[]) => {
-      setPrices((prev) => {
-        const next = updater(prev);
-        storage.setItem(STORAGE_KEY, JSON.stringify(next));
-        return next;
-      });
+    const commit = (update: (prev: IngredientPrice[]) => IngredientPrice[]) => {
+      const next = update(listRef.current);
+      listRef.current = next;
+      storage.setItem(STORAGE_KEY, JSON.stringify(next));
+      setPrices(next);
     };
     return {
       prices,
       setPrice: (entry) => commit((prev) => upsertPrice(prev, entry)),
-      removePrice: (name) =>
-        commit((prev) => prev.filter((p) => priceKey(p.ingredientName) !== priceKey(name))),
+      removePrice: (name) => commit((prev) => removePriceByName(prev, name)),
       getPrice: (name) => prices.find((p) => priceKey(p.ingredientName) === priceKey(name)),
     };
   }, [prices]);

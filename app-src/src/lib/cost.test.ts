@@ -5,6 +5,7 @@ import {
   priceKey,
   pricePerGram,
   recipeCost,
+  removePriceByName,
   upsertPrice,
 } from './cost';
 
@@ -193,6 +194,23 @@ describe('upsertPrice', () => {
     );
     expect(next).toHaveLength(2);
     expect(next[1]).toEqual({ ingredientName: 'Bread Flour', pricePerGram: 0.003, updatedAt: 0 });
+  });
+});
+
+describe('removePriceByName', () => {
+  it('drops the matching price', () => {
+    const next = removePriceByName([priced('water', 0), priced('bread flour', 0.002)], 'water');
+    expect(next.map((p) => p.ingredientName)).toEqual(['bread flour']);
+  });
+
+  it('matches case and whitespace insensitively', () => {
+    const next = removePriceByName([priced('bread flour', 0.002)], '  Bread   Flour ');
+    expect(next).toEqual([]);
+  });
+
+  it('is a no-op when the name is absent', () => {
+    const list = [priced('water', 0)];
+    expect(removePriceByName(list, 'rye flour')).toEqual(list);
   });
 });
 

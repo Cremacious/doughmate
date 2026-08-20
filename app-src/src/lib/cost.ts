@@ -150,6 +150,18 @@ export function upsertPrice(list: IngredientPrice[], entry: IngredientPrice): In
   return list.map((p, i) => (i === index ? entry : p));
 }
 
+/**
+ * Drop the price for this ingredient, if present. A no-op if it isn't.
+ *
+ * The name-keyed counterpart to `removeById` in `./collection`: prices are
+ * keyed by ingredient name rather than an id, so they cannot share those
+ * helpers, but the transform belongs here under test either way.
+ */
+export function removePriceByName(list: IngredientPrice[], name: string): IngredientPrice[] {
+  const key = priceKey(name);
+  return list.filter((p) => priceKey(p.ingredientName) !== key);
+}
+
 /** USD only, matching every other unit in the app. */
 export function formatUsd(value: number): string {
   return `$${value.toFixed(2)}`;
