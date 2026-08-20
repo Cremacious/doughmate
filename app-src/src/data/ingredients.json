@@ -36,9 +36,9 @@
       "id": "cake_flour",
       "name": "Cake flour",
       "category": "flour",
-      "per_cup_g": 113,
-      "per_tbsp_g": 7,
-      "per_tsp_g": 2.3,
+      "per_cup_g": 120,
+      "per_tbsp_g": 7.5,
+      "per_tsp_g": 2.5,
       "aliases": []
     },
     {
@@ -423,9 +423,9 @@
       "id": "baking_soda",
       "name": "Baking soda",
       "category": "leavener",
-      "per_cup_g": 240,
-      "per_tbsp_g": 15,
-      "per_tsp_g": 5,
+      "per_cup_g": 288,
+      "per_tbsp_g": 18,
+      "per_tsp_g": 6,
       "aliases": ["bicarbonate of soda"]
     },
     {
