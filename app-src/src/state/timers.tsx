@@ -1,7 +1,8 @@
 // Live timers. Each is running (with an end time) or paused (with a held
 // remaining). "Done" is derived from the clock, not stored. Self contained.
-import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
+import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 
+import { removeById } from '@/lib/collection';
 import { storage } from '@/lib/storage';
 
 export interface Timer {
@@ -62,12 +63,16 @@ const TimersContext = createContext<TimersContextValue | null>(null);
 
 export function TimersProvider({ children }: { children: ReactNode }) {
   const [timers, setTimers] = useState<Timer[]>(() => sortTimers(loadTimers()));
+  // Mutations derive from this rather than from the captured `timers`, matching
+  // the other providers — see recipes.tsx / starters.tsx for why.
+  const listRef = useRef(timers);
 
   const value = useMemo<TimersContextValue>(() => {
-    const commit = (next: Timer[]) => {
-      const sorted = sortTimers(next);
-      storage.setItem(STORAGE_KEY, JSON.stringify(sorted));
-      setTimers(sorted);
+    const commit = (update: (prev: Timer[]) => Timer[]) => {
+      const next = sortTimers(update(listRef.current));
+      listRef.current = next;
+      storage.setItem(STORAGE_KEY, JSON.stringify(next));
+      setTimers(next);
     };
     return {
       timers,
@@ -82,12 +87,12 @@ export function TimersProvider({ children }: { children: ReactNode }) {
           endsAt: Date.now() + input.durationMs,
           createdAt: Date.now(),
         };
-        commit([timer, ...timers]);
+        commit((prev) => [timer, ...prev]);
         return timer;
       },
       pauseTimer: (id) =>
-        commit(
-          timers.map((t) =>
+        commit((prev) =>
+          prev.map((t) =>
             t.id === id && t.status === 'running'
               ? {
                   ...t,
@@ -99,8 +104,8 @@ export function TimersProvider({ children }: { children: ReactNode }) {
           )
         ),
       resumeTimer: (id) =>
-        commit(
-          timers.map((t) =>
+        commit((prev) =>
+          prev.map((t) =>
             t.id === id && t.status === 'paused'
               ? {
                   ...t,
@@ -111,7 +116,7 @@ export function TimersProvider({ children }: { children: ReactNode }) {
               : t
           )
         ),
-      cancelTimer: (id) => commit(timers.filter((t) => t.id !== id)),
+      cancelTimer: (id) => commit((prev) => removeById(prev, id)),
       getTimer: (id) => timers.find((t) => t.id === id),
     };
   }, [timers]);

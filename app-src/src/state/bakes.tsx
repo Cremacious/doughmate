@@ -1,7 +1,8 @@
 // The bake journal. Each bake records how a loaf turned out, optionally linked to
 // a recipe and the starter used (by id plus a name snapshot). Self contained.
-import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
+import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 
+import { removeById, restoreById } from '@/lib/collection';
 import { storage } from '@/lib/storage';
 
 export interface Bake {
@@ -61,12 +62,21 @@ function sortByBakedAt(list: Bake[]): Bake[] {
 
 export function BakesProvider({ children }: { children: ReactNode }) {
   const [bakes, setBakes] = useState<Bake[]>(() => sortByBakedAt(loadBakes()));
+  // Mutations derive from this rather than from the captured `bakes`. An undo
+  // handler lives inside a toast, which holds the callback from the render that
+  // raised it — deriving from that render's list re-added a bake that had
+  // already gone, leaving two records sharing one id.
+  const listRef = useRef(bakes);
 
   const value = useMemo<BakesContextValue>(() => {
-    const commit = (next: Bake[]) => {
-      const sorted = sortByBakedAt(next);
-      storage.setItem(STORAGE_KEY, JSON.stringify(sorted));
-      setBakes(sorted);
+    const commit = (update: (prev: Bake[]) => Bake[]) => {
+      // Every commit re-sorts the full list, not just restore: bakedAt is a
+      // user-editable field (backdating a bake), so any add/update/restore can
+      // change where a record belongs chronologically.
+      const next = sortByBakedAt(update(listRef.current));
+      listRef.current = next;
+      storage.setItem(STORAGE_KEY, JSON.stringify(next));
+      setBakes(next);
     };
     const fromInput = (input: BakeInput, id: string, createdAt: number): Bake => ({
       id,
@@ -89,13 +99,15 @@ export function BakesProvider({ children }: { children: ReactNode }) {
           `${Date.now()}-${Math.round(Math.random() * 1e6)}`,
           Date.now()
         );
-        commit([bake, ...bakes]);
+        commit((prev) => [bake, ...prev]);
         return bake;
       },
       updateBake: (id, input) =>
-        commit(bakes.map((b) => (b.id === id ? fromInput(input, b.id, b.createdAt) : b))),
-      removeBake: (id) => commit(bakes.filter((b) => b.id !== id)),
-      restoreBake: (bake) => commit([bake, ...bakes]),
+        commit((prev) => prev.map((b) => (b.id === id ? fromInput(input, b.id, b.createdAt) : b))),
+      removeBake: (id) => commit((prev) => removeById(prev, id)),
+      // The commit above re-sorts by bakedAt regardless, so restoring here only
+      // needs the id dedupe — no comparator required.
+      restoreBake: (bake) => commit((prev) => restoreById(prev, bake)),
       getBake: (id) => bakes.find((b) => b.id === id),
     };
   }, [bakes]);

@@ -2,6 +2,7 @@
 // history. Feeding stamps the time so the countdown to the next feed can update.
 import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 
+import { removeById, restoreById } from '@/lib/collection';
 import { storage } from '@/lib/storage';
 
 export interface Starter {
@@ -103,15 +104,9 @@ export function StartersProvider({ children }: { children: ReactNode }) {
               : s
           )
         ),
-      removeStarter: (id) => commit((prev) => prev.filter((s) => s.id !== id)),
-      // Dropping any record already holding this id keeps restore idempotent, so
-      // a double tap on undo cannot duplicate what it is putting back.
+      removeStarter: (id) => commit((prev) => removeById(prev, id)),
       restoreStarter: (starter) =>
-        commit((prev) =>
-          [starter, ...prev.filter((s) => s.id !== starter.id)].sort(
-            (a, b) => b.createdAt - a.createdAt
-          )
-        ),
+        commit((prev) => restoreById(prev, starter, (a, b) => b.createdAt - a.createdAt)),
       getStarter: (id) => starters.find((s) => s.id === id),
       updateStarter: (id, input) =>
         commit((prev) =>

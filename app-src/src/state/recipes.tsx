@@ -2,6 +2,7 @@
 // v1 records ({ name, lines[] }) are migrated once into this richer shape.
 import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 
+import { removeById, restoreById } from '@/lib/collection';
 import { parseIngredientLine } from '@/lib/recipe';
 import { storage } from '@/lib/storage';
 
@@ -138,15 +139,9 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
       },
       updateRecipe: (id, input) =>
         commit((prev) => prev.map((r) => (r.id === id ? fromInput(input, r.id, r.createdAt) : r))),
-      removeRecipe: (id) => commit((prev) => prev.filter((r) => r.id !== id)),
-      // Dropping any record already holding this id keeps restore idempotent, so
-      // a double tap on undo cannot duplicate what it is putting back.
+      removeRecipe: (id) => commit((prev) => removeById(prev, id)),
       restoreRecipe: (recipe) =>
-        commit((prev) =>
-          [recipe, ...prev.filter((r) => r.id !== recipe.id)].sort(
-            (a, b) => b.createdAt - a.createdAt
-          )
-        ),
+        commit((prev) => restoreById(prev, recipe, (a, b) => b.createdAt - a.createdAt)),
       getRecipe: (id) => recipes.find((r) => r.id === id),
     };
   }, [recipes]);
