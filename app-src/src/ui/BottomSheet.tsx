@@ -117,7 +117,7 @@ export function BottomSheet({
           {/* Tall/full sheets can reach the very top of the screen, so the drag
               handle and title need the status bar's own inset or the phone's
               battery/wifi icons sit on top of them. */}
-          <View style={[styles.dragArea, { paddingTop: 10 + insets.top }]}>
+          <View style={[styles.dragArea, { paddingTop: spacing.lg + insets.top }]}>
             <View style={[styles.grabber, { backgroundColor: palette.grabber }]} />
             {header}
           </View>
