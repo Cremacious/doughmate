@@ -11,7 +11,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import type { WeightUnit } from '@/lib/convert';
-import { formatUsd, type IngredientPrice, pricePerGram } from '@/lib/cost';
+import { formatUsd, type IngredientPrice, priceKey, pricePerGram } from '@/lib/cost';
 import { scaleType } from '@/lib/typeScale';
 import { useIngredientPrices } from '@/state/ingredientPrices';
 import { spacing, typography } from '@/theme';
@@ -51,6 +51,7 @@ export default function PriceEditorSheet() {
   const packageValue = parseAmount(packageAmount);
   const valid =
     name.trim().length > 0 &&
+    price.trim().length > 0 &&
     Number.isFinite(priceValue) &&
     priceValue >= 0 &&
     Number.isFinite(packageValue) &&
@@ -77,6 +78,12 @@ export default function PriceEditorSheet() {
       packageAmount: packageValue,
       packageUnit,
     };
+    // A rename (not just a case/whitespace tweak, which priceKey already treats as the
+    // same ingredient) leaves the old record behind under upsert's own key, so it must
+    // be removed explicitly or the baker ends up with two prices for one ingredient.
+    if (existing && priceKey(existing.ingredientName) !== priceKey(entry.ingredientName)) {
+      removePrice(existing.ingredientName);
+    }
     setPrice(entry);
     router.back();
     show({
