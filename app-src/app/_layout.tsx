@@ -167,6 +167,14 @@ function ThemedApp() {
           }}
         />
         <Stack.Screen
+          name="prices"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'none',
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
           name="starter/[id]"
           options={{
             presentation: 'transparentModal',

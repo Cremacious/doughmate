@@ -303,6 +303,12 @@ export default function SettingsSheet() {
             onValueChange={(v) => update('flouredFingers', v)}
           />
         </Card>
+        <Card onPress={() => router.push('/prices')} style={styles.linkRow}>
+          <Text style={[...bodyText, { color: palette.textInk }]}>
+            {t('settings.ingredient_prices')}
+          </Text>
+          <Text style={[...bodyText, { color: palette.textFaint }]}>›</Text>
+        </Card>
 
         <SectionLabel>{t('settings.section_notifications')}</SectionLabel>
         <DividedCard>
