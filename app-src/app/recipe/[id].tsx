@@ -7,7 +7,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { formatQuantity, type NumberFormat } from '@/lib/convert';
-import { bakersPercentages, groupBySection } from '@/lib/recipe';
+import { bakersPercentages, groupBySection, levainBuild, type LevainBuild } from '@/lib/recipe';
 import { tagStripFor } from '@/lib/recipeTag';
 import { formatStepTime, parseDuration } from '@/lib/timer';
 import { scaleType } from '@/lib/typeScale';
@@ -18,8 +18,10 @@ import { hardShadow, radius, spacing, stroke, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
+import { Chip } from '@/ui/Chip';
 import { HardShadow } from '@/ui/HardShadow';
 import { IconButton } from '@/ui/IconButton';
+import { Input } from '@/ui/Input';
 import { StepTimerControl } from '@/ui/StepTimerControl';
 import { Stepper } from '@/ui/Stepper';
 import { Tip } from '@/ui/Tip';
@@ -46,6 +48,18 @@ export default function RecipeDetailSheet() {
   const [factor, setFactor] = useState(1);
 
   const bakers = useMemo(() => (recipe ? bakersPercentages(recipe.ingredients) : null), [recipe]);
+
+  const [levainTarget, setLevainTarget] = useState('');
+  const [levainHydration, setLevainHydration] = useState(100);
+  const [levainRatio, setLevainRatio] = useState('1:2:2');
+
+  const levain: LevainBuild | null = useMemo(() => {
+    const target = Number(levainTarget);
+    if (!Number.isFinite(target) || target <= 0) {
+      return null;
+    }
+    return levainBuild(target, levainRatio, levainHydration);
+  }, [levainTarget, levainRatio, levainHydration]);
 
   if (!recipe) {
     return (
@@ -290,22 +304,86 @@ export default function RecipeDetailSheet() {
           {t('recipes.bakers_pct')}
         </Text>
         {isPro ? (
-          <Card style={styles.list}>
-            {bakers ? (
-              bakers.map((row, i) => (
-                <View key={i} style={styles.rowBetween}>
-                  <Text style={[typography.body.md, { color: palette.textInk }]}>{row.item}</Text>
-                  <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
-                    {formatQuantity(row.pct)}%
-                  </Text>
-                </View>
-              ))
-            ) : (
-              <Text style={[typography.body.md, { color: palette.textFaint }]}>
-                {t('recipes.bakers_empty')}
-              </Text>
-            )}
-          </Card>
+          <>
+            <Card style={styles.list}>
+              {bakers ? (
+                bakers.map((row, i) => (
+                  <View key={i} style={styles.rowBetween}>
+                    <Text style={[typography.body.md, { color: palette.textInk }]}>{row.item}</Text>
+                    <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
+                      {formatQuantity(row.pct)}%
+                    </Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={[typography.body.md, { color: palette.textFaint }]}>
+                  {t('recipes.bakers_empty')}
+                </Text>
+              )}
+            </Card>
+            <Text style={[typography.label, styles.sectionLabel, { color: palette.textSoft }]}>
+              {t('recipes.levain_heading')}
+            </Text>
+            <Card style={styles.list}>
+              <Input
+                label={t('recipes.levain_target_label')}
+                value={levainTarget}
+                onChangeText={setLevainTarget}
+                placeholder={t('recipes.levain_target_placeholder')}
+                numeric
+              />
+              <View style={styles.rowBetween}>
+                {[80, 100, 125].map((h) => (
+                  <Chip
+                    key={h}
+                    label={`${h}%`}
+                    numeric
+                    selected={levainHydration === h}
+                    onPress={() => setLevainHydration(h)}
+                  />
+                ))}
+              </View>
+              <View style={styles.rowBetween}>
+                {['1:1:1', '1:2:2', '1:5:5'].map((r) => (
+                  <Chip
+                    key={r}
+                    label={r}
+                    numeric
+                    selected={levainRatio === r}
+                    onPress={() => setLevainRatio(r)}
+                  />
+                ))}
+              </View>
+              {levain ? (
+                <>
+                  <View style={styles.rowBetween}>
+                    <Text style={[typography.body.md, { color: palette.textInk }]}>
+                      {t('recipes.levain_seed')}
+                    </Text>
+                    <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
+                      {formatQuantity(levain.seed, { format: 'decimal' })} g
+                    </Text>
+                  </View>
+                  <View style={styles.rowBetween}>
+                    <Text style={[typography.body.md, { color: palette.textInk }]}>
+                      {t('recipes.levain_flour')}
+                    </Text>
+                    <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
+                      {formatQuantity(levain.flour, { format: 'decimal' })} g
+                    </Text>
+                  </View>
+                  <View style={styles.rowBetween}>
+                    <Text style={[typography.body.md, { color: palette.textInk }]}>
+                      {t('recipes.levain_water')}
+                    </Text>
+                    <Text style={[typography.numeric.sm, { color: palette.proofTeal }]}>
+                      {formatQuantity(levain.water, { format: 'decimal' })} g
+                    </Text>
+                  </View>
+                </>
+              ) : null}
+            </Card>
+          </>
         ) : (
           <Card tier="quiet" onPress={() => router.push('/paywall')} style={styles.locked}>
             <View style={[styles.proBadge, { backgroundColor: palette.proWash }]}>
