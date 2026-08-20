@@ -9,14 +9,14 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { parseDuration } from '@/lib/timer';
 import { numeralLine, scaleType } from '@/lib/typeScale';
 import { useRecipes } from '@/state/recipes';
-import { radius, spacing, typography } from '@/theme';
+import { spacing, typography } from '@/theme';
 import { BottomSheet } from '@/ui/BottomSheet';
 import { Button } from '@/ui/Button';
 import { StepTimerControl } from '@/ui/StepTimerControl';
 import { useToast } from '@/ui/Toast';
 
-/** The ghost step number sitting behind the instruction. */
-const GHOST = 96;
+/** The step number above the instruction. Sized to label the step, not to lead it. */
+const STEP_NUMERAL = 56;
 
 export default function CookModeSheet() {
   const { t } = useTranslation();
@@ -105,7 +105,7 @@ export default function CookModeSheet() {
               typography.label,
               scaleType(typography.label, fontScale),
               styles.centred,
-              { color: palette.textFaint },
+              { color: palette.textSoft },
             ]}
             numberOfLines={1}
           >
@@ -159,7 +159,7 @@ export default function CookModeSheet() {
               typography.body.sm,
               scaleType(typography.body.sm, fontScale),
               styles.centred,
-              { color: palette.textFaint },
+              { color: palette.textSoft },
             ]}
           >
             {t('recipes.cook_swipe_hint')}
@@ -168,22 +168,9 @@ export default function CookModeSheet() {
       }
     >
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
-        <View style={styles.dots}>
-          {steps.map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.dot,
-                {
-                  width: i === index ? 22 : 8,
-                  backgroundColor: i === index ? palette.primary : palette.divider,
-                },
-              ]}
-            />
-          ))}
-        </View>
-
-        <Text style={[typography.numeric.hero, numeralLine(GHOST), { color: palette.bgSunken }]}>
+        <Text
+          style={[typography.numeric.hero, numeralLine(STEP_NUMERAL), { color: palette.textInk }]}
+        >
           {index + 1}
         </Text>
         <Text
@@ -215,8 +202,6 @@ const styles = StyleSheet.create({
   headerBlock: { alignSelf: 'stretch', paddingHorizontal: spacing.xl, gap: 2 },
   centred: { textAlign: 'center' },
   body: { padding: spacing.xl, gap: spacing.md, flexGrow: 1, justifyContent: 'center' },
-  dots: { flexDirection: 'row', gap: spacing.xs, alignItems: 'center' },
-  dot: { height: 8, borderRadius: radius.pill },
   footerCol: { gap: spacing.sm },
   footerRow: { flexDirection: 'row', gap: spacing.sm },
   footerItem: { flex: 1 },

@@ -18,10 +18,11 @@ import {
   isTimerDone,
   timerRemainingMs,
 } from '@/lib/timer';
+import { scaleType } from '@/lib/typeScale';
 import { usePro } from '@/state/pro';
 import { useTimers } from '@/state/timers';
-import { Icon } from '@/ui/Icon';
 import { radius, spacing, typography } from '@/theme';
+import { Icon } from '@/ui/Icon';
 import { useToast } from '@/ui/Toast';
 
 export interface StepTimerControlProps {
@@ -75,7 +76,16 @@ export function StepTimerControl({
         style={[styles.largeBtn, { height: largeHeight, backgroundColor: palette.proofTeal }]}
       >
         <Icon name="timer" size={22} color={palette.onTeal} />
-        <Text style={[typography.title, { color: palette.onTeal }]}>{startLabel}</Text>
+        <Text
+          numberOfLines={1}
+          style={[
+            typography.title,
+            scaleType(typography.title, fontScale),
+            { color: palette.onTeal },
+          ]}
+        >
+          {startLabel}
+        </Text>
       </Pressable>
     ) : (
       <Pressable
@@ -104,7 +114,12 @@ export function StepTimerControl({
       style={[styles.largeBtn, { height: largeHeight, backgroundColor: palette.proofTealWash }]}
     >
       <Icon name="timer" size={22} color={runningColor} />
-      <Text style={[typography.title, { color: runningColor }]}>{runningLabel}</Text>
+      <Text
+        numberOfLines={1}
+        style={[typography.title, scaleType(typography.title, fontScale), { color: runningColor }]}
+      >
+        {runningLabel}
+      </Text>
     </Pressable>
   ) : (
     <Pressable
