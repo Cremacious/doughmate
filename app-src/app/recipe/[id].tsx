@@ -107,9 +107,6 @@ export default function RecipeDetailSheet() {
   ];
 
   const scaled = factor !== 1;
-  // Cook mode walks the method one step at a time, so a recipe without one has
-  // nothing to walk. Offering it anyway landed the baker on an empty sheet.
-  const canCook = recipe.steps.length > 0;
   const canPlanBake = recipe.steps.some((s) => s.time && parseDuration(s.time) !== null);
 
   return (
@@ -171,15 +168,13 @@ export default function RecipeDetailSheet() {
       footer={
         <View style={styles.footerCol}>
           <View style={styles.footerRow}>
-            {canCook ? (
-              <View style={styles.footerPrimary}>
-                <Button
-                  label={t('recipes.start_baking')}
-                  onPress={() => router.push(`/recipe/${recipe.id}/cook`)}
-                  haptic="pop"
-                />
-              </View>
-            ) : null}
+            <View style={styles.footerPrimary}>
+              <Button
+                label={t('recipes.start_baking')}
+                onPress={() => router.push(`/recipe/${recipe.id}/cook`)}
+                haptic="pop"
+              />
+            </View>
             {canPlanBake ? (
               <IconButton
                 iconName="timer"

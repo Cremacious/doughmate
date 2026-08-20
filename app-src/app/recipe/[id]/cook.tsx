@@ -49,7 +49,24 @@ export default function CookModeSheet() {
         canvasColor={palette.cookCanvas}
         footerColor={palette.cookFooter}
         footer={
-          <Button label={t('common.close')} onPress={() => router.back()} size="lg" haptic="tap" />
+          <View style={styles.footerCol}>
+            {/* The way out of an empty method is to write one, so the primary
+                action goes to the editor rather than just dismissing. */}
+            {recipe ? (
+              <Button
+                label={t('recipes.cook_empty_add_steps')}
+                onPress={() => router.replace(`/recipe-new?id=${recipe.id}`)}
+                size="lg"
+                haptic="pop"
+              />
+            ) : null}
+            <Button
+              label={t('common.close')}
+              onPress={() => router.back()}
+              variant="quiet"
+              haptic="tap"
+            />
+          </View>
         }
       >
         <View style={styles.body}>
