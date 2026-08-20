@@ -1,7 +1,8 @@
 // The Recipe Box. Recipes carry structured ingredients, steps, tags and notes.
 // v1 records ({ name, lines[] }) are migrated once into this richer shape.
-import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
+import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 
+import { removeById, restoreById } from '@/lib/collection';
 import { parseIngredientLine } from '@/lib/recipe';
 import { storage } from '@/lib/storage';
 
@@ -100,9 +101,16 @@ const RecipesContext = createContext<RecipesContextValue | null>(null);
 
 export function RecipesProvider({ children }: { children: ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>(loadRecipes);
+  // Mutations derive from this rather than from the captured `recipes`. An undo
+  // handler lives inside a toast, which holds the callback from the render that
+  // raised it — deriving from that render's list re-added a recipe that had
+  // already gone, leaving two records sharing one id.
+  const listRef = useRef(recipes);
 
   const value = useMemo<RecipesContextValue>(() => {
-    const commit = (next: Recipe[]) => {
+    const commit = (update: (prev: Recipe[]) => Recipe[]) => {
+      const next = update(listRef.current);
+      listRef.current = next;
       storage.setItem(KEY, JSON.stringify(next));
       setRecipes(next);
     };
@@ -126,14 +134,14 @@ export function RecipesProvider({ children }: { children: ReactNode }) {
           `${Date.now()}-${Math.round(Math.random() * 1e6)}`,
           Date.now()
         );
-        commit([recipe, ...recipes]);
+        commit((prev) => [recipe, ...prev]);
         return recipe;
       },
       updateRecipe: (id, input) =>
-        commit(recipes.map((r) => (r.id === id ? fromInput(input, r.id, r.createdAt) : r))),
-      removeRecipe: (id) => commit(recipes.filter((r) => r.id !== id)),
+        commit((prev) => prev.map((r) => (r.id === id ? fromInput(input, r.id, r.createdAt) : r))),
+      removeRecipe: (id) => commit((prev) => removeById(prev, id)),
       restoreRecipe: (recipe) =>
-        commit([recipe, ...recipes].sort((a, b) => b.createdAt - a.createdAt)),
+        commit((prev) => restoreById(prev, recipe, (a, b) => b.createdAt - a.createdAt)),
       getRecipe: (id) => recipes.find((r) => r.id === id),
     };
   }, [recipes]);

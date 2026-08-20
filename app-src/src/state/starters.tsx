@@ -1,7 +1,8 @@
 // Sourdough starters: a persisted list, each with a feed interval and a feed
 // history. Feeding stamps the time so the countdown to the next feed can update.
-import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
+import { createContext, type ReactNode, useContext, useMemo, useRef, useState } from 'react';
 
+import { removeById, restoreById } from '@/lib/collection';
 import { storage } from '@/lib/storage';
 
 export interface Starter {
@@ -59,9 +60,16 @@ const StartersContext = createContext<StartersContextValue | null>(null);
 
 export function StartersProvider({ children }: { children: ReactNode }) {
   const [starters, setStarters] = useState<Starter[]>(loadStarters);
+  // Mutations derive from this rather than from the captured `starters`. An undo
+  // handler lives inside a toast, which holds the callback from the render that
+  // raised it — deriving from that render's list re-added a starter that had
+  // already gone, leaving two records sharing one id.
+  const listRef = useRef(starters);
 
   const value = useMemo<StartersContextValue>(() => {
-    const commit = (next: Starter[]) => {
+    const commit = (update: (prev: Starter[]) => Starter[]) => {
+      const next = update(listRef.current);
+      listRef.current = next;
       storage.setItem(STORAGE_KEY, JSON.stringify(next));
       setStarters(next);
     };
@@ -80,12 +88,12 @@ export function StartersProvider({ children }: { children: ReactNode }) {
           notes,
           feeds: [],
         };
-        commit([starter, ...starters]);
+        commit((prev) => [starter, ...prev]);
         return starter;
       },
       feedStarter: (id) =>
-        commit(
-          starters.map((s) =>
+        commit((prev) =>
+          prev.map((s) =>
             s.id === id
               ? {
                   ...s,
@@ -96,13 +104,13 @@ export function StartersProvider({ children }: { children: ReactNode }) {
               : s
           )
         ),
-      removeStarter: (id) => commit(starters.filter((s) => s.id !== id)),
+      removeStarter: (id) => commit((prev) => removeById(prev, id)),
       restoreStarter: (starter) =>
-        commit([starter, ...starters].sort((a, b) => b.createdAt - a.createdAt)),
+        commit((prev) => restoreById(prev, starter, (a, b) => b.createdAt - a.createdAt)),
       getStarter: (id) => starters.find((s) => s.id === id),
       updateStarter: (id, input) =>
-        commit(
-          starters.map((s) =>
+        commit((prev) =>
+          prev.map((s) =>
             s.id === id
               ? {
                   ...s,

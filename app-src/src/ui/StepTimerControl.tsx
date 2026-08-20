@@ -18,9 +18,11 @@ import {
   isTimerDone,
   timerRemainingMs,
 } from '@/lib/timer';
+import { scaleType } from '@/lib/typeScale';
 import { usePro } from '@/state/pro';
 import { useTimers } from '@/state/timers';
 import { radius, spacing, typography } from '@/theme';
+import { Icon } from '@/ui/Icon';
 import { useToast } from '@/ui/Toast';
 
 export interface StepTimerControlProps {
@@ -41,19 +43,22 @@ export function StepTimerControl({
   size = 'compact',
 }: StepTimerControlProps) {
   const { t } = useTranslation();
-  const { palette } = useAppTheme();
+  const { palette, fontScale } = useAppTheme();
   const { timers, startTimer } = useTimers();
   const { isPro } = usePro();
   const { show } = useToast();
   const now = useNow();
 
   const large = size === 'large';
+  // Matches HEIGHTS.lg in src/ui/Button.tsx, so this control and the primary
+  // button beneath it in cook mode sit at the same height.
+  const largeHeight = fontScale > 1 ? 72 : 60;
   const stepLabel = t('timers.step_n', { n: stepIndex + 1 });
   const timeLabel = formatStepTime(time);
   const running = timers.find((tm) => tm.recipeId === recipeId && tm.stepLabel === stepLabel);
 
   if (!running) {
-    const label = `▶ ${t('timers.start_step_timer', { time: timeLabel })}`;
+    const startLabel = t('timers.start_step_timer', { time: timeLabel });
     const onPress = () => {
       // Free bakers run one timer at a time. Overlapping stages are the Pro upgrade.
       if (atLimit(activeTimerCount(timers, now), FREE_TIMER_LIMIT, isPro)) {
@@ -66,37 +71,54 @@ export function StepTimerControl({
     return large ? (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={t('timers.start_step_timer', { time: timeLabel })}
+        accessibilityLabel={startLabel}
         onPress={onPress}
-        style={[styles.largeBtn, { backgroundColor: palette.proofTeal }]}
+        style={[styles.largeBtn, { height: largeHeight, backgroundColor: palette.proofTeal }]}
       >
-        <Text style={[typography.title, { color: palette.bgSurface }]}>{label}</Text>
+        <Icon name="timer" size={22} color={palette.onTeal} />
+        <Text
+          numberOfLines={1}
+          style={[
+            typography.title,
+            scaleType(typography.title, fontScale),
+            { color: palette.onTeal },
+          ]}
+        >
+          {startLabel}
+        </Text>
       </Pressable>
     ) : (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={t('timers.start_step_timer', { time: timeLabel })}
+        accessibilityLabel={startLabel}
         onPress={onPress}
         style={styles.compactBtn}
       >
-        <Text style={[typography.label, { color: palette.proofTeal }]}>{label}</Text>
+        <Text style={[typography.label, { color: palette.proofTeal }]}>{`▶ ${startLabel}`}</Text>
       </Pressable>
     );
   }
 
   const remaining = timerRemainingMs(running, now);
   const done = isTimerDone(running, now);
-  const label = `◷ ${done ? t('timers.done') : t('timers.step_time_left', { time: formatRemaining(remaining) })}`;
+  const runningLabel = done
+    ? t('timers.done')
+    : t('timers.step_time_left', { time: formatRemaining(remaining) });
+  const runningColor = done ? palette.primary : palette.proofTealText;
 
   return large ? (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={t('timers.view_running_timer')}
       onPress={() => router.push('/timers')}
-      style={[styles.largeBtn, { backgroundColor: palette.proofTealWash }]}
+      style={[styles.largeBtn, { height: largeHeight, backgroundColor: palette.proofTealWash }]}
     >
-      <Text style={[typography.title, { color: done ? palette.primary : palette.proofTealText }]}>
-        {label}
+      <Icon name="timer" size={22} color={runningColor} />
+      <Text
+        numberOfLines={1}
+        style={[typography.title, scaleType(typography.title, fontScale), { color: runningColor }]}
+      >
+        {runningLabel}
       </Text>
     </Pressable>
   ) : (
@@ -107,7 +129,7 @@ export function StepTimerControl({
       style={styles.compactBtn}
     >
       <Text style={[typography.label, { color: done ? palette.primary : palette.proofTeal }]}>
-        {label}
+        {`◷ ${runningLabel}`}
       </Text>
     </Pressable>
   );
@@ -120,11 +142,12 @@ const styles = StyleSheet.create({
   },
   largeBtn: {
     alignSelf: 'stretch',
-    marginTop: spacing.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: radius.lg,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.xl,
   },
 });
 

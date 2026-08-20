@@ -80,12 +80,6 @@ export const palettes = {
     toastText: '#FFF9F4',
     toastAction: '#FFC24B',
 
-    // Cook mode inverts on both themes.
-    cookCanvas: '#241611',
-    cookFooter: '#1B120E',
-    cookGhost: '#3D2C22',
-    cookDim: '#5A4436',
-
     /** Ink at 28%, for a track or an inactive dot sitting on a hero fill. */
     heroDim: 'rgba(36,22,17,0.28)',
 
@@ -152,11 +146,6 @@ export const palettes = {
     toastBg: '#F7ECE2',
     toastText: '#211A16',
     toastAction: '#D2622F',
-
-    cookCanvas: '#241611',
-    cookFooter: '#1B120E',
-    cookGhost: '#3D2C22',
-    cookDim: '#5A4436',
 
     heroDim: 'rgba(36,22,17,0.28)',
 
