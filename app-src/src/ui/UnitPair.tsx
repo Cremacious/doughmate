@@ -42,19 +42,24 @@ export function UnitPair({
       }}
       style={styles.half}
     >
-      <Text
-        numberOfLines={1}
-        style={[
-          typography.title,
-          scaleType(typography.title, fontScale),
-          styles.label,
-          { color },
-          // The open side underlines, so the revealed chip row has a visible owner.
-          openSide === side ? { textDecorationLine: 'underline' } : null,
-        ]}
-      >
-        {label}
-      </Text>
+      <View style={styles.halfInner}>
+        <Text
+          numberOfLines={1}
+          style={[
+            typography.title,
+            scaleType(typography.title, fontScale),
+            styles.label,
+            { color },
+            // The open side underlines, so the revealed chip row has a visible owner.
+            openSide === side ? { textDecorationLine: 'underline' } : null,
+          ]}
+        >
+          {label}
+        </Text>
+        {/* Same caret PickerField uses, so both halves read as tappable like every
+            other picker on this screen. */}
+        <Text style={[typography.label, scaleType(typography.label, fontScale), { color }]}>▾</Text>
+      </View>
     </Pressable>
   );
 
@@ -86,6 +91,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   half: { flex: 1, justifyContent: 'center' },
+  halfInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
   label: { textAlign: 'center' },
 });
 
