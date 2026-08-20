@@ -25,10 +25,6 @@ export interface BottomSheetProps {
   children: ReactNode;
   footer?: ReactNode;
   header?: ReactNode;
-  /** Overrides the panel fill. Cook mode inverts, on both themes. */
-  canvasColor?: string;
-  /** Overrides the sticky footer fill, paired with `canvasColor`. */
-  footerColor?: string;
 }
 
 export function BottomSheet({
@@ -37,8 +33,6 @@ export function BottomSheet({
   children,
   footer,
   header,
-  canvasColor,
-  footerColor,
 }: BottomSheetProps) {
   const { palette } = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -123,7 +117,7 @@ export function BottomSheet({
           shadow.sheet,
           {
             height: heightPct,
-            backgroundColor: canvasColor ?? palette.bgCanvas,
+            backgroundColor: palette.bgCanvas,
             borderTopColor: palette.outline,
           },
           panelStyle,
@@ -147,7 +141,7 @@ export function BottomSheet({
             style={[
               styles.footer,
               {
-                backgroundColor: footerColor ?? palette.bgSurface,
+                backgroundColor: palette.bgSurface,
                 borderTopColor: palette.outline,
                 paddingBottom: insets.bottom + spacing.md,
               },
