@@ -380,6 +380,8 @@
     "restore_purchases": "Restore purchases",
     "restoring": "Restoring…",
     "buy_pro": "Buy Pro",
+    "debug_pro_override": "Debug: Force Pro",
+    "debug_pro_override_desc": "Dev builds only. Overrides your real entitlement so you can test the Pro experience.",
     "buy_themes": "Buy themes",
     "rate": "Rate Doughmate",
     "contact": "Contact Sam",

@@ -151,7 +151,7 @@ export default function SettingsSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
   const { settings, update } = useSettings();
-  const { isPro, restore } = usePro();
+  const { isPro, restore, debugProOverride, setDebugProOverride } = usePro();
   const { show } = useToast();
   const version = Constants.expoConfig?.version ?? '1.0.0';
   const [restoring, setRestoring] = useState(false);
@@ -352,6 +352,16 @@ export default function SettingsSheet() {
             <Text style={[...bodyText, { color: palette.textInk }]}>
               {restoring ? t('settings.restoring') : t('settings.restore_purchases')}
             </Text>
+          </Card>
+        ) : null}
+        {__DEV__ ? (
+          <Card>
+            <ToggleRow
+              label={t('settings.debug_pro_override')}
+              desc={t('settings.debug_pro_override_desc')}
+              value={debugProOverride}
+              onValueChange={setDebugProOverride}
+            />
           </Card>
         ) : null}
 
