@@ -112,12 +112,14 @@ export function StarterCard({
             </Text>
           </View>
         </Pressable>
+        {/* Ink, not a tint. A delete you cannot see is a delete you tap by accident:
+            on the tomato hero the old onPrimarySoft read as a faint yellow smudge. */}
         <IconButton
           iconName="delete"
           variant="quiet"
           accessibilityLabel={t('starters.button_delete')}
           onPress={onDelete}
-          color={hero ? palette.onPrimarySoft : palette.textFaint}
+          color={hero ? palette.onButter : palette.textInk}
         />
       </View>
 

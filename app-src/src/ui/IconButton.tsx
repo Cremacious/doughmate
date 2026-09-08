@@ -48,6 +48,12 @@ export function IconButton({
   const size = floured ? Math.round(base * (58 / 46)) : base;
   const corner = radiusOverride ?? (quiet ? radius.md : floured ? radius['2xl'] : radius.lg);
 
+  // Delete is the one quiet glyph that does not get to be quiet. It is destructive,
+  // so it draws in ink on every surface rather than the soft grey the rest use — a
+  // trash can you have to hunt for is a trash can you hit by accident.
+  const destructive = iconName === 'delete';
+  const glyphColor = color ?? (quiet && !destructive ? palette.textSoft : palette.textInk);
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -78,11 +84,7 @@ export function IconButton({
             },
           ]}
         >
-          <Icon
-            name={iconName}
-            size={Math.round(size * 0.46)}
-            color={color ?? (quiet ? palette.textSoft : palette.textInk)}
-          />
+          <Icon name={iconName} size={Math.round(size * 0.46)} color={glyphColor} />
         </View>
       </HardShadow>
     </Pressable>
