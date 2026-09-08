@@ -1,10 +1,16 @@
-// Doughmate Pro, a tall sheet. A plum hero with Sam celebrating, the perks as one
-// divided card, then buy and restore. Buying needs a native build with a configured
+// The supporter sheet, tall. A plum hero with Sam celebrating, the pitch, the perks as
+// one divided card, then buy and restore. Buying needs a native build with a configured
 // key; on web it is unavailable and the button stays disabled.
 //
-// Plum is the Pro colour, always and only, so the hero carries it and nothing else on
-// the sheet competes. The price rides beside the label in Space Grotesk, because it is
-// the number the decision turns on.
+// This is not a wall and it does not sell. The app is free and stays free; supporting
+// is a thank you that happens to unlock things. So the hero says support rather than
+// upgrade, the pitch is two sentences, and the perks are framed as the thank you rather
+// than as what you are missing. This sheet is also the only place in the app that
+// mentions who builds it, and it mentions it once.
+//
+// Plum is the supporter colour, always and only, so the hero carries it and nothing else
+// on the sheet competes. The price rides beside the label in Space Grotesk, because it
+// is the number the decision turns on.
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -94,7 +100,7 @@ export default function PaywallSheet() {
     >
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <Card tier="hero" heroColor={palette.pro} style={styles.hero}>
-          <Sam size={132} emotion="excited" crust={palette.samCrustPale} />
+          <Sam size={132} emotion="excited" crust={palette.samCrustPale} idle />
           <Text
             style={[
               typography.display.lg,
@@ -116,6 +122,25 @@ export default function PaywallSheet() {
             {t('paywall.tagline')}
           </Text>
         </Card>
+
+        {/* The one place the app says who made it. Body weight, not a headline: it is
+            context for the ask, not the ask itself. */}
+        <Text
+          style={[
+            typography.body.lg,
+            scaleType(typography.body.lg, fontScale),
+            styles.center,
+            { color: palette.textSoft },
+          ]}
+        >
+          {t('paywall.pitch')}
+        </Text>
+
+        <Text
+          style={[typography.label, scaleType(typography.label, fontScale), { color: palette.pro }]}
+        >
+          {t('paywall.features_heading')}
+        </Text>
 
         <Card style={styles.perks}>
           {features.map((feature, i) => (

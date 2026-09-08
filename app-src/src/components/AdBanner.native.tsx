@@ -1,7 +1,7 @@
 // Ad banner: native. Hidden entirely for Pro bakers, and held back until consent
 // is settled and the SDK is initialized, so it never renders a dead frame.
 //
-// requestNonPersonalizedAdsOnly stays true: Doughmate does not serve personalized
+// requestNonPersonalizedAdsOnly stays true: DoughMate does not serve personalized
 // ads, which is what keeps the ATT prompt off iOS.
 import { useSyncExternalStore } from 'react';
 import { StyleSheet, View } from 'react-native';

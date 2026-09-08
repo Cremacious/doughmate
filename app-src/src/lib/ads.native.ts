@@ -11,7 +11,7 @@
 // is needed and shows a form only where one is required. Everywhere else it
 // resolves immediately and nobody sees a dialog.
 //
-// Doughmate serves non personalized ads only, so there is no ATT prompt and no
+// DoughMate serves non personalized ads only, so there is no ATT prompt and no
 // tracking permission to ask for. See AdBanner for the request flag.
 import mobileAds, { AdsConsent } from 'react-native-google-mobile-ads';
 
@@ -58,7 +58,7 @@ export async function initAds(): Promise<void> {
     canRequestAds = info.canRequestAds;
   } catch {
     // A consent failure must never take the app down, and it must never be
-    // treated as permission. No consent, no ads: the rest of Doughmate is
+    // treated as permission. No consent, no ads: the rest of DoughMate is
     // untouched either way.
     canRequestAds = false;
   }

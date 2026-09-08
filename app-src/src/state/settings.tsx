@@ -14,7 +14,6 @@ export interface Settings {
   theme: ThemePref;
   reducedMotion: boolean;
   haptics: boolean;
-  soundEffects: boolean;
   units: UnitsPref;
   flourStandard: FlourStandardPref;
   numberFormat: NumberFormatPref;
@@ -31,7 +30,6 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'light',
   reducedMotion: false,
   haptics: true,
-  soundEffects: false,
   units: 'imperial',
   flourStandard: 120,
   numberFormat: 'fraction',

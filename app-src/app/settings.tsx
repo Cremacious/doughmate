@@ -1,5 +1,5 @@
 // Settings, opened from the gear as a bottom sheet. Grouped cards for appearance,
-// sound and feel, preferences, notifications, Pro and about. Every control writes
+// motion and feel, preferences, notifications, supporter and about. Every control writes
 // straight to the settings store.
 //
 // Two Fresh Bake calls here. Toggles live in one standard card divided by rules, not
@@ -210,7 +210,7 @@ export default function SettingsSheet() {
           ))}
         </View>
 
-        <SectionLabel>{t('settings.section_sound')}</SectionLabel>
+        <SectionLabel>{t('settings.section_feel')}</SectionLabel>
         <DividedCard>
           {[
             <ToggleRow
@@ -219,12 +219,6 @@ export default function SettingsSheet() {
               desc={t('settings.reduced_motion_desc')}
               value={settings.reducedMotion}
               onValueChange={(v) => update('reducedMotion', v)}
-            />,
-            <ToggleRow
-              key="sound"
-              label={t('settings.sound_effects')}
-              value={settings.soundEffects}
-              onValueChange={(v) => update('soundEffects', v)}
             />,
             <ToggleRow
               key="haptics"

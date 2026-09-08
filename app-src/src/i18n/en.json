@@ -5,7 +5,7 @@
     "notes": "Every string in the app lives here. Access via t('key.path'). Never hardcode text in components."
   },
   "app": {
-    "name": "Doughmate",
+    "name": "DoughMate",
     "tagline": "Convert, scale, and bake with Sam"
   },
   "sam": {
@@ -140,7 +140,7 @@
     "search_placeholder": "Search substitutions",
     "swap_for": "Swap for",
     "empty": "Nothing matches. Try another ingredient.",
-    "pro_teaser": "{{count}} more swaps and full baker's math with Pro."
+    "pro_teaser": "{{count}} more swaps and full baker's math for supporters."
   },
   "scaler": {
     "title": "Scale a recipe",
@@ -227,7 +227,7 @@
     "meta_steps_other": "{{count}} steps",
     "tag_all": "All",
     "bakers_pct": "Baker's percentages",
-    "bakers_locked": "See baker's percentages, the levain calculator, and recipe costs with Pro",
+    "bakers_locked": "Baker's percentages, the levain calculator and recipe costs are supporter features",
     "levain_heading": "Levain build",
     "levain_target_label": "Target levain weight",
     "levain_target_placeholder": "e.g. 550",
@@ -358,10 +358,10 @@
   "settings": {
     "title": "Settings",
     "section_appearance": "Appearance",
-    "section_sound": "Sound & feel",
+    "section_feel": "Motion & feel",
     "section_preferences": "Preferences",
     "section_notifications": "Notifications",
-    "section_pro": "Pro",
+    "section_pro": "Supporter",
     "section_support": "Support",
     "section_about": "About",
     "theme_label": "Theme",
@@ -369,7 +369,6 @@
     "theme_light": "Light",
     "theme_dark": "Dark",
     "reduced_motion": "Reduced motion",
-    "sound_effects": "Sound effects",
     "haptics": "Haptics",
     "default_units": "Default units",
     "unit_metric": "Metric",
@@ -387,11 +386,11 @@
     "weekly_tip": "Weekly baking tip from Sam",
     "restore_purchases": "Restore purchases",
     "restoring": "Restoring…",
-    "buy_pro": "Buy Pro",
-    "debug_pro_override": "Debug: Force Pro",
-    "debug_pro_override_desc": "Dev builds only. Overrides your real entitlement so you can test the Pro experience.",
+    "buy_pro": "Support DoughMate",
+    "debug_pro_override": "Debug: Force supporter",
+    "debug_pro_override_desc": "Dev builds only. Overrides your real entitlement so you can test the supporter experience.",
     "buy_themes": "Buy themes",
-    "rate": "Rate Doughmate",
+    "rate": "Rate DoughMate",
     "contact": "Contact Sam",
     "feedback": "Send feedback",
     "privacy": "Privacy",
@@ -401,7 +400,7 @@
     "version": "Version",
     "credits": "Credits",
     "reduced_motion_desc": "A calm version of every animation.",
-    "pro_unlocked_row": "Doughmate Pro unlocked",
+    "pro_unlocked_row": "You're a supporter. Thank you.",
     "show_tips_again": "Show tips again",
     "tips_reset_toast": "Tips are back.",
     "flour_caption_120": "per cup, US",
@@ -429,8 +428,10 @@
     "rename_collision": "{{name}} already has a price. Delete it first if you want to replace it."
   },
   "paywall": {
-    "title": "Doughmate Pro",
-    "tagline": "Single purchase, no subscription.",
+    "title": "Support DoughMate",
+    "tagline": "One purchase, no subscription.",
+    "pitch": "DoughMate is free, and it's built by one person in their kitchen. Supporting it keeps it going.",
+    "features_heading": "As a thank you, supporters get:",
     "features": [
       "Unlimited recipes",
       "Unlimited starters",
@@ -441,11 +442,11 @@
       "Recipe cost calculator",
       "No ads, ever"
     ],
-    "cta": "Get Pro for $4.99",
+    "cta": "Support for $2.99",
     "restore": "Restore purchases",
     "close": "Close",
-    "cta_label": "Get Pro",
-    "price": "$4.99"
+    "cta_label": "Support",
+    "price": "$2.99"
   },
   "empty_states": {
     "favorites_title": "No favorites yet.",
@@ -463,7 +464,7 @@
   },
   "toasts": {
     "restore_success": "Restored. Welcome back.",
-    "pro_unlocked": "Pro unlocked. Thank you.",
+    "pro_unlocked": "You're a supporter now. Thank you.",
     "theme_purchased": "New theme unlocked. Enjoy."
   },
   "milestones": {
@@ -503,7 +504,7 @@
   },
   "common": {
     "close": "Close",
-    "pro": "Pro",
+    "pro": "Supporter",
     "open_settings": "Open settings",
     "more_converters": "More converters",
     "remove": "Remove"

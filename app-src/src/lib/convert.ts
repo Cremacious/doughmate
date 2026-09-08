@@ -1,4 +1,4 @@
-// Doughmate conversion engine. Pure functions, no UI, no side effects.
+// DoughMate conversion engine. Pure functions, no UI, no side effects.
 // Volume/weight math plus ingredient density lookups from data/ingredients.json.
 import ingredientsData from '../data/ingredients.json';
 
