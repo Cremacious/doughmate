@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700;0,6..12,800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#EFE2CE;-webkit-font-smoothing:antialiased}
+  :root{--k:1;--play:running;--cyc:calc(3000ms * var(--k));--cycE:calc(1200ms * var(--k));--cycF:calc(4200ms * var(--k))}
+  a{color:#C24A26;text-decoration:none}
+  a:hover{color:#D84D2C;text-decoration:underline}
+
+  /* generic hard cut, for the "today" columns */
+  @keyframes dmHardOut{0%,26.66%{opacity:1}26.67%,73.32%{opacity:0}73.33%,100%{opacity:1}}
+  @keyframes dmHardIn{0%,26.66%{opacity:0}26.67%,73.32%{opacity:1}73.33%,100%{opacity:0}}
+
+  /* 01 tab switch */
+  @keyframes dmAOut{0%{opacity:1;transform:translateX(0)}26.66%{opacity:1;transform:translateX(0);animation-timing-function:cubic-bezier(0.32,0.72,0,1)}34%{opacity:0;transform:translateX(-26px)}73.32%{opacity:0;transform:translateX(-26px);animation-timing-function:cubic-bezier(0.32,0.72,0,1)}80.66%{opacity:1;transform:translateX(0)}100%{opacity:1;transform:translateX(0)}}
+  @keyframes dmAIn{0%{opacity:0;transform:translateX(34px)}26.66%{opacity:0;transform:translateX(34px);animation-timing-function:cubic-bezier(0.32,0.72,0,1)}34%{opacity:1;transform:translateX(0)}73.32%{opacity:1;transform:translateX(0);animation-timing-function:cubic-bezier(0.32,0.72,0,1)}80.66%{opacity:0;transform:translateX(34px)}100%{opacity:0;transform:translateX(34px)}}
+  @keyframes dmAPillHard{0%,26.66%{transform:translateX(0)}26.67%,73.32%{transform:translateX(90.5px)}73.33%,100%{transform:translateX(0)}}
+  @keyframes dmAPill{0%{transform:translateX(0)}26.66%{transform:translateX(0);animation-timing-function:cubic-bezier(0.34,1.5,0.64,1)}33.33%{transform:translateX(90.5px)}73.32%{transform:translateX(90.5px);animation-timing-function:cubic-bezier(0.34,1.5,0.64,1)}80%{transform:translateX(0)}100%{transform:translateX(0)}}
+  @keyframes dmASoftOut{0%,26.66%{opacity:1}30.66%,73.32%{opacity:0}77.32%,100%{opacity:1}}
+  @keyframes dmASoftIn{0%,26.66%{opacity:0}30.66%,73.32%{opacity:1}77.32%,100%{opacity:0}}
+
+  /* 02 sheet present */
+  @keyframes dmBPanelBefore{0%{transform:translateY(444px)}26.66%{transform:translateY(444px);animation-timing-function:cubic-bezier(0.18,1.06,0.32,1)}47.33%{transform:translateY(0)}73.32%{transform:translateY(0);animation-timing-function:cubic-bezier(0.4,0,1,1)}80.66%{transform:translateY(444px)}100%{transform:translateY(444px)}}
+  @keyframes dmBPanelAfter{0%{transform:translateY(444px)}26.66%{transform:translateY(444px);animation-timing-function:cubic-bezier(0.28,0.9,0.2,1)}34.66%{transform:translateY(-2px)}36%{transform:translateY(0)}73.32%{transform:translateY(0);animation-timing-function:cubic-bezier(0.4,0,1,1)}79%{transform:translateY(444px)}100%{transform:translateY(444px)}}
+  @keyframes dmBScrim{0%,26.66%{opacity:0}31.33%,73.32%{opacity:1}78%,100%{opacity:0}}
+
+  /* 03 push into detail */
+  @keyframes dmCPanelBefore{0%{transform:translateY(666px)}26.66%{transform:translateY(666px);animation-timing-function:cubic-bezier(0.18,1.06,0.32,1)}47.33%{transform:translateY(0)}73.32%{transform:translateY(0);animation-timing-function:cubic-bezier(0.4,0,1,1)}80.66%{transform:translateY(666px)}100%{transform:translateY(666px)}}
+  @keyframes dmCPanelAfter{0%{transform:translateY(666px)}26.66%{transform:translateY(666px);animation-timing-function:cubic-bezier(0.28,0.9,0.2,1)}34.66%{transform:translateY(-3px)}36%{transform:translateY(0)}73.32%{transform:translateY(0);animation-timing-function:cubic-bezier(0.4,0,1,1)}79%{transform:translateY(666px)}100%{transform:translateY(666px)}}
+  @keyframes dmCRecede{0%{transform:scale(1);opacity:1}26.66%{transform:scale(1);opacity:1;animation-timing-function:cubic-bezier(0.32,0.72,0,1)}34%{transform:scale(0.965);opacity:0.72}73.32%{transform:scale(0.965);opacity:0.72;animation-timing-function:cubic-bezier(0.32,0.72,0,1)}80%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:1}}
+  @keyframes dmCTap{0%,24%{transform:translate(0,0);box-shadow:4px 4px 0 rgba(36,22,17,0.14)}25.5%,26.5%{transform:translate(3px,3px);box-shadow:1px 1px 0 rgba(36,22,17,0.14)}28%,100%{transform:translate(0,0);box-shadow:4px 4px 0 rgba(36,22,17,0.14)}}
+
+  /* 04 onboarding advance */
+  @keyframes dmDFadeOut{0%,26.66%{opacity:1}38.33%,73.32%{opacity:0}85%,100%{opacity:1}}
+  @keyframes dmDFadeIn{0%,26.66%{opacity:0}38.33%,73.32%{opacity:1}85%,100%{opacity:0}}
+  @keyframes dmDOut{0%{opacity:1;transform:translateY(0)}26.66%{opacity:1;transform:translateY(0);animation-timing-function:cubic-bezier(0.4,0,1,1)}30.66%{opacity:0;transform:translateY(-12px)}73.32%{opacity:0;transform:translateY(-12px);animation-timing-function:cubic-bezier(0,0,0.2,1)}80.66%{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes dmDIn{0%{opacity:0;transform:translateY(16px)}28%{opacity:0;transform:translateY(16px);animation-timing-function:cubic-bezier(0.32,0.72,0,1)}35.33%{opacity:1;transform:translateY(0)}73.32%{opacity:1;transform:translateY(0);animation-timing-function:cubic-bezier(0.4,0,1,1)}77.32%{opacity:0;transform:translateY(16px)}100%{opacity:0;transform:translateY(16px)}}
+  @keyframes dmDHero{0%{transform:scale(0.88)}28%{transform:scale(0.88);animation-timing-function:cubic-bezier(0.34,1.45,0.64,1)}36.66%{transform:scale(1)}100%{transform:scale(1)}}
+
+  /* 05 press */
+  @keyframes dmEBefore{0%{transform:translate(0,0);box-shadow:3px 3px 0 #241611}20%{transform:translate(0,0);box-shadow:3px 3px 0 #241611;animation-timing-function:cubic-bezier(0.45,0,0.55,1)}30%{transform:translate(2px,2px);box-shadow:1px 1px 0 #241611}55%{transform:translate(2px,2px);box-shadow:1px 1px 0 #241611;animation-timing-function:cubic-bezier(0.45,0,0.55,1)}65%{transform:translate(0,0);box-shadow:3px 3px 0 #241611}100%{transform:translate(0,0);box-shadow:3px 3px 0 #241611}}
+  @keyframes dmEAfter{0%{transform:translate(0,0);box-shadow:3px 3px 0 #241611}20%{transform:translate(0,0);box-shadow:3px 3px 0 #241611;animation-timing-function:cubic-bezier(0.4,0,1,1)}27.5%{transform:translate(2px,2px);box-shadow:1px 1px 0 #241611}55%{transform:translate(2px,2px);box-shadow:1px 1px 0 #241611;animation-timing-function:cubic-bezier(0.34,1.55,0.64,1)}68.33%{transform:translate(0,0);box-shadow:3px 3px 0 #241611}100%{transform:translate(0,0);box-shadow:3px 3px 0 #241611}}
+  @keyframes dmEFinger{0%,19%{opacity:0;transform:scale(0.5)}22%{opacity:0.9;transform:scale(1)}55%{opacity:0.9;transform:scale(1)}70%{opacity:0;transform:scale(1.5)}100%{opacity:0;transform:scale(1.5)}}
+
+  /* 06 Sam idle */
+  @keyframes dmFSway{0%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}100%{transform:rotate(-1.6deg)}}
+  @keyframes dmFBreathe{0%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-2.5px) scale(1.025,1.035)}100%{transform:translateY(0) scale(1,1)}}
+  @keyframes dmFBlink{0%,52%{transform:scaleY(1)}54%{transform:scaleY(0.08)}56.5%{transform:scaleY(1)}88%{transform:scaleY(1)}89.5%{transform:scaleY(0.08)}91.5%{transform:scaleY(1)}100%{transform:scaleY(1)}}
+  @keyframes dmFShadow{0%{transform:scaleX(1);opacity:0.18}50%{transform:scaleX(0.93);opacity:0.13}100%{transform:scaleX(1);opacity:0.18}}
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="min-height:100vh;background:#EFE2CE;font-family:'Nunito Sans',sans-serif;color:#241611;padding:44px 28px 90px">
+<div style="max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:26px">
+
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="font-weight:800;font-size:11px;line-height:15px;letter-spacing:1.5px;text-transform:uppercase;color:#C24A26">Motion spec · Fresh Bake v3</div>
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:42px;line-height:44px;letter-spacing:-0.84px;max-width:20ch">Doughmate, in motion</div>
+    <div style="font-size:17px;line-height:26px;color:#6B5344;max-width:64ch;text-wrap:pretty">Six transitions, each shown as the app behaves today beside what it should do. Both columns loop in step. Every proposed move lands inside 240ms, uses a token that already exists in <code style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:#241611">theme.ts</code>, and falls back to a 120ms fade under reduced motion.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:14px">
+    <div style="flex:1;min-width:230px;background:#FFFDF8;border:2px solid #241611;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-weight:800;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#9C8776">Principle 01</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;line-height:24px">Nothing waits on motion</div>
+      <div style="font-size:13px;line-height:19px;color:#6B5344">A tap commits immediately. The animation describes what just happened, it never gates it.</div>
+    </div>
+    <div style="flex:1;min-width:230px;background:#FFFDF8;border:2px solid #241611;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-weight:800;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#9C8776">Principle 02</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;line-height:24px">One move per event</div>
+      <div style="font-size:13px;line-height:19px;color:#6B5344">Position or opacity, rarely both at full strength. Two competing moves read as lag, not polish.</div>
+    </div>
+    <div style="flex:1;min-width:230px;background:#FFFDF8;border:2px solid #241611;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-weight:800;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#9C8776">Principle 03</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;line-height:24px">Short in, shorter out</div>
+      <div style="font-size:13px;line-height:19px;color:#6B5344">Entering earns 220ms. Leaving gets 120 to 170. Dismissing something should feel like it already went.</div>
+    </div>
+  </div>
+
+  <div style="background:#241611;border-radius:20px;padding:20px 22px;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:4px;min-width:150px">
+      <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#A8917C">Playback</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;color:#FFC24B">{{ speedLabel }}</div>
+    </div>
+    <div style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap">
+      <div role="button" onClick="{{ full }}" style="height:40px;padding:0 16px;border-radius:999px;background:#FFC24B;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#241611;cursor:pointer" style-hover="background:#FFCD6B">Real time</div>
+      <div role="button" onClick="{{ half }}" style="height:40px;padding:0 16px;border-radius:999px;border:1.5px solid #4B3B31;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#F7ECE2;cursor:pointer" style-hover="border-color:#FFC24B">Half speed</div>
+      <div role="button" onClick="{{ quarter }}" style="height:40px;padding:0 16px;border-radius:999px;border:1.5px solid #4B3B31;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#F7ECE2;cursor:pointer" style-hover="border-color:#FFC24B">Quarter speed</div>
+      <div role="button" onClick="{{ toggle }}" style="height:40px;padding:0 16px;border-radius:999px;border:1.5px solid #4B3B31;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#F7ECE2;cursor:pointer" style-hover="border-color:#FFC24B">{{ playLabel }}</div>
+    </div>
+    <div style="flex:1;min-width:220px;font-size:13px;line-height:19px;color:#A8917C">Slow the loops to read the segments, then watch at real time to judge the feel. Timings on the tapes are always the real values, not the played ones.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:14px">
+    <div style="flex:1;min-width:200px;background:#FFFDF8;border:1.5px solid #DCC9B2;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">Springs in theme.ts</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;line-height:22px;color:#241611">quick 320 / 22 / 1<br />medium 210 / 18 / 1<br />soft 130 / 20 / 1.1</div>
+      <div style="font-size:12px;line-height:18px;color:#6B5344">Proposed addition: <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#C24A26">snap 420 / 26 / 0.9</span> for sheets.</div>
+    </div>
+    <div style="flex:1;min-width:200px;background:#FFFDF8;border:1.5px solid #DCC9B2;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">Durations</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;line-height:22px;color:#241611">instant 120<br />fast 200<br />normal 320<br />slow 480</div>
+      <div style="font-size:12px;line-height:18px;color:#6B5344">Screen transitions live between instant and fast. Nothing on this page uses normal or slow.</div>
+    </div>
+    <div style="flex:1;min-width:200px;background:#FFFDF8;border:1.5px solid #DCC9B2;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">Easings</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;line-height:22px;color:#241611">standard .32 .72 0 1<br />enter 0 0 .2 1<br />exit .4 0 1 1</div>
+      <div style="font-size:12px;line-height:18px;color:#6B5344">Standard carries anything that moves and stays. Exit carries anything leaving.</div>
+    </div>
+    <div style="flex:1;min-width:200px;background:#FFFDF8;border:1.5px solid #DCC9B2;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">Press</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;line-height:22px;color:#241611">travel 3px<br />down 90ms<br />up 160ms</div>
+      <div style="font-size:12px;line-height:18px;color:#6B5344">Was a symmetric 120 / 120. Same travel, same shadow, faster in and springier out.</div>
+    </div>
+  </div>
+
+  <!-- 01 TAB SWITCH -->
+  <div style="background:#FFFDF8;border:2px solid #241611;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:row;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="width:44px;height:44px;flex:0 0 auto;border-radius:14px;background:#FFC24B;border:2px solid #241611;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px">01</div>
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:25px;line-height:28px;letter-spacing:-0.38px">Tab switch</div>
+        <div style="font-size:15px;line-height:22px;color:#6B5344;max-width:70ch">Convert to Recipes. Today the two screens hard cut and the butter pill teleports. Proposed: a 220ms directional cross slide, with the pill springing to its new tab on the same beat.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:22px">
+      <div style="width:244px;flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#EFE2CE;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#6B5344">Today</div>
+        <div style="width:244px;height:517px;border-radius:34px;border:5px solid #241611;overflow:hidden;background:#F7EFE1;box-shadow:4px 4px 0 rgba(36,22,17,0.14)">
+          <div style="width:390px;height:844px;transform:scale(0.6);transform-origin:top left;position:relative">
+            <div style="position:absolute;left:0;top:0;width:390px;height:740px;animation:dmHardOut var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <dc-import name="DMConvert" hint-size="390px,740px"></dc-import>
+            </div>
+            <div style="position:absolute;left:0;top:0;width:390px;height:740px;animation:dmHardIn var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <dc-import name="DMRecipes" hint-size="390px,740px"></dc-import>
+            </div>
+            <div style="position:absolute;left:0;bottom:0;width:390px;height:104px;background:#241611;border-radius:26px 26px 0 0;padding:10px 14px 44px;display:flex;flex-direction:row;font-family:'Nunito Sans',sans-serif">
+              <div style="position:absolute;left:36.25px;top:10px;width:46px;height:32px;border-radius:999px;background:#FFC24B;animation:dmAPillHard var(--cyc) linear infinite both;animation-play-state:var(--play)"></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;z-index:1">
+                <div style="width:46px;height:32px;position:relative">
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:dmHardIn var(--cyc) linear infinite both;animation-play-state:var(--play)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8917C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h9M9.5 4.5 13 8l-3.5 3.5"></path><path d="M20 16h-9M14.5 12.5 11 16l3.5 3.5"></path></svg></div>
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:dmHardOut var(--cyc) linear infinite both;animation-play-state:var(--play)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#241611" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h9M9.5 4.5 13 8l-3.5 3.5"></path><path d="M20 16h-9M14.5 12.5 11 16l3.5 3.5"></path></svg></div>
+                </div>
+                <div style="font-weight:800;font-size:11px;color:#FFC24B">Convert</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;z-index:1">
+                <div style="width:46px;height:32px;position:relative">
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:dmHardOut var(--cyc) linear infinite both;animation-play-state:var(--play)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8917C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v14H6a2 2 0 0 0-2 2z"></path><path d="M9 9h6M9 13h4"></path></svg></div>
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:dmHardIn var(--cyc) linear infinite both;animation-play-state:var(--play)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#241611" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v14H6a2 2 0 0 0-2 2z"></path><path d="M9 9h6M9 13h4"></path></svg></div>
+                </div>
+                <div style="font-weight:800;font-size:11px;color:#FFC24B">Recipes</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;z-index:1">
+                <div style="width:46px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8917C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3h8M9.5 3v4.5L6 15.5A3 3 0 0 0 8.7 20h6.6A3 3 0 0 0 18 15.5L14.5 7.5V3"></path><path d="M7 15h10"></path></svg></div>
+                <div style="font-weight:800;font-size:11px;color:#A8917C">Starters</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;z-index:1">
+                <div style="width:46px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8917C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 8h9l-3-3M19 16h-9l3 3"></path><circle cx="17" cy="8" r="2.5"></circle><circle cx="7" cy="16" r="2.5"></circle></svg></div>
+                <div style="font-weight:800;font-size:11px;color:#A8917C">Swaps</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:1.5%;background:#241611;border-radius:999px"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>0ms · hard cut</span><span>scale 0 to 700ms</span></div>
+        </div>
+      </div>
+
+      <div style="width:244px;flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#FFC24B;border:1.5px solid #241611;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#241611">Proposed</div>
+        <div style="width:244px;height:517px;border-radius:34px;border:5px solid #241611;overflow:hidden;background:#F7EFE1;box-shadow:4px 4px 0 rgba(36,22,17,0.14)">
+          <div style="width:390px;height:844px;transform:scale(0.6);transform-origin:top left;position:relative">
+            <div style="position:absolute;left:0;top:0;width:390px;height:740px;animation:dmAOut var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <dc-import name="DMConvert" hint-size="390px,740px"></dc-import>
+            </div>
+            <div style="position:absolute;left:0;top:0;width:390px;height:740px;animation:dmAIn var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <dc-import name="DMRecipes" hint-size="390px,740px"></dc-import>
+            </div>
+            <div style="position:absolute;left:0;bottom:0;width:390px;height:104px;background:#241611;border-radius:26px 26px 0 0;padding:10px 14px 44px;display:flex;flex-direction:row;font-family:'Nunito Sans',sans-serif">
+              <div style="position:absolute;left:36.25px;top:10px;width:46px;height:32px;border-radius:999px;background:#FFC24B;animation:dmAPill var(--cyc) linear infinite both;animation-play-state:var(--play)"></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;z-index:1">
+                <div style="width:46px;height:32px;position:relative">
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:dmASoftIn var(--cyc) linear infinite both;animation-play-state:var(--play)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8917C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h9M9.5 4.5 13 8l-3.5 3.5"></path><path d="M20 16h-9M14.5 12.5 11 16l3.5 3.5"></path></svg></div>
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:dmASoftOut var(--cyc) linear infinite both;animation-play-state:var(--play)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#241611" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h9M9.5 4.5 13 8l-3.5 3.5"></path><path d="M20 16h-9M14.5 12.5 11 16l3.5 3.5"></path></svg></div>
+                </div>
+                <div style="font-weight:800;font-size:11px;color:#FFC24B">Convert</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;z-index:1">
+                <div style="width:46px;height:32px;position:relative">
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:dmASoftOut var(--cyc) linear infinite both;animation-play-state:var(--play)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8917C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v14H6a2 2 0 0 0-2 2z"></path><path d="M9 9h6M9 13h4"></path></svg></div>
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:dmASoftIn var(--cyc) linear infinite both;animation-play-state:var(--play)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#241611" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v14H6a2 2 0 0 0-2 2z"></path><path d="M9 9h6M9 13h4"></path></svg></div>
+                </div>
+                <div style="font-weight:800;font-size:11px;color:#FFC24B">Recipes</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;z-index:1">
+                <div style="width:46px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8917C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3h8M9.5 3v4.5L6 15.5A3 3 0 0 0 8.7 20h6.6A3 3 0 0 0 18 15.5L14.5 7.5V3"></path><path d="M7 15h10"></path></svg></div>
+                <div style="font-weight:800;font-size:11px;color:#A8917C">Starters</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;z-index:1">
+                <div style="width:46px;height:32px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8917C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 8h9l-3-3M19 16h-9l3 3"></path><circle cx="17" cy="8" r="2.5"></circle><circle cx="7" cy="16" r="2.5"></circle></svg></div>
+                <div style="font-weight:800;font-size:11px;color:#A8917C">Swaps</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:31.4%;background:#F2603C;border-radius:999px"></div><div style="position:absolute;left:0;top:0;bottom:0;width:28.6%;background:#FFC24B;border-radius:999px;opacity:0.9"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>220ms slide · 200ms pill</span><span>scale 0 to 700ms</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">What changes</div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Outgoing screen fades and slides 26px against the travel direction over 220ms, easing.standard.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Incoming screen comes from 34px ahead on the same 220ms, so the two never both sit still.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">The butter pill is a shared element: one spring.quick to the new tab, 200ms, slight overshoot. The icon and label colours cross fade in 120ms under it.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#3E9C8F;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">The shelf itself never moves. It is chrome, so it stays put while the content behind it travels.</div></div>
+        </div>
+        <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#241611;border-radius:16px;padding:16px;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:11.5px;line-height:19px;color:#F7ECE2;white-space:pre-wrap;overflow:auto">// app/(tabs)/_layout.tsx
+// the Tabs props, spread onto the navigator
+tabBar: (p) =&gt; AppTabBar with p
+screenOptions: {
+  headerShown: false,
+  animation: 'shift',
+  transitionSpec: {
+    animation: 'timing',
+    config: {
+      duration: 220,
+      easing: Easing.bezier(...easing.standard),
+    },
+  },
+}
+
+// src/ui/TabBar.tsx — the pill is one shared element
+const x = useSharedValue(0);
+useEffect(() =&gt; {
+  x.value = reduced
+    ? index * ITEM_W
+    : withSpring(index * ITEM_W, spring.quick);
+}, [index, reduced]);</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 SHEET PRESENT -->
+  <div style="background:#FFFDF8;border:2px solid #241611;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:row;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="width:44px;height:44px;flex:0 0 auto;border-radius:14px;background:#FFC24B;border:2px solid #241611;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px">02</div>
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:25px;line-height:28px;letter-spacing:-0.38px">Sheet present</div>
+        <div style="font-size:15px;line-height:22px;color:#6B5344;max-width:70ch">The converter tray, and every OptionSheet with it. BottomSheet already springs, but on spring.soft it takes about 620ms to settle while the scrim snaps in at full strength on frame one. Proposed: scrim fades in 140ms, panel lands in 240ms.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:22px">
+      <div style="width:244px;flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#EFE2CE;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#6B5344">Today</div>
+        <div style="width:244px;height:517px;border-radius:34px;border:5px solid #241611;overflow:hidden;background:#F7EFE1;box-shadow:4px 4px 0 rgba(36,22,17,0.14)">
+          <div style="width:390px;height:844px;transform:scale(0.6);transform-origin:top left;position:relative">
+            <div style="position:absolute;left:0;top:0"><dc-import name="DMConvert" hint-size="390px,740px"></dc-import></div>
+            <div style="position:absolute;left:0;bottom:0"><dc-import name="DMShelf" hint-size="390px,104px"></dc-import></div>
+            <div style="position:absolute;left:0;top:0;width:390px;height:740px;background:rgba(36,22,17,0.50);animation:dmHardIn var(--cyc) linear infinite both;animation-play-state:var(--play)"></div>
+            <div style="position:absolute;left:0;bottom:104px;width:390px;animation:dmBPanelBefore var(--cyc) linear infinite both;animation-play-state:var(--play)"><dc-import name="DMTray" hint-size="390px,444px"></dc-import></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:88.6%;background:#241611;border-radius:999px"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>620ms · spring.soft</span><span>scrim 0ms</span></div>
+        </div>
+      </div>
+
+      <div style="width:244px;flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#FFC24B;border:1.5px solid #241611;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#241611">Proposed</div>
+        <div style="width:244px;height:517px;border-radius:34px;border:5px solid #241611;overflow:hidden;background:#F7EFE1;box-shadow:4px 4px 0 rgba(36,22,17,0.14)">
+          <div style="width:390px;height:844px;transform:scale(0.6);transform-origin:top left;position:relative">
+            <div style="position:absolute;left:0;top:0"><dc-import name="DMConvert" hint-size="390px,740px"></dc-import></div>
+            <div style="position:absolute;left:0;bottom:0"><dc-import name="DMShelf" hint-size="390px,104px"></dc-import></div>
+            <div style="position:absolute;left:0;top:0;width:390px;height:740px;background:rgba(36,22,17,0.50);animation:dmBScrim var(--cyc) linear infinite both;animation-play-state:var(--play)"></div>
+            <div style="position:absolute;left:0;bottom:104px;width:390px;animation:dmBPanelAfter var(--cyc) linear infinite both;animation-play-state:var(--play)"><dc-import name="DMTray" hint-size="390px,444px"></dc-import></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:34.3%;background:#F2603C;border-radius:999px"></div><div style="position:absolute;left:0;top:0;bottom:0;width:20%;background:#FFC24B;border-radius:999px;opacity:0.9"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>240ms panel · 140ms scrim</span><span>out in 170ms</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">What changes</div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">spring.soft becomes a new spring.snap, 420 stiffness and 26 damping. It settles in about 240ms and keeps a 2px overshoot, so the panel still reads as a physical thing arriving.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Scrim fades over 140ms instead of appearing at once, which is what currently makes the sheet feel like it lags behind its own background.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Dismiss drops from 220ms to 170ms on easing.exit. The drag to dismiss gesture keeps its own velocity handoff untouched.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#3E9C8F;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">One change in BottomSheet covers the tray, all six OptionSheets, the recipe sheet and the paywall.</div></div>
+        </div>
+        <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#241611;border-radius:16px;padding:16px;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:11.5px;line-height:19px;color:#F7ECE2;white-space:pre-wrap;overflow:auto">// src/theme.ts
+export const spring = {
+  quick: { stiffness: 320, damping: 22, mass: 1 },
+  medium:{ stiffness: 210, damping: 18, mass: 1 },
+  soft:  { stiffness: 130, damping: 20, mass: 1.1 },
+  snap:  { stiffness: 420, damping: 26, mass: 0.9 }, // new
+} as const;
+
+// src/ui/BottomSheet.tsx
+translateY.value = withSpring(0, spring.snap);
+progress.value  = withTiming(1, { duration: 140 });
+
+const dismiss = () =&gt; {
+  progress.value = withTiming(0, { duration: 140 });
+  translateY.value = withTiming(sheetH, {
+    duration: 170,
+    easing: Easing.bezier(...easing.exit),
+  }, (done) =&gt; { if (done) runOnJS(onClose)(); });
+};</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 PUSH INTO DETAIL -->
+  <div style="background:#FFFDF8;border:2px solid #241611;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:row;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="width:44px;height:44px;flex:0 0 auto;border-radius:14px;background:#FFC24B;border:2px solid #241611;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px">03</div>
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:25px;line-height:28px;letter-spacing:-0.38px">Push into detail</div>
+        <div style="font-size:15px;line-height:22px;color:#6B5344;max-width:70ch">Tapping a recipe card. The card gives no feedback, then a tall sheet takes 620ms to arrive over a list that never acknowledges it left. Proposed: the card sits into its shadow, the list recedes, the sheet lands in 220ms.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:22px">
+      <div style="width:244px;flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#EFE2CE;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#6B5344">Today</div>
+        <div style="width:244px;height:517px;border-radius:34px;border:5px solid #241611;overflow:hidden;background:#F7EFE1;box-shadow:4px 4px 0 rgba(36,22,17,0.14)">
+          <div style="width:390px;height:844px;transform:scale(0.6);transform-origin:top left;position:relative">
+            <div style="position:absolute;left:0;top:0"><dc-import name="DMRecipes" hint-size="390px,740px"></dc-import></div>
+            <div style="position:absolute;left:0;bottom:0"><dc-import name="DMShelfR" hint-size="390px,104px"></dc-import></div>
+            <div style="position:absolute;inset:0;background:rgba(36,22,17,0.50);animation:dmHardIn var(--cyc) linear infinite both;animation-play-state:var(--play)"></div>
+            <div style="position:absolute;left:0;bottom:0;width:390px;animation:dmCPanelBefore var(--cyc) linear infinite both;animation-play-state:var(--play)"><dc-import name="DMDetail" hint-size="390px,666px"></dc-import></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:88.6%;background:#241611;border-radius:999px"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>620ms · no tap feedback</span><span>list static</span></div>
+        </div>
+      </div>
+
+      <div style="width:244px;flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#FFC24B;border:1.5px solid #241611;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#241611">Proposed</div>
+        <div style="width:244px;height:517px;border-radius:34px;border:5px solid #241611;overflow:hidden;background:#F7EFE1;box-shadow:4px 4px 0 rgba(36,22,17,0.14)">
+          <div style="width:390px;height:844px;transform:scale(0.6);transform-origin:top left;position:relative">
+            <div style="position:absolute;inset:0;transform-origin:50% 40%;animation:dmCRecede var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <div style="position:absolute;left:0;top:0"><dc-import name="DMRecipes" hint-size="390px,740px"></dc-import></div>
+              <div style="position:absolute;left:0;bottom:0"><dc-import name="DMShelfR" hint-size="390px,104px"></dc-import></div>
+            </div>
+            <div style="position:absolute;inset:0;background:rgba(36,22,17,0.50);animation:dmBScrim var(--cyc) linear infinite both;animation-play-state:var(--play)"></div>
+            <div style="position:absolute;left:0;bottom:0;width:390px;animation:dmCPanelAfter var(--cyc) linear infinite both;animation-play-state:var(--play)"><dc-import name="DMDetail" hint-size="390px,666px"></dc-import></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:31.4%;background:#F2603C;border-radius:999px"></div><div style="position:absolute;left:0;top:0;bottom:0;width:12.9%;background:#FFC24B;border-radius:999px;opacity:0.9"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>90ms press · 220ms sheet</span><span>list to 0.965</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">What changes</div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Card already has HardShadow. It just needs the Pressable to pass pressed through, so the tap has an answer before the sheet has moved at all.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">The list scales to 0.965 and drops to 72% over 220ms. That is the depth cue the transparentModal never got, and it makes the sheet read as on top rather than merely newer.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Keep animation: 'none' on the Stack screen. The sheet owns the motion, so a stack animation on top of it would double the travel.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#3E9C8F;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Same treatment for starter detail, bake plan and the cook sheet. Recipe detail is the one to build first.</div></div>
+        </div>
+        <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#241611;border-radius:16px;padding:16px;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:11.5px;line-height:19px;color:#F7ECE2;white-space:pre-wrap;overflow:auto">// src/ui/BottomSheet.tsx — new prop, drives the layer below
+export interface BottomSheetProps {
+  recedeBelow?: boolean;   // default true
+}
+
+// the receding layer, mounted once per tab screen
+const k = useSharedValue(1);
+useEffect(() =&gt; {
+  k.value = reduced ? 1 : withTiming(sheetOpen ? 0.965 : 1, {
+    duration: 220,
+    easing: Easing.bezier(...easing.standard),
+  });
+}, [sheetOpen, reduced]);
+
+const style = useAnimatedStyle(() =&gt; ({
+  transform: [{ scale: k.value }],
+  opacity: interpolate(k.value, [0.965, 1], [0.72, 1]),
+}));</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 ONBOARDING -->
+  <div style="background:#FFFDF8;border:2px solid #241611;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:row;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="width:44px;height:44px;flex:0 0 auto;border-radius:14px;background:#FFC24B;border:2px solid #241611;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px">04</div>
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:25px;line-height:28px;letter-spacing:-0.38px">Onboarding advance</div>
+        <div style="font-size:15px;line-height:22px;color:#6B5344;max-width:70ch">Five screens on one butter canvas. The stack is set to animation: 'fade', so the whole screen cross dissolves for 350ms, background included, and the canvas visibly flickers between two identical butter fills.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:22px">
+      <div style="width:244px;flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#EFE2CE;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#6B5344">Today</div>
+        <div style="width:244px;height:517px;border-radius:34px;border:5px solid #241611;overflow:hidden;background:#FFC24B;box-shadow:4px 4px 0 rgba(36,22,17,0.14)">
+          <div style="width:390px;height:844px;transform:scale(0.6);transform-origin:top left;position:relative;background:#FFC24B">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:47px 0 34px;animation:dmDFadeOut var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 22px">
+                <div style="margin-bottom:30px"><svg width="196" height="170" viewBox="0 0 120 104"><ellipse cx="60" cy="98" rx="40" ry="4.5" fill="#8B5A2B" opacity="0.18"></ellipse><path d="M14 64 C14 32 40 20 60 20 C80 20 106 32 106 64 C106 82 88 92 60 92 C32 92 14 82 14 64 Z" fill="#FFF3DC" stroke="#241611" strokeWidth="3"></path><ellipse cx="36" cy="62" rx="6" ry="3.6" fill="#F2A0A0" opacity="0.5"></ellipse><ellipse cx="84" cy="62" rx="6" ry="3.6" fill="#F2A0A0" opacity="0.5"></ellipse><g stroke="#241611" strokeWidth="2.6" fill="none" strokeLinecap="round"><path d="M42 56 q5 -5 10 0"></path><path d="M68 56 q5 -5 10 0"></path><path d="M50 65 q10 9 20 0"></path></g></svg></div>
+                <div style="display:flex;flex-direction:column;gap:10px;align-items:center;max-width:340px">
+                  <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:42px;line-height:44px;letter-spacing:-0.84px;text-align:center;color:#241611">Hi. I'm<br />Sourdough Sam.</div>
+                  <div style="font-size:17px;line-height:26px;text-align:center;color:#5E4526">Your baking buddy.<br />Let's make the math easy.</div>
+                </div>
+              </div>
+              <div style="padding:0 22px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;flex-direction:row;gap:8px;align-self:center;align-items:center;margin-bottom:10px">
+                  <div style="width:26px;height:9px;border-radius:999px;background:#F2603C"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div>
+                </div>
+                <div style="height:58px;border-radius:16px;background:#F2603C;box-shadow:0 6px 18px rgba(36,22,17,0.10);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#FFC24B">Get started</div>
+                <div style="height:48px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#7A5A12">Skip</div>
+              </div>
+            </div>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:47px 0 34px;animation:dmDFadeIn var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 22px">
+                <div style="margin-bottom:30px;width:160px;height:160px;border-radius:999px;background:#F2603C;border:2px solid #241611;display:flex;align-items:center;justify-content:center"><svg width="74" height="74" viewBox="0 0 24 24" fill="none" stroke="#FFF9F4" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v14H6a2 2 0 0 0-2 2z"></path><path d="M9 9h6M9 13h4"></path></svg></div>
+                <div style="display:flex;flex-direction:column;gap:10px;align-items:center;max-width:340px">
+                  <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:42px;line-height:44px;letter-spacing:-0.84px;text-align:center;color:#241611">Your recipe box</div>
+                  <div style="font-size:17px;line-height:26px;text-align:center;color:#5E4526">Save a recipe, scale it by servings, and cook it step by step.</div>
+                </div>
+              </div>
+              <div style="padding:0 22px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;flex-direction:row;gap:8px;align-self:center;align-items:center;margin-bottom:10px">
+                  <div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:26px;height:9px;border-radius:999px;background:#F2603C"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div>
+                </div>
+                <div style="height:58px;border-radius:16px;background:#F2603C;box-shadow:0 6px 18px rgba(36,22,17,0.10);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#FFC24B">Next</div>
+                <div style="height:48px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#7A5A12">Skip</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:50%;background:#241611;border-radius:999px"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>350ms · whole screen</span><span>canvas included</span></div>
+        </div>
+      </div>
+
+      <div style="width:244px;flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#FFC24B;border:1.5px solid #241611;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#241611">Proposed</div>
+        <div style="width:244px;height:517px;border-radius:34px;border:5px solid #241611;overflow:hidden;background:#FFC24B;box-shadow:4px 4px 0 rgba(36,22,17,0.14)">
+          <div style="width:390px;height:844px;transform:scale(0.6);transform-origin:top left;position:relative;background:#FFC24B">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:47px 0 34px;animation:dmDOut var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 22px">
+                <div style="margin-bottom:30px"><svg width="196" height="170" viewBox="0 0 120 104"><ellipse cx="60" cy="98" rx="40" ry="4.5" fill="#8B5A2B" opacity="0.18"></ellipse><path d="M14 64 C14 32 40 20 60 20 C80 20 106 32 106 64 C106 82 88 92 60 92 C32 92 14 82 14 64 Z" fill="#FFF3DC" stroke="#241611" strokeWidth="3"></path><ellipse cx="36" cy="62" rx="6" ry="3.6" fill="#F2A0A0" opacity="0.5"></ellipse><ellipse cx="84" cy="62" rx="6" ry="3.6" fill="#F2A0A0" opacity="0.5"></ellipse><g stroke="#241611" strokeWidth="2.6" fill="none" strokeLinecap="round"><path d="M42 56 q5 -5 10 0"></path><path d="M68 56 q5 -5 10 0"></path><path d="M50 65 q10 9 20 0"></path></g></svg></div>
+                <div style="display:flex;flex-direction:column;gap:10px;align-items:center;max-width:340px">
+                  <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:42px;line-height:44px;letter-spacing:-0.84px;text-align:center;color:#241611">Hi. I'm<br />Sourdough Sam.</div>
+                  <div style="font-size:17px;line-height:26px;text-align:center;color:#5E4526">Your baking buddy.<br />Let's make the math easy.</div>
+                </div>
+              </div>
+              <div style="padding:0 22px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;flex-direction:row;gap:8px;align-self:center;align-items:center;margin-bottom:10px">
+                  <div style="width:26px;height:9px;border-radius:999px;background:#F2603C"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div>
+                </div>
+                <div style="height:58px;border-radius:16px;background:#F2603C;box-shadow:0 6px 18px rgba(36,22,17,0.10);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#FFC24B">Get started</div>
+                <div style="height:48px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#7A5A12">Skip</div>
+              </div>
+            </div>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;padding:47px 0 34px;animation:dmDIn var(--cyc) linear infinite both;animation-play-state:var(--play)">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 22px">
+                <div style="margin-bottom:30px;animation:dmDHero var(--cyc) linear infinite both;animation-play-state:var(--play)"><div style="width:160px;height:160px;border-radius:999px;background:#F2603C;border:2px solid #241611;display:flex;align-items:center;justify-content:center"><svg width="74" height="74" viewBox="0 0 24 24" fill="none" stroke="#FFF9F4" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v14H6a2 2 0 0 0-2 2z"></path><path d="M9 9h6M9 13h4"></path></svg></div></div>
+                <div style="display:flex;flex-direction:column;gap:10px;align-items:center;max-width:340px">
+                  <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:42px;line-height:44px;letter-spacing:-0.84px;text-align:center;color:#241611">Your recipe box</div>
+                  <div style="font-size:17px;line-height:26px;text-align:center;color:#5E4526">Save a recipe, scale it by servings, and cook it step by step.</div>
+                </div>
+              </div>
+              <div style="padding:0 22px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;flex-direction:row;gap:8px;align-self:center;align-items:center;margin-bottom:10px">
+                  <div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:26px;height:9px;border-radius:999px;background:#F2603C"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div><div style="width:9px;height:9px;border-radius:999px;background:rgba(36,22,17,0.28)"></div>
+                </div>
+                <div style="height:58px;border-radius:16px;background:#F2603C;box-shadow:0 6px 18px rgba(36,22,17,0.10);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#FFC24B">Next</div>
+                <div style="height:48px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#7A5A12">Skip</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:37.1%;background:#F2603C;border-radius:999px"></div><div style="position:absolute;left:0;top:0;bottom:0;width:17.1%;background:#FFC24B;border-radius:999px;opacity:0.9"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>120ms out · 220ms in</span><span>40ms stagger</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">What changes</div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Stack animation goes to 'none' and the scaffold animates its own content. The butter canvas is then continuous across all five steps, which is the whole reason the flow has one background.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Outgoing content rises 12px and fades in 120ms on easing.exit. Incoming enters 40ms later from 16px below over 220ms, so there is never a frame with two headlines.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">The hero adds a scale from 0.88 with a light overshoot. It is the one element per step allowed to be theatrical.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#3E9C8F;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">The active dot should morph width rather than cross fade. Same 200ms spring.quick as the tab pill, and the two then read as the same idea.</div></div>
+        </div>
+        <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#241611;border-radius:16px;padding:16px;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:11.5px;line-height:19px;color:#F7ECE2;white-space:pre-wrap;overflow:auto">// app/onboarding/_layout.tsx
+// the Stack screenOptions
+screenOptions: {
+  headerShown: false,
+  animation: 'none',        // was 'fade'
+}
+
+// src/ui/OnboardingScaffold.tsx
+&lt;Animated.View
+  key={step}
+  entering={reduced
+    ? FadeIn.duration(120)
+    : FadeInDown.duration(220).delay(40)
+        .easing(Easing.bezier(...easing.standard))}
+  exiting={reduced
+    ? FadeOut.duration(120)
+    : FadeOutUp.duration(120)
+        .easing(Easing.bezier(...easing.exit))}
+&gt;
+
+// the progress dot morphs, it does not swap
+w.value = withSpring(active ? 26 : 9, spring.quick);</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 PRESS -->
+  <div style="background:#FFFDF8;border:2px solid #241611;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:row;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="width:44px;height:44px;flex:0 0 auto;border-radius:14px;background:#FFC24B;border:2px solid #241611;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px">05</div>
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:25px;line-height:28px;letter-spacing:-0.38px">Press feedback</div>
+        <div style="font-size:15px;line-height:22px;color:#6B5344;max-width:70ch">The sit into your own shadow move is already right. It is just symmetric: 120ms down, 120ms up, same curve both ways, which is what makes it feel soft rather than sprung. Same travel, same shadow, new timing.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:22px">
+      <div style="flex:1;min-width:270px;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#EFE2CE;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#6B5344">Today · 120 / 120</div>
+        <div style="background:#F7EFE1;border:1.5px solid #DCC9B2;border-radius:20px;padding:30px 26px;display:flex;flex-direction:row;align-items:center;gap:26px;flex-wrap:wrap">
+          <div style="position:relative">
+            <div style="height:54px;padding:0 26px;border-radius:16px;background:#F2603C;border:2px solid #241611;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#FFF9F4;animation:dmEBefore var(--cycE) linear infinite both;animation-play-state:var(--play)">Feed now</div>
+            <div style="position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:999px;background:rgba(36,22,17,0.22);animation:dmEFinger var(--cycE) linear infinite both;animation-play-state:var(--play)"></div>
+          </div>
+          <div style="width:60px;height:60px;border-radius:999px;background:#FFC24B;border:2.5px solid #241611;display:flex;align-items:center;justify-content:center;animation:dmEBefore var(--cycE) linear infinite both;animation-play-state:var(--play)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#241611" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+          <div style="height:44px;padding:0 14px;border-radius:999px;background:#FFC24B;border:2px solid #241611;display:flex;align-items:center;gap:8px;animation:dmEBefore var(--cycE) linear infinite both;animation-play-state:var(--play)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#241611" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h9M9.5 4.5 13 8l-3.5 3.5"></path><path d="M20 16h-9M14.5 12.5 11 16l3.5 3.5"></path></svg><span style="font-weight:800;font-size:14px;color:#241611">Ingredient</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:34.3%;background:#241611;border-radius:999px"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>120ms down · 120ms up</span><span>inOut quad both ways</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:270px;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#FFC24B;border:1.5px solid #241611;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#241611">Proposed · 90 / 160</div>
+        <div style="background:#F7EFE1;border:1.5px solid #DCC9B2;border-radius:20px;padding:30px 26px;display:flex;flex-direction:row;align-items:center;gap:26px;flex-wrap:wrap">
+          <div style="position:relative">
+            <div style="height:54px;padding:0 26px;border-radius:16px;background:#F2603C;border:2px solid #241611;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#FFF9F4;animation:dmEAfter var(--cycE) linear infinite both;animation-play-state:var(--play)">Feed now</div>
+            <div style="position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:999px;background:rgba(36,22,17,0.22);animation:dmEFinger var(--cycE) linear infinite both;animation-play-state:var(--play)"></div>
+          </div>
+          <div style="width:60px;height:60px;border-radius:999px;background:#FFC24B;border:2.5px solid #241611;display:flex;align-items:center;justify-content:center;animation:dmEAfter var(--cycE) linear infinite both;animation-play-state:var(--play)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#241611" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+          <div style="height:44px;padding:0 14px;border-radius:999px;background:#FFC24B;border:2px solid #241611;display:flex;align-items:center;gap:8px;animation:dmEAfter var(--cycE) linear infinite both;animation-play-state:var(--play)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#241611" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h9M9.5 4.5 13 8l-3.5 3.5"></path><path d="M20 16h-9M14.5 12.5 11 16l3.5 3.5"></path></svg><span style="font-weight:800;font-size:14px;color:#241611">Ingredient</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:35.7%;background:#F2603C;border-radius:999px"></div><div style="position:absolute;left:0;top:0;bottom:0;width:12.9%;background:#FFC24B;border-radius:999px;opacity:0.9"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>90ms down · 160ms up</span><span>out quad · elastic back</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">What changes</div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Down goes to 90ms on Easing.out, so the control is already seated by the time the finger has finished landing.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Up takes 160ms with a small elastic tail. Release is where the snap lives, and it is the only overshoot in the system besides the tab pill.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Travel stays 3px and the shadow still shrinks to hardShadow.pressed, so the footprint never moves. One edit in HardShadow covers Button, Chip, ModeChip, IconButton, Card and the FAB.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#3E9C8F;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Haptics are unchanged. The five named ones already fire on the right controls.</div></div>
+        </div>
+        <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#241611;border-radius:16px;padding:16px;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:11.5px;line-height:19px;color:#F7ECE2;white-space:pre-wrap;overflow:auto">// src/theme.ts
+export const press = {
+  travel: 3,
+  downMs: 90,             // was duration.instant, 120
+  upMs: 160,              // was duration.instant, 120
+  reducedOpacity: 0.9,
+} as const;
+
+// src/ui/HardShadow.tsx
+const cfg = (down: boolean) =&gt; ({
+  duration: down ? press.downMs : press.upMs,
+  easing: down
+    ? Easing.out(Easing.quad)
+    : Easing.elastic(0.9),
+});
+
+transform: [
+  { translateX: withTiming(travelX, cfg(pressed)) },
+  { translateY: withTiming(travelY, cfg(pressed)) },
+]</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 SAM -->
+  <div style="background:#FFFDF8;border:2px solid #241611;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:row;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="width:44px;height:44px;flex:0 0 auto;border-radius:14px;background:#FFC24B;border:2px solid #241611;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px">06</div>
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:25px;line-height:28px;letter-spacing:-0.38px">Sam, idling</div>
+        <div style="font-size:15px;line-height:22px;color:#6B5344;max-width:70ch">Sam is drawn in react native svg and he has never moved. Until the Lottie files land, three looping shared values give him a pulse: a slow breath, a slower sway, and a blink on an offbeat. No new dependency, and it is the cheapest thing on this page.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:22px">
+      <div style="flex:1;min-width:250px;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#EFE2CE;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#6B5344">Today</div>
+        <div style="background:#FFF1D6;border:1.5px solid #DCC9B2;border-radius:20px;height:230px;display:flex;align-items:center;justify-content:center">
+          <svg width="180" height="156" viewBox="0 0 120 104"><ellipse cx="60" cy="98" rx="40" ry="4.5" fill="#8B5A2B" opacity="0.18"></ellipse><path d="M14 64 C14 32 40 20 60 20 C80 20 106 32 106 64 C106 82 88 92 60 92 C32 92 14 82 14 64 Z" fill="#E9B478" stroke="#241611" strokeWidth="3"></path><circle cx="47" cy="54" r="3" fill="#241611"></circle><circle cx="73" cy="54" r="3" fill="#241611"></circle><path d="M52 66 q8 6 16 0" stroke="#241611" strokeWidth="2.6" fill="none" strokeLinecap="round"></path></svg>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>no motion</span><span>static svg</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:250px;display:flex;flex-direction:column;gap:10px">
+        <div style="align-self:flex-start;border-radius:999px;background:#FFC24B;border:1.5px solid #241611;padding:5px 12px;font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#241611">Proposed</div>
+        <div style="background:#FFF1D6;border:1.5px solid #DCC9B2;border-radius:20px;height:230px;display:flex;align-items:center;justify-content:center">
+          <div style="animation:dmFSway var(--cycF) ease-in-out infinite both;animation-play-state:var(--play);transform-origin:50% 90%">
+            <svg width="180" height="156" viewBox="0 0 120 104">
+              <ellipse cx="60" cy="98" rx="40" ry="4.5" fill="#8B5A2B" opacity="0.18" style="transform-box:fill-box;transform-origin:center;animation:dmFShadow var(--cycF) ease-in-out infinite both;animation-play-state:var(--play)"></ellipse>
+              <g style="transform-box:fill-box;transform-origin:50% 100%;animation:dmFBreathe var(--cycF) ease-in-out infinite both;animation-play-state:var(--play)">
+                <path d="M14 64 C14 32 40 20 60 20 C80 20 106 32 106 64 C106 82 88 92 60 92 C32 92 14 82 14 64 Z" fill="#E9B478" stroke="#241611" strokeWidth="3"></path>
+                <g style="transform-box:fill-box;transform-origin:center;animation:dmFBlink var(--cycF) linear infinite both;animation-play-state:var(--play)">
+                  <circle cx="47" cy="54" r="3" fill="#241611"></circle>
+                  <circle cx="73" cy="54" r="3" fill="#241611"></circle>
+                </g>
+                <path d="M52 66 q8 6 16 0" stroke="#241611" strokeWidth="2.6" fill="none" strokeLinecap="round"></path>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="height:8px;border-radius:999px;background:#EFE2CE;position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:100%;background:#F2603C;border-radius:999px;opacity:0.35"></div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:#6B5344"><span>breath 2100ms · sway 4200ms</span><span>blink offbeat</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#9C8776">What changes</div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Breath is a 2100ms scale to 1.025 with a 2.5 unit rise, anchored at his base so he squashes rather than floats.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Sway is 4200ms and 1.6 degrees, deliberately not a multiple of the breath, so the loop never lands on the same pose twice in a row.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#F2603C;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Blink is a 90ms scaleY on the eye group only. It reads as alive and costs one shared value.</div></div>
+          <div style="display:flex;flex-direction:row;gap:10px"><div style="width:6px;height:6px;border-radius:999px;background:#D64545;margin-top:8px;flex:0 0 auto"></div><div style="font-size:14px;line-height:21px;color:#241611">Only the large Sams idle: onboarding, empty states, the starter hero. The 30px footnote Sam and the 34px tip Sam stay still, or the screen twitches.</div></div>
+        </div>
+        <sc-if value="{{ showCode }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#241611;border-radius:16px;padding:16px;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:11.5px;line-height:19px;color:#F7ECE2;white-space:pre-wrap;overflow:auto">// src/components/Sam.tsx
+export function Sam({ size = 96, idle = false, ... }) {
+  const reduced = useReducedMotion();
+  const live = idle &amp;&amp; !reduced &amp;&amp; size &gt;= 56;
+
+  const breath = useSharedValue(0);
+  const sway   = useSharedValue(0);
+  const blink  = useSharedValue(1);
+
+  useEffect(() =&gt; {
+    if (!live) return;
+    breath.value = withRepeat(
+      withTiming(1, { duration: 2100 }), -1, true);
+    sway.value = withRepeat(
+      withTiming(1, { duration: 4200 }), -1, true);
+    blink.value = withRepeat(
+      withSequence(
+        withDelay(2300, withTiming(0.08, { duration: 45 })),
+        withTiming(1, { duration: 45 })),
+      -1, false);
+  }, [live]);
+}</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#241611;border-radius:24px;padding:30px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-weight:800;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#FFC24B">Handoff</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:32px;line-height:34px;letter-spacing:-0.64px;color:#F7ECE2">Six edits, in this order</div>
+    </div>
+    <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:14px">
+      <div style="flex:1;min-width:250px;background:#211A16;border:1.5px solid #342922;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:#FFC24B">1 · src/theme.ts</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">Add spring.snap. Change press to downMs 90 and upMs 160. Nothing else in the token file moves, so every screen inherits the new feel without touching a screen.</div>
+      </div>
+      <div style="flex:1;min-width:250px;background:#211A16;border:1.5px solid #342922;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:#FFC24B">2 · src/ui/HardShadow.tsx</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">Asymmetric press timing. One file, and Button, Chip, ModeChip, IconButton, Card and the FAB all snap. This is the change you feel most for the least code.</div>
+      </div>
+      <div style="flex:1;min-width:250px;background:#211A16;border:1.5px solid #342922;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:#FFC24B">3 · src/ui/BottomSheet.tsx</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">spring.snap, a 140ms scrim, a 170ms dismiss, and the optional recede for the layer below. Covers the tray, all the option sheets, recipe and starter detail, and the paywall.</div>
+      </div>
+      <div style="flex:1;min-width:250px;background:#211A16;border:1.5px solid #342922;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:#FFC24B">4 · app/(tabs)/_layout.tsx + TabBar</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">Tab transitionSpec at 220ms, and the pill becomes one spring driven shared element instead of four conditional fills.</div>
+      </div>
+      <div style="flex:1;min-width:250px;background:#211A16;border:1.5px solid #342922;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:#FFC24B">5 · OnboardingScaffold + its layout</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">Stack animation off, content animates instead, dots morph. Only the first run sees it, which also makes it the safest place to land the pattern.</div>
+      </div>
+      <div style="flex:1;min-width:250px;background:#211A16;border:1.5px solid #342922;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:#FFC24B">6 · src/components/Sam.tsx</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">The idle prop. Last, because it is the only item here that is decoration rather than feedback, and it is the one to drop if the Lottie files arrive first.</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:row;flex-wrap:wrap;gap:22px;padding-top:6px;border-top:1.5px solid #342922">
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px;padding-top:16px">
+        <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#8E7A6C">Reduced motion</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">Every item above keeps the existing rule: useReducedMotion swaps the move for a 120ms opacity fade, and press falls back to opacity 0.9. The recede layer and Sam's idle switch off entirely rather than shortening.</div>
+      </div>
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px;padding-top:16px">
+        <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#8E7A6C">Cost</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">All of it is transform and opacity on the UI thread through reanimated 4. No layout animations, no new dependency, no change to any engine in src/lib. The pure tests stay green because nothing they cover is touched.</div>
+      </div>
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px;padding-top:16px">
+        <div style="font-weight:800;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#8E7A6C">Not in this pass</div>
+        <div style="font-size:13px;line-height:20px;color:#C0AA9B">List add, delete and undo; the convert result PopIn, which is already right; cook mode step advance; the timer pill. Say the word and they get the same treatment.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showCode&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Spec sheet&quot;}}">
+class Component extends DCLogic {
+  state = { k: 1, playing: true };
+
+  componentDidMount() {
+    this.apply();
+  }
+
+  apply() {
+    const el = this.rootRef && this.rootRef.current;
+    const target = el ? el : null;
+    const root = document.documentElement;
+    root.style.setProperty('--k', String(this.state.k));
+    root.style.setProperty('--play', this.state.playing ? 'running' : 'paused');
+    if (target) {
+      target.style.setProperty('--k', String(this.state.k));
+      target.style.setProperty('--play', this.state.playing ? 'running' : 'paused');
+    }
+  }
+
+  set(k) {
+    this.setState({ k }, () => this.apply());
+  }
+
+  renderVals() {
+    if (!this.rootRef) {
+      this.rootRef = React.createRef();
+    }
+    const labels = { 1: 'Real time', 2: 'Half speed', 4: 'Quarter speed' };
+    return {
+      rootRef: this.rootRef,
+      showCode: this.props.showCode !== false,
+      speedLabel: this.state.playing ? labels[this.state.k] : 'Paused',
+      playLabel: this.state.playing ? 'Pause' : 'Play',
+      full: () => this.set(1),
+      half: () => this.set(2),
+      quarter: () => this.set(4),
+      toggle: () =>
+        this.setState((s) => ({ playing: !s.playing }), () => this.apply()),
+    };
+  }
+}
+</script>
+</body>
+</html>
