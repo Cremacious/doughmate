@@ -10,9 +10,10 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { LINKS, reviewUrl } from '@/lib/links';
 import { scaleType } from '@/lib/typeScale';
 import { useIngredientPrices } from '@/state/ingredientPrices';
 import { usePro } from '@/state/pro';
@@ -174,6 +175,26 @@ export default function SettingsSheet() {
   };
 
   const bodyText = [typography.body.lg, scaleType(typography.body.lg, fontScale)];
+
+  // Leaving the app. A failure here is not worth an error state of its own — the
+  // only realistic cause is a device with no mail client, and a toast says that
+  // better than a dialog would.
+  const openLink = async (url: string) => {
+    try {
+      await Linking.openURL(url);
+    } catch {
+      show({ message: t('errors.generic') });
+    }
+  };
+
+  const review = reviewUrl();
+
+  const linkRow = (key: string, label: string, url: string) => (
+    <Pressable key={key} accessibilityRole="link" style={styles.row} onPress={() => openLink(url)}>
+      <Text style={[...bodyText, { color: palette.textInk }]}>{label}</Text>
+      <Text style={[...bodyText, { color: palette.textFaint }]}>↗</Text>
+    </Pressable>
+  );
 
   return (
     <BottomSheet
@@ -369,14 +390,22 @@ export default function SettingsSheet() {
           </Card>
         ) : null}
 
+        <SectionLabel>{t('settings.section_support')}</SectionLabel>
+        <DividedCard>
+          {[
+            linkRow('contact', t('settings.contact'), LINKS.support),
+            linkRow('feedback', t('settings.feedback'), LINKS.feedback),
+            // Only once there is a listing to rate. A Rate row that opens a dead
+            // App Store page is worse than no Rate row.
+            ...(review ? [linkRow('rate', t('settings.rate'), review)] : []),
+          ]}
+        </DividedCard>
+
         <SectionLabel>{t('settings.section_about')}</SectionLabel>
         <DividedCard>
           {[
-            <View key="sources" style={styles.row}>
-              <Text style={[...bodyText, { color: palette.textInk }]}>
-                {t('settings.ingredient_sources')}
-              </Text>
-            </View>,
+            linkRow('privacy', t('settings.privacy'), LINKS.privacy),
+            linkRow('terms', t('settings.terms'), LINKS.terms),
             <View key="version" style={styles.row}>
               <Text style={[...bodyText, { color: palette.textInk }]}>{t('settings.version')}</Text>
               <Text
