@@ -2,17 +2,39 @@
 // screens are one idea each, and a card around a single idea is just a smaller screen.
 // A hero slot, headline and body, optional middle content, progress dots, and a
 // primary plus a quiet exit.
+//
+// The step change happens here rather than in the stack. Each block enters 40ms after
+// the one above it, so the screen assembles top down instead of arriving in one piece.
+// The hero is the only element allowed to be theatrical: it scales up from 0.88 with
+// a light overshoot. Everything else is a fade and a short rise.
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  Easing,
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { triggerHaptic } from '@/lib/haptics';
 import { scaleType } from '@/lib/typeScale';
-import { radius, shadow, spacing, typography } from '@/theme';
+import { easing, radius, shadow, spacing, spring, transition, typography } from '@/theme';
 
 const PRIMARY_HEIGHT = 58;
+const DOT = 9;
+const DOT_ACTIVE = 26;
+
+/** How far the text and footer rise into place. The hero scales instead. */
+const TEXT_RISE = 18;
+const FOOTER_RISE = 22;
 
 export interface OnboardingScaffoldProps {
   step: number;
@@ -28,6 +50,33 @@ export interface OnboardingScaffoldProps {
   onSecondary?: () => void;
 }
 
+/**
+ * The dot morphs rather than swapping. Each step is its own route, so the footer
+ * remounts and there is nothing to animate from — the dot therefore starts at the
+ * width it held on the step before and springs to the width it holds now, which is
+ * the same picture the user would have seen had the footer persisted.
+ */
+function ProgressDot({ active, wasActive }: { active: boolean; wasActive: boolean }) {
+  const { palette } = useAppTheme();
+  const reduced = useReducedMotion();
+  const p = useSharedValue(reduced ? (active ? 1 : 0) : wasActive ? 1 : 0);
+
+  useEffect(() => {
+    if (reduced) {
+      p.value = active ? 1 : 0;
+      return;
+    }
+    p.value = withSpring(active ? 1 : 0, spring.quick);
+  }, [active, reduced, p]);
+
+  const style = useAnimatedStyle(() => ({
+    width: interpolate(p.value, [0, 1], [DOT, DOT_ACTIVE]),
+    backgroundColor: interpolateColor(p.value, [0, 1], [palette.heroDim, palette.primary]),
+  }));
+
+  return <Animated.View style={[styles.dot, style]} />;
+}
+
 export function OnboardingScaffold({
   step,
   total,
@@ -41,13 +90,57 @@ export function OnboardingScaffold({
   onSecondary,
 }: OnboardingScaffoldProps) {
   const { palette, fontScale } = useAppTheme();
+  const reduced = useReducedMotion();
   const [pressed, setPressed] = useState(false);
+
+  // Steps run forward, so the dot that was wide is the one before this one.
+  const previousIndex = step - 2;
+
+  const heroIn = useSharedValue(reduced ? 1 : 0);
+  const textIn = useSharedValue(reduced ? 1 : 0);
+  const footerIn = useSharedValue(reduced ? 1 : 0);
+
+  useEffect(() => {
+    const fade = { duration: transition.reducedMs };
+    const rise = {
+      duration: transition.stepInMs,
+      easing: Easing.bezier(...easing.standard),
+    };
+
+    if (reduced) {
+      heroIn.value = withTiming(1, fade);
+      textIn.value = withTiming(1, fade);
+      footerIn.value = withTiming(1, fade);
+      return;
+    }
+
+    heroIn.value = withSpring(1, spring.quick);
+    textIn.value = withDelay(transition.stepStaggerMs, withTiming(1, rise));
+    footerIn.value = withDelay(transition.stepStaggerMs * 2, withTiming(1, rise));
+  }, [reduced, heroIn, textIn, footerIn]);
+
+  const heroStyle = useAnimatedStyle(() => ({
+    opacity: Math.min(heroIn.value, 1),
+    transform: reduced ? [] : [{ scale: interpolate(heroIn.value, [0, 1], [0.88, 1]) }],
+  }));
+
+  const textStyle = useAnimatedStyle(() => ({
+    opacity: textIn.value,
+    transform: reduced ? [] : [{ translateY: interpolate(textIn.value, [0, 1], [TEXT_RISE, 0]) }],
+  }));
+
+  const footerStyle = useAnimatedStyle(() => ({
+    opacity: footerIn.value,
+    transform: reduced
+      ? []
+      : [{ translateY: interpolate(footerIn.value, [0, 1], [FOOTER_RISE, 0]) }],
+  }));
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: palette.accentButter }]}>
       <View style={styles.content}>
-        <View style={styles.hero}>{hero}</View>
-        <View style={styles.textGroup}>
+        <Animated.View style={[styles.hero, heroStyle]}>{hero}</Animated.View>
+        <Animated.View style={[styles.textGroup, textStyle]}>
           <Text
             style={[
               typography.display.xl,
@@ -68,22 +161,16 @@ export function OnboardingScaffold({
           >
             {body}
           </Text>
-        </View>
-        {children ? <View style={styles.middle}>{children}</View> : null}
+        </Animated.View>
+        {children ? (
+          <Animated.View style={[styles.middle, textStyle]}>{children}</Animated.View>
+        ) : null}
       </View>
 
-      <View style={styles.footer}>
+      <Animated.View style={[styles.footer, footerStyle]}>
         <View style={styles.dots}>
           {Array.from({ length: total }).map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.dot,
-                i === step - 1
-                  ? { width: 26, height: 9, backgroundColor: palette.primary }
-                  : { width: 9, height: 9, backgroundColor: palette.heroDim },
-              ]}
-            />
+            <ProgressDot key={i} active={i === step - 1} wasActive={i === previousIndex} />
           ))}
         </View>
 
@@ -132,7 +219,7 @@ export function OnboardingScaffold({
             </Text>
           </Pressable>
         ) : null}
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -157,7 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     alignItems: 'center',
   },
-  dot: { borderRadius: radius.pill },
+  dot: { height: DOT, borderRadius: radius.pill },
   primary: {
     height: PRIMARY_HEIGHT,
     borderRadius: radius.xl,

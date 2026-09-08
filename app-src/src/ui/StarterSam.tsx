@@ -12,10 +12,20 @@ export interface StarterSamProps {
   tightCrop?: boolean;
   /** Pale crust, for the butter and plum circles he would otherwise vanish into. */
   crust?: string;
+  /** Breathe, sway and blink. For the starter hero, not for cards in a list. */
+  idle?: boolean;
 }
 
-export function StarterSam({ mood, size = 120, tightCrop, crust }: StarterSamProps) {
-  return <Sam emotion={emotionForMood(mood)} size={size} tightCrop={tightCrop} crust={crust} />;
+export function StarterSam({ mood, size = 120, tightCrop, crust, idle }: StarterSamProps) {
+  return (
+    <Sam
+      emotion={emotionForMood(mood)}
+      size={size}
+      tightCrop={tightCrop}
+      crust={crust}
+      idle={idle}
+    />
+  );
 }
 
 export default StarterSam;

@@ -1,10 +1,21 @@
 // Proof BottomSheet. The only navigation besides the tabs. Drag the handle down
 // (past 120px or a fast flick) or tap the scrim to dismiss. Sticky footer for the
-// primary action. Enter/exit spring soft; opacity only under reduced motion.
+// primary action.
+//
+// The panel arrives on spring.snap, which is stiff enough to stop rather than settle,
+// and the scrim fades over 140ms instead of appearing at once — a scrim that is
+// already there when the panel is still travelling is what makes a sheet feel like
+// it lags behind its own background. Dismiss is a hard 170ms on easing.exit, because
+// something being dismissed should feel like it already went. The drag to dismiss
+// gesture keeps its own velocity handoff. Opacity only under reduced motion.
+//
+// One file: the mode tray, all six option sheets, recipe and starter detail, the
+// cook sheet, the bake plan and the paywall.
 import { type ReactNode, useEffect } from 'react';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -15,7 +26,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { sheet as sheetTokens, shadow, spacing, spring, stroke } from '@/theme';
+import { easing, sheet as sheetTokens, shadow, spacing, spring, stroke, transition } from '@/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -65,8 +76,8 @@ export function BottomSheet({
       progress.value = 1;
       return;
     }
-    translateY.value = withSpring(0, spring.soft);
-    progress.value = withTiming(1, { duration: 200 });
+    translateY.value = withSpring(0, spring.snap);
+    progress.value = withTiming(1, { duration: transition.scrimMs });
   }, [reduced, translateY, progress]);
 
   const dismiss = () => {
@@ -74,12 +85,16 @@ export function BottomSheet({
       onClose();
       return;
     }
-    progress.value = withTiming(0, { duration: 200 });
-    translateY.value = withTiming(sheetH, { duration: 220 }, (finished) => {
-      if (finished) {
-        runOnJS(onClose)();
+    progress.value = withTiming(0, { duration: transition.scrimMs });
+    translateY.value = withTiming(
+      sheetH,
+      { duration: transition.sheetOutMs, easing: Easing.bezier(...easing.exit) },
+      (finished) => {
+        if (finished) {
+          runOnJS(onClose)();
+        }
       }
-    });
+    );
   };
 
   const pan = Gesture.Pan()
@@ -96,8 +111,10 @@ export function BottomSheet({
       ) {
         runOnJS(dismiss)();
       } else {
-        translateY.value = withSpring(0, spring.soft);
-        progress.value = withTiming(1, { duration: 160 });
+        // Snapping back from a partial drag is a return, not an arrival, so it
+        // rides the same spring the panel came in on.
+        translateY.value = withSpring(0, spring.snap);
+        progress.value = withTiming(1, { duration: transition.scrimMs });
       }
     });
 

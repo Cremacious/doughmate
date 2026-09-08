@@ -21,7 +21,7 @@ export default function Welcome() {
     <OnboardingScaffold
       step={1}
       total={5}
-      hero={<Sam size={196} emotion="happy" crust={palette.samCrustPale} />}
+      hero={<Sam size={196} emotion="happy" crust={palette.samCrustPale} idle />}
       title={t('onboarding.welcome.title')}
       body={t('onboarding.welcome.body')}
       primaryLabel={t('onboarding.welcome.cta')}

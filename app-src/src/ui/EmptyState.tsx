@@ -42,7 +42,7 @@ export function EmptyState({
   return (
     <View style={styles.wrap}>
       <Card tier="hero" heroColor={palette.accentButter} style={styles.card}>
-        <Sam size={SAM_SIZE} emotion={emotion} crust={palette.samCrustPale} />
+        <Sam size={SAM_SIZE} emotion={emotion} crust={palette.samCrustPale} idle />
         <Text
           style={[
             typography.display.md,

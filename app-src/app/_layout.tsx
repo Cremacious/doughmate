@@ -19,16 +19,18 @@ import {
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { BakePlanSync } from '@/components/BakePlanSync';
+import { BootGround, BootSplash } from '@/components/BootSplash';
 import { ReminderSync } from '@/components/ReminderSync';
 import { TimerSync } from '@/components/TimerSync';
 import { TimerPill } from '@/ui/TimerPill';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { initAds } from '@/lib/ads';
+import { palettes } from '@/theme';
 import { BakePlanProvider } from '@/state/bakePlan';
 import { BakesProvider } from '@/state/bakes';
 import { IngredientPricesProvider } from '@/state/ingredientPrices';
@@ -52,8 +54,11 @@ export default function RootLayout() {
     SpaceGrotesk_700Bold,
   });
 
+  // Not null: a cold start should open on the splash ground, not on a white frame
+  // that the splash then has to cover. No provider has mounted yet, so this is the
+  // light tomato rather than the themed one — which is the splash colour either way.
   if (!fontsLoaded) {
-    return null;
+    return <BootGround color={palettes.light.primary} />;
   }
 
   return (
@@ -87,6 +92,10 @@ export default function RootLayout() {
 
 function ThemedApp() {
   const { palette, isDark } = useAppTheme();
+  // The cold start plays once, over a live app. Convert is laying itself out behind
+  // the ground the whole time, so the handoff reveals a finished screen rather than
+  // starting one.
+  const [booting, setBooting] = useState(true);
 
   useEffect(() => {
     // Gathers consent, then initializes. Rejections are handled inside, so a
@@ -203,6 +212,7 @@ function ThemedApp() {
       <ReminderSync />
       <TimerSync />
       <BakePlanSync />
+      {booting ? <BootSplash onDone={() => setBooting(false)} /> : null}
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </>
   );

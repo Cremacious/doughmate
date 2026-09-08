@@ -8,13 +8,27 @@
 // appears to sit down into its own shadow and its outer footprint never moves.
 // Reduced motion (and dark mode, which has no shadow to sit into) drops opacity
 // to press.reducedOpacity instead.
+//
+// The two halves of a press are not the same length. Going down is 90ms on an ease
+// out, so the control is seated before the finger has finished landing. Coming up
+// is 160ms with a small elastic tail, because release is where the snap lives. This
+// one file is what Button, Chip, ModeChip, IconButton, Card and the FAB all feel.
 import type { ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { hardShadow, press } from '@/theme';
+
+/** Down eases out and stops; up overshoots slightly and settles. */
+function pressTiming(down: boolean) {
+  'worklet';
+  return {
+    duration: down ? press.downMs : press.upMs,
+    easing: down ? Easing.out(Easing.quad) : Easing.elastic(0.9),
+  };
+}
 
 export interface HardShadowOffset {
   x: number;
@@ -57,8 +71,8 @@ export function HardShadow({
     }
     return {
       transform: [
-        { translateX: withTiming(target.x, { duration: press.duration }) },
-        { translateY: withTiming(target.y, { duration: press.duration }) },
+        { translateX: withTiming(target.x, pressTiming(pressed)) },
+        { translateY: withTiming(target.y, pressTiming(pressed)) },
       ],
     };
   }, [pressed, offset, reduced]);
@@ -73,8 +87,8 @@ export function HardShadow({
     return {
       opacity: 1,
       transform: [
-        { translateX: withTiming(travelX, { duration: press.duration }) },
-        { translateY: withTiming(travelY, { duration: press.duration }) },
+        { translateX: withTiming(travelX, pressTiming(pressed)) },
+        { translateY: withTiming(travelY, pressTiming(pressed)) },
       ],
     };
   }, [pressed, offset, reduced, visible]);

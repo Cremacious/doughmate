@@ -111,7 +111,7 @@ export default function TimersSheet() {
 
         {timers.length === 0 ? (
           <View style={styles.empty}>
-            <Sam size={96} />
+            <Sam size={96} idle />
             <Text style={[typography.heading, styles.center, { color: palette.textInk }]}>
               {t('timers.empty_title')}
             </Text>

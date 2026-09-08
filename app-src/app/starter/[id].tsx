@@ -115,7 +115,7 @@ export default function StarterDetailSheet() {
               { backgroundColor: palette.accentButter, borderColor: palette.outline },
             ]}
           >
-            <StarterSam mood={mood} size={66} tightCrop crust={palette.samCrustPale} />
+            <StarterSam mood={mood} size={66} tightCrop crust={palette.samCrustPale} idle />
           </View>
           <View style={styles.heroText}>
             <Text

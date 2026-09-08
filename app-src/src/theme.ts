@@ -1,5 +1,5 @@
 /**
- * Doughmate design tokens — "Fresh Bake", v3.
+ * DoughMate design tokens — "Fresh Bake", v3.
  * Drop-in replacement for app-src/src/theme.ts.
  *
  * Every key that existed in the Proof v2 file still exists, so no screen breaks
@@ -309,11 +309,16 @@ export const shadow = {
   },
 } as const;
 
-/** Three springs only. Reduced motion swaps every one for a 120ms opacity fade. */
+/** Four springs only. Reduced motion swaps every one for a 120ms opacity fade. */
 export const spring = {
   quick: { stiffness: 320, damping: 22, mass: 1 },
   medium: { stiffness: 210, damping: 18, mass: 1 },
   soft: { stiffness: 130, damping: 20, mass: 1.1 },
+  /**
+   * Sheets. Stiffer and lighter than quick, so a panel arrives and stops rather
+   * than easing in over half a second. A sheet that settles is a sheet that lags.
+   */
+  snap: { stiffness: 420, damping: 26, mass: 0.9 },
 } as const;
 
 export const duration = { instant: 120, fast: 200, normal: 320, slow: 480 } as const;
@@ -329,8 +334,36 @@ export const easing = {
  * `press.travel` while the shadow shrinks to hardShadow.pressed, so the control
  * appears to sit down into its own shadow. Reduced motion skips the translate
  * and drops opacity to 0.9 instead.
+ *
+ * Asymmetric on purpose. Down is faster than a frame budget's worth of thought,
+ * so the control is already seated by the time the finger has finished landing;
+ * up is slower and springier, because release is where the snap lives. It is the
+ * only overshoot in the system besides the tab pill.
  */
-export const press = { travel: 3, duration: duration.instant, reducedOpacity: 0.9 } as const;
+export const press = { travel: 3, downMs: 90, upMs: 160, reducedOpacity: 0.9 } as const;
+
+/**
+ * Screen level transitions. Everything here lives between `instant` and `fast`:
+ * entering earns 220ms, leaving gets 120 to 170. Tab travel is asymmetric because
+ * the outgoing screen only has to clear the frame, while the incoming one has to
+ * arrive from far enough away to read as a new page rather than a redraw.
+ */
+export const transition = {
+  tabMs: 220,
+  /** Outgoing screens slide this far against the direction of travel. */
+  tabOutPx: 26,
+  /** Incoming screens start this far ahead of their resting position. */
+  tabInPx: 34,
+  /** Sheets: spring in on `spring.snap`, scrim fades, dismiss is a hard exit. */
+  scrimMs: 140,
+  sheetOutMs: 170,
+  /** Onboarding steps: content animates, the stack does not. */
+  stepInMs: 220,
+  stepOutMs: 120,
+  stepStaggerMs: 40,
+  /** Reduced motion swaps every move above for an opacity fade of this length. */
+  reducedMs: duration.instant,
+} as const;
 
 /** Named haptics, unchanged. */
 export const haptic = {
@@ -366,6 +399,7 @@ export const theme = {
   duration,
   easing,
   press,
+  transition,
   haptic,
   sheet,
   adSlot,

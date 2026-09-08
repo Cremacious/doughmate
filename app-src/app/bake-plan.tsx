@@ -72,7 +72,7 @@ export default function BakePlanSheet() {
         }
       >
         <View style={styles.empty}>
-          <Sam size={96} />
+          <Sam size={96} idle />
           <Text style={[typography.body.md, styles.center, { color: palette.textSoft }]}>
             {t('bakePlan.empty')}
           </Text>
