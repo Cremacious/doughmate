@@ -45,11 +45,16 @@ export function subscribeAdsReady(listener: () => void): () => void {
 
 export async function initAds(): Promise<void> {
   if (!__DEV__ && USING_TEST_AD_UNITS) {
-    // Shipping test units serves real looking ads that earn nothing, and it is
-    // invisible unless you go looking at revenue weeks later.
+    // A release build with Google's test unit ids serves real looking ads that
+    // earn nothing, and nothing about it is visible from inside the app — you
+    // find out weeks later by staring at an empty revenue chart. So this returns
+    // rather than warns. No ads at all is a missing banner, which is obvious on
+    // the first launch and costs one build to fix; ads that quietly earn nothing
+    // is a month of ad impressions given away.
     console.warn(
-      '[ads] Built with Google test ad unit ids. Set EXPO_PUBLIC_ADMOB_BANNER_IOS and _ANDROID.'
+      '[ads] Release build with Google test ad unit ids. Ads are off. Set EXPO_PUBLIC_ADMOB_BANNER_IOS and _ANDROID.'
     );
+    return;
   }
 
   let canRequestAds = false;
