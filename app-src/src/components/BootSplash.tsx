@@ -11,7 +11,7 @@
 // reduced motion it is a still ground and a short fade.
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, Text, useColorScheme, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
   Extrapolation,
@@ -28,7 +28,7 @@ import { useAppTheme } from '@/hooks/useAppTheme';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { SamEmotion } from '@/lib/samEmotion';
 import { useSettings } from '@/state/settings';
-import { radius, spacing, typography } from '@/theme';
+import { palettes, radius, spacing, typography } from '@/theme';
 
 /** Cue times in ms. The names match the scenes the piece was authored against. */
 const CUE = { sleep: 0, wake: 400, wordmark: 850, handoff: 1200 } as const;
@@ -222,12 +222,18 @@ export function BootSplash({ onDone }: BootSplashProps) {
 }
 
 /**
- * The frame shown before fonts resolve, so a cold start opens on the splash ground
- * rather than on white. It cannot read the theme — no provider has mounted yet — so
- * it uses the light tomato, which is what the splash is in either theme anyway.
+ * The frame shown between the native launch screen and the first themed render,
+ * while fonts resolve. Without it a cold start goes tomato, white, tomato.
+ *
+ * No provider has mounted yet, so it cannot read the app's theme setting — but it
+ * does not need to. It reads the system scheme, which is exactly what the native
+ * splash was configured against, so the two are the same colour and the seam
+ * between them is invisible.
  */
-export function BootGround({ color }: { color: string }) {
-  return <View style={[styles.prelude, { backgroundColor: color }]} />;
+export function BootGround() {
+  const scheme = useColorScheme();
+  const tomato = scheme === 'dark' ? palettes.dark.primary : palettes.light.primary;
+  return <View style={[styles.prelude, { backgroundColor: tomato }]} />;
 }
 
 const styles = StyleSheet.create({

@@ -30,7 +30,6 @@ import { TimerSync } from '@/components/TimerSync';
 import { TimerPill } from '@/ui/TimerPill';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { initAds } from '@/lib/ads';
-import { palettes } from '@/theme';
 import { BakePlanProvider } from '@/state/bakePlan';
 import { BakesProvider } from '@/state/bakes';
 import { IngredientPricesProvider } from '@/state/ingredientPrices';
@@ -54,11 +53,10 @@ export default function RootLayout() {
     SpaceGrotesk_700Bold,
   });
 
-  // Not null: a cold start should open on the splash ground, not on a white frame
-  // that the splash then has to cover. No provider has mounted yet, so this is the
-  // light tomato rather than the themed one — which is the splash colour either way.
+  // Not null: a cold start should carry straight on from the native splash rather
+  // than dropping to a white frame the boot animation then has to cover.
   if (!fontsLoaded) {
-    return <BootGround color={palettes.light.primary} />;
+    return <BootGround />;
   }
 
   return (
