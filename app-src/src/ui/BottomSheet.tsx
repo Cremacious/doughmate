@@ -9,14 +9,23 @@
 // something being dismissed should feel like it already went. The drag to dismiss
 // gesture keeps its own velocity handoff. Opacity only under reduced motion.
 //
+// The panel also gets out of the keyboard's way. On iOS the window does not resize
+// when the keyboard opens, so a panel anchored to the bottom at a fixed fraction of
+// its container simply has its lower third covered — which is what hid the notes
+// field on the starter form, and every other field sitting low in a sheet. The panel
+// pads its own bottom by the live keyboard height instead of moving, so its top edge
+// and the grabber stay exactly where they were and only the usable area shrinks. The
+// footer rides up with it, so the primary action is never behind the keyboard either.
+//
 // One file: the mode tray, all six option sheets, recipe and starter detail, the
 // cook sheet, the bake plan and the paywall.
 import { type ReactNode, useEffect } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
+  useAnimatedKeyboard,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -67,6 +76,10 @@ export function BottomSheet({
   // Padding every sheet regardless is what opened a gap above the grabber.
   const grabberInset = size === 'full' ? insets.top : 0;
 
+  // Tracked on the UI thread, so the panel shrinks in step with the keyboard rather
+  // than snapping once it has finished arriving.
+  const keyboard = useAnimatedKeyboard();
+
   const translateY = useSharedValue(reduced ? 0 : sheetH);
   const progress = useSharedValue(reduced ? 1 : 0);
 
@@ -81,6 +94,9 @@ export function BottomSheet({
   }, [reduced, translateY, progress]);
 
   const dismiss = () => {
+    // A sheet leaving with the keyboard still up leaves the keyboard behind on the
+    // screen underneath, which then has to animate away on its own.
+    Keyboard.dismiss();
     if (reduced) {
       onClose();
       return;
@@ -119,7 +135,20 @@ export function BottomSheet({
     });
 
   const scrimStyle = useAnimatedStyle(() => ({ opacity: progress.value }));
-  const panelStyle = useAnimatedStyle(() => ({ transform: [{ translateY: translateY.value }] }));
+
+  // Padding rather than a lift: raising the whole panel would push its top edge, and
+  // the grabber with it, off the top of the screen on a tall sheet. Padding takes the
+  // space out of the bottom, which is the part the keyboard is standing on anyway.
+  const panelStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    paddingBottom: keyboard.height.value,
+  }));
+
+  // The home indicator inset is only worth reserving while nothing covers it. Once the
+  // keyboard is taller than the inset, the footer sits directly on the keyboard.
+  const footerStyle = useAnimatedStyle(() => ({
+    paddingBottom: spacing.md + Math.max(0, insets.bottom - keyboard.height.value),
+  }));
 
   return (
     <View style={StyleSheet.absoluteFill}>
@@ -154,18 +183,18 @@ export function BottomSheet({
         <View style={styles.content}>{children}</View>
 
         {footer ? (
-          <View
+          <Animated.View
             style={[
               styles.footer,
               {
                 backgroundColor: palette.bgSurface,
                 borderTopColor: palette.outline,
-                paddingBottom: insets.bottom + spacing.md,
               },
+              footerStyle,
             ]}
           >
             {footer}
-          </View>
+          </Animated.View>
         ) : null}
       </Animated.View>
     </View>

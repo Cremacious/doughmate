@@ -5,9 +5,9 @@
 // is the one people actually change, so its selection is butter and lifts onto a hard
 // shadow, while the ratio settles for an ink fill.
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Sam } from '@/components/Sam';
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -39,6 +39,26 @@ export default function NewStarterSheet() {
   const [ratio, setRatio] = useState(existing?.ratio ?? '1:2:2');
   const [intervalHours, setIntervalHours] = useState(existing?.intervalHours ?? 24);
   const [notes, setNotes] = useState(existing?.notes ?? '');
+
+  // Notes is the last and tallest field, so it is the one the keyboard lands on.
+  // The sheet already shrinks to sit above the keyboard, but shrinking a scroll
+  // view does not move what is inside it: React Native has no automatic scroll to
+  // the focused input, it only exposes an imperative one. So we scroll ourselves,
+  // once on focus for when the keyboard is already up and the sheet is its final
+  // size, and again when the keyboard finishes opening, which is the case where
+  // focus fires while the sheet is still full height and a scroll would land short.
+  const scroller = useRef<ScrollView>(null);
+  const [notesFocused, setNotesFocused] = useState(false);
+
+  const revealNotes = () => scroller.current?.scrollToEnd({ animated: true });
+
+  useEffect(() => {
+    if (!notesFocused) {
+      return;
+    }
+    const shown = Keyboard.addListener('keyboardDidShow', revealNotes);
+    return () => shown.remove();
+  }, [notesFocused]);
 
   const save = () => {
     const fallback = t('starters.new_name_placeholder_next', { number: starters.length + 1 });
@@ -113,8 +133,10 @@ export default function NewStarterSheet() {
       }
     >
       <ScrollView
+        ref={scroller}
         contentContainerStyle={styles.body}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         <Card>
@@ -181,6 +203,11 @@ export default function NewStarterSheet() {
             onChangeText={setNotes}
             placeholder={t('starters.new_notes_placeholder')}
             placeholderTextColor={palette.textFaint}
+            onFocus={() => {
+              setNotesFocused(true);
+              revealNotes();
+            }}
+            onBlur={() => setNotesFocused(false)}
             multiline
             textAlignVertical="top"
             style={[
