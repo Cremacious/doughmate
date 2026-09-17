@@ -4,6 +4,7 @@
 import Purchases from 'react-native-purchases';
 import { Platform } from 'react-native';
 
+import { proPriceString, selectProPackage } from './offering';
 import { PRO_ENTITLEMENT, type PurchaseOutcome } from './purchases.types';
 
 const apiKey =
@@ -41,7 +42,7 @@ export async function purchasePro(): Promise<PurchaseOutcome> {
   }
   try {
     const offerings = await Purchases.getOfferings();
-    const pkg = offerings.current?.availablePackages?.[0];
+    const pkg = selectProPackage(offerings.current?.availablePackages);
     if (!pkg) {
       return { ok: false, error: 'no_offering' };
     }
@@ -66,5 +67,22 @@ export async function restorePro(): Promise<boolean> {
     return Boolean(info.entitlements.active[PRO_ENTITLEMENT]);
   } catch {
     return false;
+  }
+}
+
+/**
+ * The storefront-localised price of the Supporter purchase, or null if the
+ * offering cannot be reached. Null is not an error: the paywall falls back to
+ * its own copy, so a slow network shows a price rather than a blank.
+ */
+export async function getProPrice(): Promise<string | null> {
+  if (!configured) {
+    return null;
+  }
+  try {
+    const offerings = await Purchases.getOfferings();
+    return proPriceString(selectProPackage(offerings.current?.availablePackages));
+  } catch {
+    return null;
   }
 }
