@@ -13,7 +13,7 @@ export const LINKS = {
   support: 'mailto:chrismackall3@gmail.com?subject=DoughMate',
   feedback: 'mailto:chrismackall3@gmail.com?subject=DoughMate%20feedback',
   /** Numeric App Store id, digits only, no leading "id". Empty until 1.0 is created. */
-  appStoreId: '',
+  appStoreId: '6802765361',
 } as const;
 
 /** Deep links straight to the review sheet rather than the store listing. */
