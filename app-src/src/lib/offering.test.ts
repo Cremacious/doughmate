@@ -54,4 +54,11 @@ describe('proPriceString', () => {
   it('treats an empty price string as absent', () => {
     expect(proPriceString(pkg(PRO_PRODUCT_ID, ''))).toBeNull();
   });
+
+  // A whitespace-only price is just as useless to the paywall as an empty one;
+  // without trimming, `' '` is truthy and would slip past the "never blank"
+  // guard and render as a blank space beside the button.
+  it('treats a whitespace-only price string as absent', () => {
+    expect(proPriceString(pkg(PRO_PRODUCT_ID, '   '))).toBeNull();
+  });
 });

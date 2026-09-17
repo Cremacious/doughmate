@@ -32,5 +32,5 @@ export function selectProPackage<T extends OfferingPackage>(
  */
 export function proPriceString(pkg: OfferingPackage | null | undefined): string | null {
   const price = pkg?.product.priceString;
-  return price ? price : null;
+  return price?.trim() ? price : null;
 }
