@@ -4,15 +4,18 @@
 // folder, so they are edited and deployed with the app rather than living in some
 // console nobody remembers the password to.
 //
-// `appStoreId` is empty until the App Store Connect record exists. Settings hides
-// the review row while it is, which is the right behaviour anyway: a Rate row that
-// opens a dead App Store page is worse than no Rate row.
+// `appStoreId` is the numeric id of the App Store Connect record, which exists
+// ahead of release so TestFlight and submission have somewhere to attach to. 1.0
+// itself has not shipped yet (as of this writing it hasn't even been submitted),
+// but the id does not change between the record's creation and release, so
+// Settings shows the Rate row now rather than waiting on a launch that has no
+// bearing on whether the link works.
 export const LINKS = {
   privacy: 'https://cremacious.github.io/doughmate/',
   terms: 'https://cremacious.github.io/doughmate/terms.html',
   support: 'mailto:chrismackall3@gmail.com?subject=DoughMate',
   feedback: 'mailto:chrismackall3@gmail.com?subject=DoughMate%20feedback',
-  /** Numeric App Store id, digits only, no leading "id". Empty until 1.0 is created. */
+  /** Numeric App Store id, digits only, no leading "id". Set once the App Store Connect record exists. */
   appStoreId: '6802765361',
 } as const;
 
