@@ -13,8 +13,10 @@
 export const LINKS = {
   privacy: 'https://cremacious.github.io/doughmate/',
   terms: 'https://cremacious.github.io/doughmate/terms.html',
-  support: 'mailto:chrismackall3@gmail.com?subject=DoughMate',
-  feedback: 'mailto:chrismackall3@gmail.com?subject=DoughMate%20feedback',
+  // Use the project address, never a personal one — these ship in the binary and
+  // are published on the App Store listing, so they are effectively permanent.
+  support: 'mailto:codemackcreations@gmail.com?subject=DoughMate',
+  feedback: 'mailto:codemackcreations@gmail.com?subject=DoughMate%20feedback',
   /** Numeric App Store id, digits only, no leading "id". Set once the App Store Connect record exists. */
   appStoreId: '6802765361',
 } as const;
