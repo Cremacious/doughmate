@@ -1,9 +1,19 @@
 // Pro entitlement state, backed by RevenueCat on native (stubbed on web).
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { storage } from '@/lib/storage';
 import {
   configurePurchases,
+  getProPrice,
   PURCHASES_AVAILABLE,
   purchasePro,
   refreshPro,
@@ -22,8 +32,12 @@ interface ProContextValue {
   isPro: boolean;
   /** Whether purchasing is possible (native build with a configured key). */
   available: boolean;
+  /** Storefront-localised Supporter price, or null until the offering resolves. */
+  price: string | null;
   purchase: () => Promise<PurchaseOutcome>;
   restore: () => Promise<boolean>;
+  /** Re-fetches the price. Callers use this to recover from a launch-time fetch that failed. */
+  refreshPrice: () => Promise<void>;
   /** Dev builds only: manually forces isPro on, regardless of the real entitlement. */
   debugProOverride: boolean;
   setDebugProOverride: (value: boolean) => void;
@@ -34,19 +48,38 @@ const ProContext = createContext<ProContextValue | null>(null);
 export function ProProvider({ children }: { children: ReactNode }) {
   const [isPro, setIsPro] = useState(false);
   const [debugProOverride, setDebugProOverrideState] = useState(loadDebugProOverride);
+  const [price, setPrice] = useState<string | null>(null);
+
+  // Shared unmount guard for the mount effect below and for refreshPrice, which
+  // can still be resolving after the paywall that triggered it has closed.
+  const mounted = useRef(true);
+  useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  const refreshPrice = useCallback(async () => {
+    const storePrice = await getProPrice();
+    if (mounted.current) {
+      setPrice(storePrice);
+    }
+  }, []);
 
   useEffect(() => {
-    let active = true;
     void (async () => {
-      await configurePurchases();
-      const pro = await refreshPro();
-      if (active) {
+      try {
+        await configurePurchases();
+      } catch {
+        // A malformed key must not stop isPro/price from resolving below, or a
+        // paying supporter would silently see ads with no error surfaced.
+      }
+      const [pro, storePrice] = await Promise.all([refreshPro(), getProPrice()]);
+      if (mounted.current) {
         setIsPro(pro);
+        setPrice(storePrice);
       }
     })();
-    return () => {
-      active = false;
-    };
   }, []);
 
   const setDebugProOverride = (value: boolean) => {
@@ -61,6 +94,7 @@ export function ProProvider({ children }: { children: ReactNode }) {
     () => ({
       isPro: debugProOverride || isPro,
       available: PURCHASES_AVAILABLE,
+      price,
       purchase: async () => {
         const outcome = await purchasePro();
         if (outcome.ok) {
@@ -75,10 +109,11 @@ export function ProProvider({ children }: { children: ReactNode }) {
         }
         return restored;
       },
+      refreshPrice,
       debugProOverride,
       setDebugProOverride,
     }),
-    [isPro, debugProOverride]
+    [isPro, debugProOverride, price, refreshPrice]
   );
 
   return <ProContext.Provider value={value}>{children}</ProContext.Provider>;

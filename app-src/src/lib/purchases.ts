@@ -18,3 +18,7 @@ export async function purchasePro(): Promise<PurchaseOutcome> {
 export async function restorePro(): Promise<boolean> {
   return false;
 }
+
+export async function getProPrice(): Promise<string | null> {
+  return null;
+}
