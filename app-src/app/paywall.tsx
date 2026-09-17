@@ -31,7 +31,7 @@ const CHECK = 26;
 export default function PaywallSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
-  const { isPro, available, purchase, restore } = usePro();
+  const { isPro, available, price, purchase, restore } = usePro();
   const { show } = useToast();
   const [busy, setBusy] = useState(false);
 
@@ -84,7 +84,7 @@ export default function PaywallSheet() {
                     { color: palette.onPrimary },
                   ]}
                 >
-                  {t('paywall.price')}
+                  {price ?? t('paywall.price')}
                 </Text>
               }
             />

@@ -4,6 +4,7 @@ import { createContext, type ReactNode, useContext, useEffect, useMemo, useState
 import { storage } from '@/lib/storage';
 import {
   configurePurchases,
+  getProPrice,
   PURCHASES_AVAILABLE,
   purchasePro,
   refreshPro,
@@ -22,6 +23,8 @@ interface ProContextValue {
   isPro: boolean;
   /** Whether purchasing is possible (native build with a configured key). */
   available: boolean;
+  /** Storefront-localised Supporter price, or null until the offering resolves. */
+  price: string | null;
   purchase: () => Promise<PurchaseOutcome>;
   restore: () => Promise<boolean>;
   /** Dev builds only: manually forces isPro on, regardless of the real entitlement. */
@@ -34,14 +37,16 @@ const ProContext = createContext<ProContextValue | null>(null);
 export function ProProvider({ children }: { children: ReactNode }) {
   const [isPro, setIsPro] = useState(false);
   const [debugProOverride, setDebugProOverrideState] = useState(loadDebugProOverride);
+  const [price, setPrice] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
     void (async () => {
       await configurePurchases();
-      const pro = await refreshPro();
+      const [pro, storePrice] = await Promise.all([refreshPro(), getProPrice()]);
       if (active) {
         setIsPro(pro);
+        setPrice(storePrice);
       }
     })();
     return () => {
@@ -61,6 +66,7 @@ export function ProProvider({ children }: { children: ReactNode }) {
     () => ({
       isPro: debugProOverride || isPro,
       available: PURCHASES_AVAILABLE,
+      price,
       purchase: async () => {
         const outcome = await purchasePro();
         if (outcome.ok) {
@@ -78,7 +84,7 @@ export function ProProvider({ children }: { children: ReactNode }) {
       debugProOverride,
       setDebugProOverride,
     }),
-    [isPro, debugProOverride]
+    [isPro, debugProOverride, price]
   );
 
   return <ProContext.Provider value={value}>{children}</ProContext.Provider>;
