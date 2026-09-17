@@ -7,3 +7,6 @@ export interface PurchaseOutcome {
 
 /** RevenueCat entitlement identifier that unlocks Pro. */
 export const PRO_ENTITLEMENT = 'pro';
+
+/** App Store product identifier for the one-time Supporter purchase. */
+export const PRO_PRODUCT_ID = 'com.cremacious.doughmate.pro';

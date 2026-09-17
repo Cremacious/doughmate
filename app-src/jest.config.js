@@ -27,6 +27,7 @@ module.exports = {
     'src/lib/timer.ts',
     'src/lib/schedule.ts',
     'src/lib/samEmotion.ts',
+    'src/lib/offering.ts',
   ],
   coverageThreshold: {
     global: { branches: 100, functions: 100, lines: 100, statements: 100 },
