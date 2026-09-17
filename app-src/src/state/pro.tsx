@@ -1,5 +1,14 @@
 // Pro entitlement state, backed by RevenueCat on native (stubbed on web).
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { storage } from '@/lib/storage';
 import {
@@ -27,6 +36,8 @@ interface ProContextValue {
   price: string | null;
   purchase: () => Promise<PurchaseOutcome>;
   restore: () => Promise<boolean>;
+  /** Re-fetches the price. Callers use this to recover from a launch-time fetch that failed. */
+  refreshPrice: () => Promise<void>;
   /** Dev builds only: manually forces isPro on, regardless of the real entitlement. */
   debugProOverride: boolean;
   setDebugProOverride: (value: boolean) => void;
@@ -39,19 +50,36 @@ export function ProProvider({ children }: { children: ReactNode }) {
   const [debugProOverride, setDebugProOverrideState] = useState(loadDebugProOverride);
   const [price, setPrice] = useState<string | null>(null);
 
+  // Shared unmount guard for the mount effect below and for refreshPrice, which
+  // can still be resolving after the paywall that triggered it has closed.
+  const mounted = useRef(true);
   useEffect(() => {
-    let active = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  const refreshPrice = useCallback(async () => {
+    const storePrice = await getProPrice();
+    if (mounted.current) {
+      setPrice(storePrice);
+    }
+  }, []);
+
+  useEffect(() => {
     void (async () => {
-      await configurePurchases();
+      try {
+        await configurePurchases();
+      } catch {
+        // A malformed key must not stop isPro/price from resolving below, or a
+        // paying supporter would silently see ads with no error surfaced.
+      }
       const [pro, storePrice] = await Promise.all([refreshPro(), getProPrice()]);
-      if (active) {
+      if (mounted.current) {
         setIsPro(pro);
         setPrice(storePrice);
       }
     })();
-    return () => {
-      active = false;
-    };
   }, []);
 
   const setDebugProOverride = (value: boolean) => {
@@ -81,10 +109,11 @@ export function ProProvider({ children }: { children: ReactNode }) {
         }
         return restored;
       },
+      refreshPrice,
       debugProOverride,
       setDebugProOverride,
     }),
-    [isPro, debugProOverride, price]
+    [isPro, debugProOverride, price, refreshPrice]
   );
 
   return <ProContext.Provider value={value}>{children}</ProContext.Provider>;

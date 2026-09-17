@@ -12,7 +12,7 @@
 // on the sheet competes. The price rides beside the label in Space Grotesk, because it
 // is the number the decision turns on.
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -31,11 +31,23 @@ const CHECK = 26;
 export default function PaywallSheet() {
   const { t } = useTranslation();
   const { palette, fontScale } = useAppTheme();
-  const { isPro, available, price, purchase, restore } = usePro();
+  const { isPro, available, price, purchase, restore, refreshPrice } = usePro();
   const { show } = useToast();
   const [busy, setBusy] = useState(false);
 
   const features = t('paywall.features', { returnObjects: true }) as string[];
+
+  // Retries a launch-time fetch that failed (e.g. cold-launched offline), so
+  // reopening the sheet once connectivity is back shows the real price instead
+  // of staying wrong for the rest of the process lifetime.
+  useEffect(() => {
+    void refreshPrice();
+  }, [refreshPrice]);
+
+  // Purchasing is only possible when `available`; that is the only state a
+  // fetch failure can be safely substituted for. Otherwise show no price at
+  // all rather than risk quoting a number the store won't honour.
+  const displayPrice = available ? price : t('paywall.price');
 
   const onBuy = async () => {
     setBusy(true);
@@ -77,15 +89,17 @@ export default function PaywallSheet() {
               disabled={busy || !available}
               haptic="success"
               trailing={
-                <Text
-                  style={[
-                    typography.numeric.md,
-                    scaleType(typography.numeric.md, fontScale),
-                    { color: palette.onPrimary },
-                  ]}
-                >
-                  {price ?? t('paywall.price')}
-                </Text>
+                displayPrice ? (
+                  <Text
+                    style={[
+                      typography.numeric.md,
+                      scaleType(typography.numeric.md, fontScale),
+                      { color: palette.onPrimary },
+                    ]}
+                  >
+                    {displayPrice}
+                  </Text>
+                ) : undefined
               }
             />
             <Button
