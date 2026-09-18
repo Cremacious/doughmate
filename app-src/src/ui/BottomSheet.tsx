@@ -83,6 +83,17 @@ export function BottomSheet({
   const translateY = useSharedValue(reduced ? 0 : sheetH);
   const progress = useSharedValue(reduced ? 1 : 0);
 
+  // The mirror of the dismiss below. A sheet opened from a field that was being
+  // typed into — the unit picker beside an amount — arrives on top of a keyboard
+  // nobody asked to keep, and because the panel pads itself by the keyboard height
+  // rather than moving, that keyboard eats the bottom of the panel instead of
+  // covering it. A half sheet is left as a strip. Forms use
+  // keyboardShouldPersistTaps="handled" so the tap reaches the field and never
+  // blurs the input on its own, which means the sheet has to do it on arrival.
+  useEffect(() => {
+    Keyboard.dismiss();
+  }, []);
+
   useEffect(() => {
     if (reduced) {
       translateY.value = 0;

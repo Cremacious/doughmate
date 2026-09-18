@@ -60,29 +60,23 @@ export function OptionSheet({
     <BottomSheet
       size={size ?? (searchable ? 'full' : 'half')}
       onClose={onClose}
+      // Close sits on the title's own line, top right. It used to ride the search
+      // row instead, which reads as part of the search field when there is one and,
+      // when there is not, leaves the button stranded on an otherwise empty row
+      // directly under the title.
       header={
-        <Text
-          style={[
-            typography.display.md,
-            styles.title,
-            // The base 32/34 line box crops this font's ascenders (same class of
-            // clip `numeralLine` exists to avoid for big numerals).
-            { lineHeight: typography.display.md.lineHeight + 6, color: palette.textInk },
-          ]}
-        >
-          {title}
-        </Text>
-      }
-    >
-      <View style={styles.body}>
-        <View style={styles.topRow}>
-          {searchable ? (
-            <View style={styles.searchField}>
-              <Input value={query} onChangeText={setQuery} placeholder={searchPlaceholder} />
-            </View>
-          ) : (
-            <View style={styles.searchField} />
-          )}
+        <View style={styles.headerRow}>
+          <Text
+            style={[
+              typography.display.md,
+              styles.title,
+              // The base 32/34 line box crops this font's ascenders (same class of
+              // clip `numeralLine` exists to avoid for big numerals).
+              { lineHeight: typography.display.md.lineHeight + 6, color: palette.textInk },
+            ]}
+          >
+            {title}
+          </Text>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('common.close')}
@@ -95,6 +89,14 @@ export function OptionSheet({
             <Text style={[typography.heading, { color: palette.textSoft }]}>✕</Text>
           </Pressable>
         </View>
+      }
+    >
+      <View style={styles.body}>
+        {searchable ? (
+          <View style={styles.searchRow}>
+            <Input value={query} onChangeText={setQuery} placeholder={searchPlaceholder} />
+          </View>
+        ) : null}
         <ScrollView
           contentContainerStyle={styles.list}
           keyboardShouldPersistTaps="handled"
@@ -148,16 +150,21 @@ export function OptionSheet({
 }
 
 const styles = StyleSheet.create({
-  title: { marginTop: spacing.xs },
-  body: { flex: 1 },
-  topRow: {
+  // The sheet's drag area centres its children, so the row has to stretch itself
+  // to full width or it shrinks to the title and the close button sits beside the
+  // text rather than in the corner.
+  headerRow: {
+    alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
     paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.sm,
   },
-  searchField: { flex: 1 },
+  // Takes the room the close button does not, so a long title wraps instead of
+  // pushing the button off the panel.
+  title: { flex: 1, marginTop: spacing.xs },
+  body: { flex: 1 },
+  searchRow: { paddingHorizontal: spacing.xl, paddingBottom: spacing.sm },
   close: {
     width: 48,
     height: 48,
@@ -165,7 +172,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  list: { paddingHorizontal: spacing.lg, paddingBottom: spacing['3xl'] },
+  // The top pad stands in for the search row's, so an unsearchable sheet does not
+  // butt its first option straight against the title.
+  list: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing['3xl'] },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
