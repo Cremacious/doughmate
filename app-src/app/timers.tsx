@@ -65,6 +65,7 @@ export default function TimersSheet() {
   return (
     <BottomSheet
       size="tall"
+      collapseHeaderWithKeyboard
       onClose={() => router.back()}
       header={
         <View style={styles.headerBlock}>
@@ -94,6 +95,7 @@ export default function TimersSheet() {
       <ScrollView
         contentContainerStyle={styles.body}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         {plan ? (

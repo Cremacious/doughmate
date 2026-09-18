@@ -108,6 +108,7 @@ export default function NewStarterSheet() {
   return (
     <BottomSheet
       size="tall"
+      collapseHeaderWithKeyboard
       onClose={() => router.back()}
       header={
         <View style={styles.header}>

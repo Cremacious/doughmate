@@ -117,6 +117,7 @@ export default function PriceEditorSheet() {
   return (
     <BottomSheet
       size="tall"
+      collapseHeaderWithKeyboard
       onClose={() => router.back()}
       header={
         <Text
@@ -135,6 +136,7 @@ export default function PriceEditorSheet() {
       <ScrollView
         contentContainerStyle={styles.body}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         <Card>

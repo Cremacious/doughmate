@@ -125,6 +125,7 @@ export default function BakeEditorSheet() {
   return (
     <BottomSheet
       size="tall"
+      collapseHeaderWithKeyboard
       onClose={() => router.back()}
       header={
         <Text
@@ -149,6 +150,7 @@ export default function BakeEditorSheet() {
       <ScrollView
         contentContainerStyle={styles.body}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         <Card>

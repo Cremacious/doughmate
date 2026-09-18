@@ -273,6 +273,7 @@ export default function RecipeEditorSheet() {
   return (
     <BottomSheet
       size="tall"
+      collapseHeaderWithKeyboard
       onClose={() => router.back()}
       header={
         <Text
@@ -298,6 +299,7 @@ export default function RecipeEditorSheet() {
       <ScrollView
         contentContainerStyle={styles.body}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         <Tip id="editor.sections" text={t('tips.editor_sections')} />

@@ -14,13 +14,17 @@
 // its container simply has its lower third covered — which is what hid the notes
 // field on the starter form, and every other field sitting low in a sheet. The panel
 // pads its own bottom by the live keyboard height instead of moving, so its top edge
-// and the grabber stay exactly where they were and only the usable area shrinks. The
-// footer rides up with it, so the primary action is never behind the keyboard either.
+// and the grabber stay exactly where they were and only the usable area shrinks.
+//
+// That shrinking is severe on a form, so the sheet also sheds its own chrome while
+// the keyboard is up: the footer always, and the header for sheets that opt in with
+// collapseHeaderWithKeyboard. Both are back the instant the keyboard goes, and the
+// form scrollers dismiss it on a downward drag.
 //
 // One file: the mode tray, all six option sheets, recipe and starter detail, the
 // cook sheet, the bake plan and the paywall.
-import { type ReactNode, useEffect } from 'react';
-import { Keyboard, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { type ReactNode, useEffect, useState } from 'react';
+import { Keyboard, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -45,6 +49,14 @@ export interface BottomSheetProps {
   children: ReactNode;
   footer?: ReactNode;
   header?: ReactNode;
+  /**
+   * Drops the header while the keyboard is up, leaving the grabber. For form
+   * sheets, where the title is only telling you something you already know by
+   * the time you are typing. Off by default: a header can hold a control rather
+   * than a label, as the option sheet's close button does, and that has to
+   * survive the search field being focused.
+   */
+  collapseHeaderWithKeyboard?: boolean;
 }
 
 export function BottomSheet({
@@ -53,6 +65,7 @@ export function BottomSheet({
   children,
   footer,
   header,
+  collapseHeaderWithKeyboard = false,
 }: BottomSheetProps) {
   const { palette } = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -92,6 +105,31 @@ export function BottomSheet({
   // blurs the input on its own, which means the sheet has to do it on arrival.
   useEffect(() => {
     Keyboard.dismiss();
+  }, []);
+
+  // The panel cannot grow to meet the keyboard — it is already as tall as it is
+  // allowed to be, and the keyboard takes better than half of what is left. So
+  // the sheet gives up its own chrome instead: on a 852pt screen a 449pt keyboard
+  // leaves 336pt, and a title and a sticky action were spending 126pt of it. Both
+  // come straight back when the keyboard goes, and every form scroller dismisses
+  // the keyboard on a downward drag, so the action is always one swipe away.
+  // Will/Did rather than one pair for both platforms: iOS fires Will ahead of the
+  // keyboard animation, so the chrome leaves with it instead of after it.
+  const [keyboardUp, setKeyboardUp] = useState(false);
+
+  useEffect(() => {
+    const show = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardUp(true)
+    );
+    const hide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardUp(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -187,13 +225,13 @@ export function BottomSheet({
               between the panel's top edge and the handle. */}
           <View style={[styles.dragArea, { paddingTop: spacing.lg + grabberInset }]}>
             <View style={[styles.grabber, { backgroundColor: palette.grabber }]} />
-            {header}
+            {collapseHeaderWithKeyboard && keyboardUp ? null : header}
           </View>
         </GestureDetector>
 
         <View style={styles.content}>{children}</View>
 
-        {footer ? (
+        {footer && !keyboardUp ? (
           <Animated.View
             style={[
               styles.footer,
